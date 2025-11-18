@@ -31,9 +31,7 @@ Whether you're building an AI-powered IDE, enhancing a chat interface, or creati
 
 ## What's in this Repository?
 
-🚧 **Under Development**: This repository currently contains the project structure and documentation for HPE GreenLake MCP servers. The actual server implementations will be added in upcoming releases.
-
-When complete, this repository will contain production-ready MCP servers for HPE GreenLake platform services. Each server will provide AI assistants with secure, read-only access to specific GreenLake APIs, enabling natural language interactions with your HPE infrastructure.
+This repository contains production-ready MCP servers for HPE GreenLake platform services. Each server provides AI assistants with secure, read-only access to specific GreenLake APIs, enabling natural language interactions with your HPE infrastructure.
 
 ### Key Features
 
@@ -44,13 +42,11 @@ When complete, this repository will contain production-ready MCP servers for HPE
 - **Production Ready**: Comprehensive logging, error handling, and Docker support
 - **Well Tested**: Extensive unit and integration test coverage
 
-## Planned MCP Servers
-
-🚧 **Coming Soon**: The following MCP servers are planned for future releases:
+## Available MCP Servers
 
 ### Infrastructure & Platform Management
 
-#### Devices Server
+#### [Devices](./src/devices/README.md)
 
 Manage and query HPE GreenLake devices in your workspace. Filter devices by type, serial number, tags, and other properties.
 
@@ -60,7 +56,7 @@ Manage and query HPE GreenLake devices in your workspace. Filter devices by type
 - Get detailed device information by ID
 - Query devices by tags, device type, serial number, and more
 
-#### Workspaces Server
+#### [Workspaces](./src/workspaces/README.md)
 
 Interact with HPE GreenLake workspace management APIs. View workspace details and manage workspace-level configurations.
 
@@ -70,7 +66,7 @@ Interact with HPE GreenLake workspace management APIs. View workspace details an
 - Retrieve workspace details and configurations
 - Access workspace-level settings
 
-#### Subscriptions Server
+#### [Subscriptions](./src/subscriptions/README.md)
 
 Access subscription information and licensing details for your HPE GreenLake services.
 
@@ -82,7 +78,7 @@ Access subscription information and licensing details for your HPE GreenLake ser
 
 ### Security & Compliance
 
-#### Audit Logs Server
+#### [Audit Logs](./src/audit-logs/README.md)
 
 Query and analyze HPE GreenLake audit logs with powerful filtering capabilities.
 
@@ -95,7 +91,7 @@ Query and analyze HPE GreenLake audit logs with powerful filtering capabilities.
 
 ### User & Access Management
 
-#### Users Server
+#### [Users](./src/users/README.md)
 
 Manage user accounts and access controls in HPE GreenLake workspaces.
 
@@ -107,17 +103,15 @@ Manage user accounts and access controls in HPE GreenLake workspaces.
 
 ## Quick Start
 
-🚧 **Coming Soon**: Installation and configuration instructions will be available when the MCP servers are released.
-
-### Prerequisites (Planned)
+### Prerequisites
 
 - Python 3.10 or higher
 - [uv](https://github.com/astral-sh/uv) package manager
 - HPE GreenLake workspace with API credentials
 
-### Configuration (Planned)
+### Configuration
 
-All servers will require the following HPE GreenLake credentials:
+All servers require the following HPE GreenLake credentials:
 
 ```bash
 export GREENLAKE_API_BASE_URL="https://global.api.greenlake.hpe.com"
@@ -125,6 +119,19 @@ export GREENLAKE_CLIENT_ID="your-client-id"
 export GREENLAKE_CLIENT_SECRET="your-client-secret"
 export GREENLAKE_WORKSPACE_ID="your-workspace-id"
 export GREENLAKE_TOKEN_ISSUER="https://global.api.greenlake.hpe.com/authorization/v2/oauth2/your-workspace-id/token"
+```
+
+### Running a Server
+
+```bash
+# Navigate to a server directory
+cd src/audit-logs
+
+# Install dependencies
+uv sync
+
+# Run the server
+uv run python __main__.py
 ```
 
 ## MCP Client Configuration

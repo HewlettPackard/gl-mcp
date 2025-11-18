@@ -1,0 +1,22 @@
+{
+  "servers": {
+    "workspaces": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "__main__.py"
+      ],
+      "cwd": "/tmp/workspaces",
+      "env": {
+        "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
+        "LOG_LEVEL": "INFO",
+        "GREENLAKE_CLIENT_ID": "<your-client-id>",
+        "GREENLAKE_CLIENT_SECRET": "<your-client-secret>",
+        "GREENLAKE_WORKSPACE_ID": "<your-workspace-id>",
+        "MCP_TOOL_MODE": "static"
+      }
+    }
+  }
+}

@@ -223,7 +223,6 @@ jobs:
   ci-checks:
     name: MCP Server CI
     runs-on: ubuntu-latest
-    environment: Pavo
     needs: [check-authorization, check-changes]
     if: |
       needs.check-changes.outputs.should-run == 'true' &&
@@ -434,11 +433,10 @@ jobs:
           name: mypy-results-${{ matrix.servers }}
           path: ${{ env.WORKING_DIR }}/${{ matrix.servers }}/mypy-results.xml
 
-      - name: Debug Pavo environment access
+      - name: Debug environment access
         if: always()
         run: |
-          echo "=== Pavo Environment Debug ==="
-          echo "Environment: Pavo"
+          echo "=== Environment Debug ==="
           echo "Event: ${{ github.event_name }}"
           echo "Actor: ${{ github.actor }}"
           echo "Ref: ${{ github.ref }}"

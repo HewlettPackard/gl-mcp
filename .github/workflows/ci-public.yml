@@ -1,0 +1,704 @@
+# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+name: CI on PR
+
+on:
+  push:
+    branches: [main, master, main-dev]
+  pull_request_target:
+    types: [opened, synchronize, reopened, labeled]
+    branches: [main, master, main-dev]
+
+permissions:
+  contents: read
+  checks: write
+  issues: write
+
+env:
+  PYTHON_VERSION: "3.11"
+  UV_VERSION: "0.4.10"
+  WORKING_DIR: src
+  UV_CACHE_DIR: /tmp/.uv-cache
+
+jobs:
+  check-authorization:
+    runs-on: ubuntu-latest
+    outputs:
+      authorized: ${{ steps.auth.outputs.authorized }}
+    steps:
+      - name: Authorization logic
+        id: auth
+        env:
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN || '' }}
+          ORG: ${{ github.repository_owner }}
+          TRUSTED_USERS: "lchinglen,vandewillysilva,chamur,alexandrealvino,sunkarar"
+          TRUSTED_TEAMS: "gl-mcp"
+        run: |
+          # Push events are always authorized
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "authorized=true" >> $GITHUB_OUTPUT
+            echo "✅ Push event - authorized"
+            exit 0
+          fi
+
+          AUTHOR="${{ github.actor }}"
+          HAS_LABEL=${{ contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}
+
+          if [ "$HAS_LABEL" = "true" ]; then
+            echo "authorized=true" >> $GITHUB_OUTPUT
+            echo "✅ PR has 'safe-to-test' label - authorized"
+            exit 0
+          fi
+
+          AUTHORIZED=false
+
+          # Check trusted users
+          if [ -n "$TRUSTED_USERS" ]; then
+            IFS=',' read -r -a users <<< "$TRUSTED_USERS"
+            for u in "${users[@]}"; do
+              u_trimmed=$(echo "$u" | xargs)
+              if [ "$u_trimmed" = "$AUTHOR" ]; then
+                AUTHORIZED=true
+                echo "✅ User $AUTHOR is in TRUSTED_USERS list"
+                break
+              fi
+            done
+          fi
+
+          # Check org membership
+          if [ -n "$AUTH_TOKEN" ] && [ "$AUTHORIZED" = "false" ]; then
+            echo "Checking org membership for $AUTHOR..."
+            membership=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "Authorization: Bearer $AUTH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/orgs/$ORG/members/$AUTHOR" || echo "000")
+            
+            if [ "$membership" = "204" ]; then
+              AUTHORIZED=true
+              echo "✅ User $AUTHOR is a member of org $ORG"
+            fi
+          fi
+
+          # Check team membership
+          if [ -n "$AUTH_TOKEN" ] && [ -n "$TRUSTED_TEAMS" ] && [ "$AUTHORIZED" = "false" ]; then
+            echo "Checking team membership..."
+            IFS=',' read -r -a teams <<< "$TRUSTED_TEAMS"
+            
+            for team in "${teams[@]}"; do
+              team_trimmed=$(echo "$team" | xargs)
+              if [ -z "$team_trimmed" ]; then continue; fi
+              
+              team_membership=$(curl -s -o /dev/null -w "%{http_code}" \
+                -H "Authorization: Bearer $AUTH_TOKEN" \
+                -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/orgs/$ORG/teams/$team_trimmed/memberships/$AUTHOR" || echo "000")
+              
+              if [ "$team_membership" = "200" ]; then
+                AUTHORIZED=true
+                echo "✅ User $AUTHOR is in team $team_trimmed"
+                break
+              fi
+            done
+          fi
+
+          # Final decision
+          if [ "$AUTHORIZED" = "true" ]; then
+            echo "authorized=true" >> $GITHUB_OUTPUT
+            echo "✅ Authorized to run CI"
+          else
+            echo "authorized=false" >> $GITHUB_OUTPUT
+            echo "⚠️ Not authorized - requires 'safe-to-test' label"
+            echo "::warning::External PR requires 'safe-to-test' label"
+          fi
+
+  check-changes:
+    name: Determine changeset
+    runs-on: ubuntu-latest
+    needs: [check-authorization]
+    if: |
+      (github.event_name == 'push') ||
+      (github.event_name == 'pull_request_target' && needs.check-authorization.outputs.authorized == 'true')
+    outputs:
+      should-run: ${{ steps.determine-strategy.outputs.should_run }}
+      servers: ${{ steps.determine-strategy.outputs.servers }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Check for changes in CI workflow
+        id: check-workflow
+        uses: tj-actions/changed-files@v46
+        with:
+          files: |
+            .github/workflows/ci-public.yml
+
+      - name: Check for changes in src directory
+        id: check-src
+        uses: tj-actions/changed-files@v46
+        with:
+          files: |
+            src/**
+
+      - name: Determine test strategy based on file changes
+        id: determine-strategy
+        run: |
+          workflow_changed="${{ steps.check-workflow.outputs.any_changed }}"
+          src_changed="${{ steps.check-src.outputs.any_changed }}"
+
+          echo "Workflow changed: $workflow_changed"
+          echo "Src changed: $src_changed"
+
+          # Initialize final server list
+          declare -a final_servers=()
+
+          # If workflow changed - test all servers for safety
+          if [[ "$workflow_changed" == "true" ]]; then
+            echo "✅ Workflow file changed - testing all servers"
+            all_servers=$(find src/ -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | grep -v "^\." | sort)
+            final_servers=($all_servers)
+            echo "Added all servers due to workflow changes: ${final_servers[@]}"
+          fi
+
+          # If src files changed - add changed servers
+          if [[ "$src_changed" == "true" ]]; then
+            changed_files="${{ steps.check-src.outputs.all_changed_files }}"
+            echo "Changed src files: $changed_files"
+            
+            # Extract unique server directories from changed files
+            changed_servers_json=$(echo "$changed_files" | tr ' ' '\n' | grep '^src/' | cut -d'/' -f2 | sort | uniq | jq -R -s -c 'split("\n")[:-1]')
+            changed_servers_array=($(echo "$changed_servers_json" | jq -r '.[]'))
+            echo "Changed servers from src: ${changed_servers_array[@]}"
+            
+            # Add changed servers to final list, avoiding duplicates
+            for server in "${changed_servers_array[@]}"; do
+              if [[ ! " ${final_servers[@]} " =~ " ${server} " ]]; then
+                final_servers+=("$server")
+                echo "Added $server from src changes"
+              else
+                echo "Skipped $server (already in list)"
+              fi
+            done
+          fi
+
+          # Convert final_servers array to JSON format
+          if [[ ${#final_servers[@]} -gt 0 ]]; then
+            # Use printf and jq for safer JSON generation
+            servers_json=$(printf '%s\n' "${final_servers[@]}" | jq -R . | jq -s -c .)
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            echo "servers=$servers_json" >> "$GITHUB_OUTPUT"
+            echo "Final server list: $servers_json"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "servers=[]" >> "$GITHUB_OUTPUT"
+            echo "No tests needed (no relevant changes)"
+          fi
+
+  lint-markdown:
+    runs-on: ubuntu-latest
+    name: Lint Markdown
+    needs: [check-authorization, check-changes]
+    if: |
+      needs.check-changes.outputs.should-run == 'true' &&
+      ((github.event_name == 'push') ||
+       (github.event_name == 'pull_request_target' && needs.check-authorization.outputs.authorized == 'true'))
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install markdownlint-cli
+        run: npm install -g markdownlint-cli@0.33.0
+
+      - name: Lint markdown files
+        run: markdownlint "**/*.md" --config .markdownlint.json
+
+  ci-checks:
+    name: MCP Server CI
+    runs-on: ubuntu-latest
+    needs: [check-authorization, check-changes]
+    if: |
+      needs.check-changes.outputs.should-run == 'true' &&
+      ((github.event_name == 'push') ||
+       (github.event_name == 'pull_request_target' && needs.check-authorization.outputs.authorized == 'true'))
+    strategy:
+      matrix:
+        servers: ${{ fromJson(needs.check-changes.outputs.servers) }}
+      fail-fast: false
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}/${{ env.WORKING_DIR }}/${{ matrix.servers }}
+
+    steps:
+
+      - name: 🧪 CI for ${{ matrix.servers }}
+        working-directory: . 
+        run: |
+            echo "::group::Starting CI for ${{ matrix.servers }}"
+            echo "🔧 Server: ${{ matrix.servers }}"
+            echo "🐍 Python: ${{ env.PYTHON_VERSION }}"
+            echo "📦 UV: ${{ env.UV_VERSION }}"
+            echo "📁 Working Dir: ${{ env.WORKING_DIR }}/${{ matrix.servers }}"
+            echo "::endgroup::"
+            
+            # Set job summary title
+            echo "## 🧪 CI Results for \`${{ matrix.servers }}\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache uv
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.UV_CACHE_DIR }}
+          key: uv-${{ runner.os }}-${{ env.UV_VERSION }}-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            uv-${{ runner.os }}-${{ env.UV_VERSION }}-
+            uv-${{ runner.os }}-
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          echo "UV_CACHE_DIR=${{ env.UV_CACHE_DIR }}" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: |
+          uv sync --dev
+
+      - name: Install development tools
+        run: |
+          uv add ruff --dev
+          uv add mypy --dev
+          uv add bandit --dev
+          uv add pip-audit --dev
+          uv add pytest --dev
+          uv add pytest-asyncio --dev
+
+      
+      # ==========================================
+      # SECURITY & LICENSE COMPLIANCE CHECKS
+      # ==========================================
+      
+      - name: Secrets detection (detect-secrets)
+        if: always()
+        run: |
+            echo "::group::Secret Detection"
+            pip install detect-secrets
+            if python3 ${{ github.workspace }}/scripts/check_secrets.py; then
+            echo "✅ No secrets detected"
+            else
+            echo "❌ Secrets detection failed"
+            exit 1
+            fi
+            echo "::endgroup::"
+        continue-on-error: false
+
+      - name: Dependency vulnerability check (Pip Audit)
+        if: always()
+        run: |
+          echo "::group::Dependency Vulnerability Check"
+          python3 ${{ github.workspace }}/scripts/check_pip_audit.py
+          echo "::endgroup::"
+        continue-on-error: false
+
+      - name: Upload pip-audit results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pip-audit-results-${{ matrix.servers }}
+          path: ${{ env.WORKING_DIR }}/${{ matrix.servers }}/pip-audit-results.json
+
+      - name: Check dependency licenses
+        if: always()
+        run: |
+          echo "::group::License Compliance Check"
+          uv add pip-licenses --dev
+          uv run pip-licenses --format=json --output-file=licenses.json
+          
+          echo "📋 Dependency licenses:"
+          uv run pip-licenses --format=markdown
+          echo ""
+          
+          uv run python -c "
+          import json
+          import sys
+          
+          ALLOWED_LICENSES = [
+              'MIT', 'MIT License',
+              'Apache', 'Apache-2.0', 'Apache Software License',
+              'BSD', 'BSD-3-Clause', 'BSD-2-Clause',
+              'ISC', 'PSF', 'Unlicense', '0BSD',
+          ]
+          
+          BLOCKED_LICENSES = [
+              'GPL', 'GPLv2', 'GPLv3', 'GPL-2.0', 'GPL-3.0',
+              'AGPL', 'AGPLv3', 'AGPL-3.0',
+          ]
+          
+          with open('licenses.json') as f:
+              packages = json.load(f)
+          
+          violations = []
+          for pkg in packages:
+              license_name = pkg.get('License', 'UNKNOWN')
+              package_name = pkg.get('Name', 'unknown')
+              version = pkg.get('Version', 'unknown')
+              license_norm = license_name.upper()
+              
+              is_allowed = any(allowed.upper() in license_norm for allowed in ALLOWED_LICENSES)
+              if is_allowed:
+                  continue
+              
+              is_blocked = any(blocked.upper() in license_norm for blocked in BLOCKED_LICENSES)
+              if is_blocked:
+                  violations.append(f'{package_name} ({version}): {license_name}')
+          
+          if violations:
+              print('❌ Incompatible licenses found:')
+              for v in violations:
+                  print(f'  - {v}')
+              sys.exit(1)
+          
+          print('✅ All licenses compatible with MIT')
+          "
+          echo "::endgroup::"
+        continue-on-error: false
+
+      - name: Upload license report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: license-report-${{ matrix.servers }}
+          path: ${{ env.WORKING_DIR }}/${{ matrix.servers }}/licenses.json
+
+      - name: Run security analysis (Bandit)
+        if: always()
+        run: |
+          echo "::group::Bandit Security Analysis"
+          python3 ${{ github.workspace }}/scripts/check_bandit.py
+          echo "::endgroup::"
+        continue-on-error: false
+
+      - name: Upload Bandit results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bandit-results-${{ matrix.servers }}
+          path: ${{ env.WORKING_DIR }}/${{ matrix.servers }}/bandit-results.json
+
+      # ==========================================
+      # CODE QUALITY CHECKS
+      # ==========================================
+
+      - name: Run linter and formatter (Ruff)
+        run: |
+          echo "::group::Ruff Format Check"
+          uv run python -m ruff format --check .
+          echo "::endgroup::"
+          echo "::group::Ruff Lint Check"
+          uv run python -m ruff check . --output-format=github
+          echo "::endgroup::"
+
+      - name: Run type checker (MyPy)
+        run: |
+          echo "::group::MyPy Type Check"
+          uv run python -m mypy . \
+            --ignore-missing-imports \
+            --allow-untyped-defs \
+            --allow-incomplete-defs \
+            --allow-untyped-calls \
+            --no-strict-optional \
+            --junit-xml=mypy-results.xml
+          echo "::endgroup::"
+        continue-on-error: true
+      - name: Upload MyPy results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mypy-results-${{ matrix.servers }}
+          path: ${{ env.WORKING_DIR }}/${{ matrix.servers }}/mypy-results.xml
+
+      - name: Debug environment access
+        if: always()
+        run: |
+          echo "=== Environment Debug ==="
+          echo "Event: ${{ github.event_name }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "Repository: ${{ github.repository }}"
+          echo ""
+          echo "=== Secret Availability Check ==="
+          if [ -n "${{ secrets.GREENLAKE_API_BASE_URL }}" ]; then
+            echo "GREENLAKE_API_BASE_URL: ✅ SET"
+          else
+            echo "GREENLAKE_API_BASE_URL: ❌ NOT SET"
+          fi
+          
+          if [ -n "${{ secrets.GREENLAKE_CLIENT_ID }}" ]; then
+            echo "GREENLAKE_CLIENT_ID: ✅ SET"
+          else
+            echo "GREENLAKE_CLIENT_ID: ❌ NOT SET"
+          fi
+          
+          if [ -n "${{ secrets.GREENLAKE_CLIENT_SECRET }}" ]; then
+            echo "GREENLAKE_CLIENT_SECRET: ✅ SET"
+          else
+            echo "GREENLAKE_CLIENT_SECRET: ❌ NOT SET"
+          fi
+          
+          if [ -n "${{ secrets.GREENLAKE_TOKEN_ISSUER }}" ]; then
+            echo "GREENLAKE_TOKEN_ISSUER: ✅ SET"
+          else
+            echo "GREENLAKE_TOKEN_ISSUER: ❌ NOT SET"
+          fi
+          
+          if [ -n "${{ secrets.GREENLAKE_WORKSPACE_ID }}" ]; then
+            echo "GREENLAKE_WORKSPACE_ID: ✅ SET"
+          else
+            echo "GREENLAKE_WORKSPACE_ID: ❌ NOT SET"
+          fi
+          
+          echo ""
+          echo "=== MCP Test Secrets ==="
+          if [ -n "${{ secrets.MCP_TEST_AUDIT_LOGS_ID }}" ]; then
+            echo "MCP_TEST_AUDIT_LOGS_ID: ✅ SET"
+          else
+            echo "MCP_TEST_AUDIT_LOGS_ID: ❌ NOT SET"
+          fi
+          
+          if [ -n "${{ secrets.MCP_TEST_DEVICES_ID }}" ]; then
+            echo "MCP_TEST_DEVICES_ID: ✅ SET"
+          else
+            echo "MCP_TEST_DEVICES_ID: ❌ NOT SET"
+          fi
+          
+          if [ -n "${{ secrets.MCP_TEST_SAMPLE_SERVICE_PETID }}" ]; then
+            echo "MCP_TEST_SAMPLE_SERVICE_PETID: ✅ SET"
+          else
+            echo "MCP_TEST_SAMPLE_SERVICE_PETID: ❌ NOT SET"
+          fi
+          echo "=============================="
+
+      - name: Run unit tests
+        if: always()
+        run: |
+          if [[ -d "tests/unit" ]]; then
+            echo "::group::Unit Tests for ${{ matrix.servers }}"
+            echo "Running unit tests for ${{ matrix.servers }}..."
+            uv run python -m pytest tests/unit/ -v --tb=short --junitxml=unit-test-results.xml
+            echo "::endgroup::"
+          else
+            echo "No unit tests found for ${{ matrix.servers }}"
+          fi
+
+      - name: Run integration tests
+        if: always()
+        env:
+          # Note: These secrets may not be available for external PRs
+          # They will only run for authorized users/teams
+          GREENLAKE_API_BASE_URL: ${{ secrets.GREENLAKE_API_BASE_URL }}
+          GREENLAKE_CLIENT_ID: ${{ secrets.GREENLAKE_CLIENT_ID }}
+          GREENLAKE_CLIENT_SECRET: ${{ secrets.GREENLAKE_CLIENT_SECRET }}
+          GREENLAKE_TOKEN_ISSUER: ${{ secrets.GREENLAKE_TOKEN_ISSUER }}
+          GREENLAKE_WORKSPACE_ID: ${{ secrets.GREENLAKE_WORKSPACE_ID }}
+          MCP_TEST_AUDIT_LOGS_ID: ${{ secrets.MCP_TEST_AUDIT_LOGS_ID }}
+          MCP_TEST_DEVICES_ID: ${{ secrets.MCP_TEST_DEVICES_ID }}
+          MCP_TEST_SAMPLE_SERVICE_PETID: ${{ secrets.MCP_TEST_SAMPLE_SERVICE_PETID }}
+          MCP_TEST_SUBSCRIPTIONS_ID: ${{ secrets.MCP_TEST_SUBSCRIPTIONS_ID }}
+          MCP_TEST_USERS_ID: ${{ secrets.MCP_TEST_USERS_ID }}
+          MCP_TEST_WORKSPACES_WORKSPACEID: ${{ secrets.GREENLAKE_WORKSPACE_ID }}
+        run: |
+          if [[ -d "tests/integration" ]]; then
+            echo "::group::Integration Tests for ${{ matrix.servers }}"
+            echo "Running integration tests for ${{ matrix.servers }}..."
+            uv run python -m pytest tests/integration/ -v --tb=short --junitxml=integration-test-results.xml
+            echo "::endgroup::"
+          else
+            echo "No integration tests found for ${{ matrix.servers }}"
+          fi
+
+      - name: Run E2E tests
+        if: always()
+        env:
+          GREENLAKE_API_BASE_URL: ${{ secrets.GREENLAKE_API_BASE_URL }}
+          GREENLAKE_CLIENT_ID: ${{ secrets.GREENLAKE_CLIENT_ID }}
+          GREENLAKE_CLIENT_SECRET: ${{ secrets.GREENLAKE_CLIENT_SECRET }}
+          GREENLAKE_TOKEN_ISSUER: ${{ secrets.GREENLAKE_TOKEN_ISSUER }}
+          GREENLAKE_WORKSPACE_ID: ${{ secrets.GREENLAKE_WORKSPACE_ID }}
+        run: |
+          if [[ -d "tests/e2e" ]]; then
+            echo "::group::E2E Tests for ${{ matrix.servers }}"
+            echo "Running E2E tests for ${{ matrix.servers }}..."
+            uv run python -m pytest tests/e2e/ -v --tb=short --junitxml=e2e-test-results.xml
+            echo "::endgroup::"
+          else
+            echo "No E2E tests found for ${{ matrix.servers }}"
+          fi
+
+      - name: 📊 Test Summary for ${{ matrix.servers }}
+        if: always()
+        run: |
+            echo "## 📊 Test Summary for \`${{ matrix.servers }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            # Check each test type
+            if [[ -f "unit-test-results.xml" ]]; then
+            echo "- ✅ Unit tests: Completed" >> $GITHUB_STEP_SUMMARY
+            else
+            echo "- ⏭️ Unit tests: No tests found" >> $GITHUB_STEP_SUMMARY
+            fi
+            
+            if [[ -f "integration-test-results.xml" ]]; then
+            echo "- ✅ Integration tests: Completed" >> $GITHUB_STEP_SUMMARY
+            else
+            echo "- ⏭️ Integration tests: No tests found" >> $GITHUB_STEP_SUMMARY
+            fi
+            
+            if [[ -f "e2e-test-results.xml" ]]; then
+            echo "- ✅ E2E tests: Completed" >> $GITHUB_STEP_SUMMARY
+            else
+            echo "- ⏭️ E2E tests: No tests found" >> $GITHUB_STEP_SUMMARY
+            fi
+            
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Status**: CI completed for ${{ matrix.servers }} ✅" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.servers }}
+          path: |
+            ${{ env.WORKING_DIR }}/${{ matrix.servers }}/unit-test-results.xml
+            ${{ env.WORKING_DIR }}/${{ matrix.servers }}/integration-test-results.xml
+            ${{ env.WORKING_DIR }}/${{ matrix.servers }}/e2e-test-results.xml
+          if-no-files-found: ignore
+
+      - name: Build package
+        if: always()
+        run: |
+          echo "::group::Building package for ${{ matrix.servers }}"
+          uv build
+
+          # Validate package metadata
+          uv run python -c "
+          import tomllib
+          import sys
+          try:
+              with open('pyproject.toml', 'rb') as f:
+                  config = tomllib.load(f)
+              print('✅ Package name:', config['project']['name'])
+              print('✅ Version:', config['project']['version'])
+              print('✅ Description:', config['project']['description'])
+          except Exception as e:
+              print('❌ Error reading package metadata:', e)
+              sys.exit(1)
+          "
+          echo "::endgroup::"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dist-packages-${{ matrix.servers }}
+          path: ${{ env.WORKING_DIR }}/${{ matrix.servers }}/dist/
+
+      - name: Test package installation
+        if: always()
+        run: |
+          echo "::group::Testing package installation for ${{ matrix.servers }}"
+          cd /tmp
+          uv venv test-env --python ${{ env.PYTHON_VERSION }}
+          source test-env/bin/activate
+
+          # Find the wheel file
+          wheel_file=$(find ${{ github.workspace }}/${{ env.WORKING_DIR }}/${{ matrix.servers }}/dist/ -name "*.whl" | head -n 1)
+          if [[ -z "$wheel_file" ]]; then
+            echo "❌ No wheel file found"
+            exit 1
+          fi
+
+          echo "Installing: $wheel_file"
+          uv pip install "$wheel_file"
+          python -c "print('✅ Package installed successfully')"
+          echo "::endgroup::"
+
+  status-check:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs: [check-authorization, check-changes, lint-markdown, ci-checks]
+    if: always()
+
+    steps:
+      - name: Check if CI should run
+        run: |
+          if [[ "${{ needs.check-changes.outputs.should-run }}" != "true" ]]; then
+            echo "⏭️ No relevant changes detected - skipping CI"
+            exit 0
+          fi
+
+      - name: Check authorization status
+        run: |
+          if [[ "${{ needs.check-authorization.result }}" == "success" ]]; then
+            echo "✅ Authorization passed"
+          elif [[ "${{ needs.check-authorization.result }}" == "skipped" ]]; then
+            echo "⏭️ Authorization skipped"
+          else
+            echo "❌ Authorization failed"
+            exit 1
+          fi
+
+      - name: Check markdown linting
+        run: |
+          if [[ "${{ needs.lint-markdown.result }}" == "success" ]]; then
+            echo "✅ Markdown linting passed"
+          elif [[ "${{ needs.lint-markdown.result }}" == "skipped" ]]; then
+            echo "⏭️ Markdown linting skipped"
+          else
+            echo "❌ Markdown linting failed"
+            exit 1
+          fi
+
+      - name: CI checks status check
+        run: |
+          if [[ "${{ needs.ci-checks.result }}" == "success" ]]; then
+            echo "✅ All CI checks passed!"
+          elif [[ "${{ needs.ci-checks.result }}" == "skipped" ]]; then
+            echo "⏭️ CI checks were skipped"
+          else
+            echo "❌ CI checks failed with status: ${{ needs.ci-checks.result }}"
+            exit 1
+          fi
+
+      - name: Final summary
+        run: |
+          echo "========================================="
+          echo "Quality Gate Summary"
+          echo "========================================="
+          echo "Authorization: ${{ needs.check-authorization.result }}"
+          echo "Change Detection: ${{ needs.check-changes.result }}"
+          echo "Markdown Lint: ${{ needs.lint-markdown.result }}"
+          echo "CI Checks: ${{ needs.ci-checks.result }}"
+          echo "========================================="
+          
+          if [[ "${{ needs.check-changes.outputs.should-run }}" == "true" ]]; then
+            echo "Tested servers: ${{ needs.check-changes.outputs.servers }}"
+            echo "✅ All quality checks passed!"
+          else
+            echo "⏭️ No relevant changes - CI skipped"
+          fi

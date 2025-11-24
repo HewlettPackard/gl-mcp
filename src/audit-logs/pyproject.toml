@@ -1,6 +1,6 @@
 [project]
 name = "audit-logs-mcp"
-version = "v1"
+version = "1.0.0"
 description = "HPE GreenLake audit-logs MCP Server"
 authors = [
     {name = "HPE GreenLake Platform Team", email = "greenlake-platform@hpe.com"}

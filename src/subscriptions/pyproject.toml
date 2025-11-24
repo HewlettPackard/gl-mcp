@@ -1,6 +1,6 @@
 [project]
 name = "subscriptions-mcp"
-version = "0.1.0"
+version = "1.0.0"
 description = "HPE GreenLake subscriptions MCP Server"
 authors = [
     {name = "HPE GreenLake Platform Team", email = "greenlake-platform@hpe.com"}

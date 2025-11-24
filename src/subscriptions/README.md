@@ -483,4 +483,4 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](../../
 
 **Service**: subscriptions  
 **API Version**: latest  
-**MCP Server Version**: 0.1.0
+**MCP Server Version**: 1.0.0

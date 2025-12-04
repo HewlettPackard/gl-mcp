@@ -118,7 +118,6 @@ export GREENLAKE_API_BASE_URL="https://global.api.greenlake.hpe.com"
 export GREENLAKE_CLIENT_ID="your-client-id"
 export GREENLAKE_CLIENT_SECRET="your-client-secret"
 export GREENLAKE_WORKSPACE_ID="your-workspace-id"
-export GREENLAKE_TOKEN_ISSUER="https://global.api.greenlake.hpe.com/authorization/v2/oauth2/your-workspace-id/token"
 ```
 
 ### Running a Server
@@ -151,8 +150,7 @@ Add servers to your `claude_desktop_config.json`:
         "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
         "GREENLAKE_CLIENT_ID": "your-client-id",
         "GREENLAKE_CLIENT_SECRET": "your-client-secret",
-        "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
-        "GREENLAKE_TOKEN_ISSUER": "https://global.api.greenlake.hpe.com/authorization/v2/oauth2/your-workspace-id/token"
+        "GREENLAKE_WORKSPACE_ID": "your-workspace-id"
       }
     },
     "greenlake-devices": {
@@ -163,8 +161,7 @@ Add servers to your `claude_desktop_config.json`:
         "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
         "GREENLAKE_CLIENT_ID": "your-client-id",
         "GREENLAKE_CLIENT_SECRET": "your-client-secret",
-        "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
-        "GREENLAKE_TOKEN_ISSUER": "https://global.api.greenlake.hpe.com/authorization/v2/oauth2/your-workspace-id/token"
+        "GREENLAKE_WORKSPACE_ID": "your-workspace-id"
       }
     }
   }

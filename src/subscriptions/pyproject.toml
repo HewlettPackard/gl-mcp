@@ -1,6 +1,6 @@
 [project]
 name = "subscriptions-mcp"
-version = "1.0.0"
+version = "1.0.1"
 description = "HPE GreenLake subscriptions MCP Server"
 authors = [
     {name = "HPE GreenLake Platform Team", email = "greenlake-platform@hpe.com"}
@@ -58,3 +58,9 @@ markers = [
 [tool.ruff]
 line-length = 120
 target-version = "py310"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+]

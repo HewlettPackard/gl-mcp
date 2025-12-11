@@ -146,7 +146,7 @@ class TestGetEndpointSchemaTool:
         """Test execution with valid endpoint."""
 
         # Use first available endpoint from the API
-        result = await tool.execute({"endpoint_identifier": "GET:/subscriptions/v1/subscriptions/{id}"})
+        result = await tool.execute({"endpoint_identifier": "GET:/subscriptions/v1/subscriptions"})
 
         assert len(result) == 1
         response = result[0]
@@ -174,7 +174,7 @@ class TestGetEndpointSchemaTool:
         """Test execution with examples enabled."""
 
         result = await tool.execute(
-            {"endpoint_identifier": "GET:/subscriptions/v1/subscriptions/{id}", "include_examples": True}
+            {"endpoint_identifier": "GET:/subscriptions/v1/subscriptions", "include_examples": True}
         )
 
         assert len(result) == 1
@@ -250,7 +250,7 @@ class TestInvokeDynamicTool:
         # Patch the http_client
         with patch.object(tool, "http_client", mock_http_client):
             result = await tool.execute(
-                {"endpoint_identifier": "GET:/subscriptions/v1/subscriptions/{id}", "parameters": test_parameters}
+                {"endpoint_identifier": "GET:/subscriptions/v1/subscriptions", "parameters": test_parameters}
             )
 
         assert len(result) == 1
@@ -296,7 +296,7 @@ class TestInvokeDynamicTool:
         # Use a valid endpoint path but with POST method (not allowed in MCP read-only servers)
         result = await tool.execute(
             {
-                "endpoint_identifier": "POST:/subscriptions/v1/subscriptions/{id}",  # Valid path but unsupported method
+                "endpoint_identifier": "POST:/subscriptions/v1/subscriptions",  # Valid path but unsupported method
                 "parameters": {},
             }
         )
@@ -368,15 +368,6 @@ def sample_endpoints():
     """Sample endpoint data for testing."""
     return [
         {
-            "path": "/subscriptions/v1/subscriptions/{id}",
-            "method": "GET",
-            "summary": "getsubscriptiondetailsbyidv1",
-            "operationId": "getsubscriptiondetailsbyidv1",
-            "parameters": [
-                {"name": "id", "type": "str", "required": True, "location": "query"},
-            ],
-        },
-        {
             "path": "/subscriptions/v1/subscriptions",
             "method": "GET",
             "summary": "getsubscriptionsv1",
@@ -390,6 +381,15 @@ def sample_endpoints():
                 {"name": "offset", "type": "int", "required": False, "location": "query"},
             ],
         },
+        {
+            "path": "/subscriptions/v1/subscriptions/{id}",
+            "method": "GET",
+            "summary": "getsubscriptiondetailsbyidv1",
+            "operationId": "getsubscriptiondetailsbyidv1",
+            "parameters": [
+                {"name": "id", "type": "str", "required": True, "location": "query"},
+            ],
+        },
     ]
 
 
@@ -399,12 +399,12 @@ def sample_tool_arguments():
     return {
         "list_endpoints": {"filter": "", "method": "", "include_deprecated": True},
         "get_endpoint_schema": {
-            "endpoint_identifier": "GET:/subscriptions/v1/subscriptions/{id}",
+            "endpoint_identifier": "GET:/subscriptions/v1/subscriptions",
             "include_examples": True,
             "include_validation": True,
         },
         "execute_dynamic_tool": {
-            "endpoint_identifier": "GET:/subscriptions/v1/subscriptions/{id}",
+            "endpoint_identifier": "GET:/subscriptions/v1/subscriptions",
             "parameters": {},
             "headers": {},
         },

@@ -18,12 +18,10 @@ class SubscriptionsHttpClient:
     """HTTP client for subscriptions API with authentication."""
 
     def __init__(self):
-        """Initialize the HTTP client."""
+        """Initialize the HTTP client with lazy token authentication."""
         self.settings = settings
         self.base_url = settings.greenlake_api_base_url
         self.logger = logger  # Use global loguru logger
-
-        # Initialize authentication - ONLY when actually needed, not at import time
         self.token_manager = TokenManager(settings=self.settings)
 
         # HTTP client configuration
@@ -178,10 +176,12 @@ class SubscriptionsHttpClient:
             raise
 
     async def _get_auth_headers(self) -> Dict[str, str]:
-        """Get authentication headers with automatic token refresh."""
-        # Use token_manager.get_auth_headers() which automatically refreshes expired tokens
+        """Get authentication headers with automatic token refresh.
+
+        Returns:
+            Dictionary with Authorization and Accept headers
+        """
         headers: Dict[str, str] = self.token_manager.get_auth_headers()
-        # Add additional headers not provided by token manager
         headers["Accept"] = "application/json"
         return headers
 

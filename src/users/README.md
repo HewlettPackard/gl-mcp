@@ -209,6 +209,17 @@ Add to your `claude_desktop_config.json`:
 
 This server provides the following MCP tools:
 
+### get_user_detailed_identity_v1_users_id_get
+
+- **Description**: Retrieve a single user based on a given user ID.
+- **Method**: GET /identity/v1/users/{id}
+- **Parameters**:
+
+- `id` (str, required): The unique identifier of the user.
+
+Example: 7600415a-8876-5722-9f3c-b0fd11112283
+
+
 ### get_users_identity_v1_users_get
 
 - **Description**: Retrieve list of users with filtering, and pagination options. All users are returned when no filters are provided. 
@@ -244,6 +255,8 @@ userStatus can be one of the following:
 **Note**: The userStatus filter is case-sensitive.
 
 Examples:
+  - lastLogin lt '2020-09-21T14:19:09.769747'
+    Returns users that logged in before 2020-09-21T14:19:09.769747
   - updatedAt gt '2020-09-21T14:19:09.769747'
     Returns users updated after 2020-09-21T14:19:09.769747
   - userStatus ne 'UNVERIFIED'
@@ -256,25 +269,12 @@ Examples:
     Returns the user with a specific email.
   - id eq '7600415a-8876-5722-9f3c-b0fd11112283'
     Returns the user with a specific ID.
-  - lastLogin lt '2020-09-21T14:19:09.769747'
-    Returns users that logged in before 2020-09-21T14:19:09.769747
 
 **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`.
 
 Filterable properties: createdAt, generation, id, lastLogin, resourceUri, type, updatedAt, userStatus, username
 - `offset` (int, optional): Specify pagination offset. An offset argument defines how many pages to skip before returning results.
 - `limit` (int, optional): Specify the maximum number of entries per page. NOTE: The maximum value accepted is 600.
-
-
-### get_user_detailed_identity_v1_users_id_get
-
-- **Description**: Retrieve a single user based on a given user ID.
-- **Method**: GET /identity/v1/users/{id}
-- **Parameters**:
-
-- `id` (str, required): The unique identifier of the user.
-
-Example: 7600415a-8876-5722-9f3c-b0fd11112283
 
 
 
@@ -296,14 +296,14 @@ These are just examples - you can ask questions in your own words, and the AI as
 
 This MCP server implements read-only access to the following users API endpoints:
 
+- `GET /identity/v1/users/{id}` - Retrieve a single user based on a given user ID.
 - `GET /identity/v1/users` - Retrieve list of users with filtering, and pagination options. All users are returned when no filters are provided. 
 **Note**: User view all permission is required to invoke this API. 
 Rate limit: 300 requests per minute per workspace, resulting in a `429` error if exceeded.
 
-- `GET /identity/v1/users/{id}` - Retrieve a single user based on a given user ID.
 
 
-API Version: 1.0.0
+API Version: 1.0.1
 
 
 ## Development
@@ -444,5 +444,5 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](../../
 ---
 
 **Service**: users  
-**API Version**: 1.0.0  
+**API Version**: 1.0.1  
 **MCP Server Version**: 0.1.0

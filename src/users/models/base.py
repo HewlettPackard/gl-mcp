@@ -104,36 +104,30 @@ class ResourceMetadata(BaseModel):
 # SERVICE-SPECIFIC MODELS GENERATED FROM OPENAPI SCHEMAS
 
 
-class Message(BaseModel):
-    """Message model"""
-
-    message: str = Field(alias="message", description="Message")
-
-
 class NBUser(BaseModel):
     """User's information for north bound apis."""
 
     username: str = Field(alias="username", description="User's Email Address")
 
-    lastLogin: Optional[str] = Field(
-        default=None, alias="lastLogin", description="Time when this user had last logged in."
-    )
+    id: str = Field(alias="id", description="Resource unique identification")
+
+    createdAt: Optional[str] = Field(default=None, alias="createdAt", description="The time the resource was created.")
 
     updatedAt: Optional[str] = Field(
         default=None, alias="updatedAt", description="The time the resource was last updated."
     )
 
-    userStatus: Optional[str] = Field(default=None, alias="userStatus", description="On-Boarding Status of a user")
+    type: str = Field(alias="type", description="Type of data")
 
     generation: Optional[int] = Field(default=None, alias="generation", description="Resource history of updates")
 
+    userStatus: Optional[str] = Field(default=None, alias="userStatus", description="On-Boarding Status of a user")
+
+    lastLogin: Optional[str] = Field(
+        default=None, alias="lastLogin", description="Time when this user had last logged in."
+    )
+
     resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
-
-    id: str = Field(alias="id", description="Resource unique identification")
-
-    createdAt: Optional[str] = Field(default=None, alias="createdAt", description="The time the resource was created.")
-
-    type: str = Field(alias="type", description="Type of data")
 
 
 class NBUserPaginate(BaseModel):
@@ -151,25 +145,25 @@ class NBUserPaginate(BaseModel):
 class NBUserPreferences(BaseModel):
     """NBUserPreferences model"""
 
+    language: Optional[str] = Field(default=None, alias="language", description="The preferred language of the user.")
+
     idleTimeout: Optional[int] = Field(
         default=None, alias="idleTimeout", description="The user's session idle timeout in seconds."
     )
 
-    language: Optional[str] = Field(default=None, alias="language", description="The preferred language of the user.")
-
 
 class StandardErrorResponse(BaseModel):
     """Standard GreenLake error response model"""
-
-    debugId: str = Field(
-        alias="debugId", description="A unique identifier for this error used to help with troubleshooting."
-    )
 
     errorCode: str = Field(alias="errorCode", description="HPE GreenLake standard error code")
 
     httpStatusCode: int = Field(alias="httpStatusCode", description="HTTP status code")
 
     message: str = Field(alias="message", description="A user-friendly error message.")
+
+    debugId: str = Field(
+        alias="debugId", description="A unique identifier for this error used to help with troubleshooting."
+    )
 
 
 class UserLanguages(BaseModel):
@@ -188,3 +182,9 @@ class Body_invite_user_to_account_identity_v1_users_post(BaseModel):
     sendWelcomeEmail: Optional[bool] = Field(
         default=None, alias="sendWelcomeEmail", description="If enabled, a welcome email is sent to the invited user."
     )
+
+
+class Message(BaseModel):
+    """Message model"""
+
+    message: str = Field(alias="message", description="Message")

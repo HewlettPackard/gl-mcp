@@ -38,15 +38,15 @@ def get_tools(mode: Optional[str] = None) -> List[Type[BaseTool]]:
             logger.info("Using dynamic mode with 3 meta-tools")
         else:
             # Static mode: Import one tool per endpoint (default)
-            from tools.implementations.get_users_identity_v1_users_get import get_users_identity_v1_users_getTool
             from tools.implementations.get_user_detailed_identity_v1_users_id_get import (
                 get_user_detailed_identity_v1_users_id_getTool,
             )
+            from tools.implementations.get_users_identity_v1_users_get import get_users_identity_v1_users_getTool
 
             tools.extend(
                 [
-                    get_users_identity_v1_users_getTool,
                     get_user_detailed_identity_v1_users_id_getTool,
+                    get_users_identity_v1_users_getTool,
                 ]
             )
             logger.info(f"Using static mode with {len(tools)} endpoint-specific tools")

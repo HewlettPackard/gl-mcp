@@ -38,13 +38,13 @@ def get_tools(mode: Optional[str] = None) -> List[Type[BaseTool]]:
             logger.info("Using dynamic mode with 3 meta-tools")
         else:
             # Static mode: Import one tool per endpoint (default)
-            from tools.implementations.getsubscriptiondetailsbyidv1 import getsubscriptiondetailsbyidv1Tool
             from tools.implementations.getsubscriptionsv1 import getsubscriptionsv1Tool
+            from tools.implementations.getsubscriptiondetailsbyidv1 import getsubscriptiondetailsbyidv1Tool
 
             tools.extend(
                 [
-                    getsubscriptiondetailsbyidv1Tool,
                     getsubscriptionsv1Tool,
+                    getsubscriptiondetailsbyidv1Tool,
                 ]
             )
             logger.info(f"Using static mode with {len(tools)} endpoint-specific tools")

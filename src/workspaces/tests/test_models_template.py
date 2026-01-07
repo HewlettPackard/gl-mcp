@@ -9,99 +9,145 @@ from typing import Any, Dict
 from pydantic import ValidationError as PydanticValidationError
 
 
-from models.base import CountryCode
-
-from models.base import NBCcsAddress
-
-from models.base import NBCcsAddressV2
-
-from models.base import NBTenantInventoryOwnership
+from models.base import NBTenantWorkspacePaginate
 
 from models.base import StandardErrorResponse
 
+from models.base import NBCcsAddressV2
+
+from models.base import NBCcsAddress
+
 from models.base import NBContactWorkspace
 
-from models.base import NBBasicWorkspace
-
-from models.base import NBContactTenant
-
-from models.base import NBTenantWorkspacePaginate
+from models.base import CountryCode
 
 from models.base import Message
 
 from models.base import NBBasicTenant
 
+from models.base import NBContactTenant
+
+from models.base import NBTenantInventoryOwnership
+
+from models.base import NBBasicWorkspace
+
 
 class TestModels:
     """Test suite for all generated data models."""
 
-    def test_countrycode_model_creation(self):
-        """Test CountryCode model creation with valid data."""
-        # Valid test data for CountryCode
-        valid_data = {}
+    def test_nbtenantworkspacepaginate_model_creation(self):
+        """Test NBTenantWorkspacePaginate model creation with valid data."""
+        # Valid test data for NBTenantWorkspacePaginate
+        valid_data = {
+            "items": [{"key": "value"}, {"key": "value"}],
+            "offset": 42,
+            "total": 42,
+            "count": 42,
+        }
 
         # Create model instance
-        model = CountryCode(**valid_data)
+        model = NBTenantWorkspacePaginate(**valid_data)
 
         # Verify model creation
-        assert isinstance(model, CountryCode)
+        assert isinstance(model, NBTenantWorkspacePaginate)
+        assert model.items == valid_data["items"]
+        assert model.offset == valid_data["offset"]
+        assert model.total == valid_data["total"]
+        assert model.count == valid_data["count"]
 
-    def test_countrycode_model_validation(self):
-        """Test CountryCode model field validation."""
+    def test_nbtenantworkspacepaginate_model_validation(self):
+        """Test NBTenantWorkspacePaginate model field validation."""
         # Test with minimal required data
-        minimal_data = {}
+        minimal_data = {
+            "items": [{"key": "value"}, {"key": "value"}],
+            "offset": 1,
+            "total": 1,
+            "count": 1,
+        }
 
-        model = CountryCode(**minimal_data)
-        assert isinstance(model, CountryCode)
+        model = NBTenantWorkspacePaginate(**minimal_data)
+        assert isinstance(model, NBTenantWorkspacePaginate)
+        assert model.items == minimal_data["items"]
+        assert model.offset == minimal_data["offset"]
+        assert model.total == minimal_data["total"]
+        assert model.count == minimal_data["count"]
 
-    def test_countrycode_model_required_fields(self):
-        """Test CountryCode model required field validation."""
+    def test_nbtenantworkspacepaginate_model_required_fields(self):
+        """Test NBTenantWorkspacePaginate model required field validation."""
         # Check if this model has any required fields
-        required_fields = []
+        required_fields = [
+            "items",
+            "offset",
+            "total",
+            "count",
+        ]
 
         if required_fields:
             # Test missing required fields
             with pytest.raises(PydanticValidationError) as exc_info:
-                CountryCode()
+                NBTenantWorkspacePaginate()
 
             # Verify validation error contains required field information
             error_details = exc_info.value.errors()
-            required_fields_set = {}
+            required_fields_set = {
+                "items",
+                "offset",
+                "total",
+                "count",
+            }
 
             # Check that at least one required field is mentioned in the error
             error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
             assert len(error_fields.intersection(required_fields_set)) > 0
         else:
             # Model has no required fields - should create successfully with no arguments
-            model = CountryCode()
-            assert isinstance(model, CountryCode)
+            model = NBTenantWorkspacePaginate()
+            assert isinstance(model, NBTenantWorkspacePaginate)
 
-    def test_countrycode_model_optional_fields(self):
-        """Test CountryCode model optional field handling."""
+    def test_nbtenantworkspacepaginate_model_optional_fields(self):
+        """Test NBTenantWorkspacePaginate model optional field handling."""
         # Create with minimal required data
-        minimal_data = {}
+        minimal_data = {
+            "items": [{"key": "value"}, {"key": "value"}],
+            "offset": 1,
+            "total": 1,
+            "count": 1,
+        }
 
-        model = CountryCode(**minimal_data)
+        model = NBTenantWorkspacePaginate(**minimal_data)
 
         # Verify model created with minimal required fields
         assert model is not None
         # Verify optional fields have default values
 
-    def test_countrycode_model_serialization(self):
-        """Test CountryCode model serialization to dict."""
-        test_data = {}
+    def test_nbtenantworkspacepaginate_model_serialization(self):
+        """Test NBTenantWorkspacePaginate model serialization to dict."""
+        test_data = {
+            "items": [{"key": "value"}, {"key": "value"}],
+            "offset": 99,
+            "total": 99,
+            "count": 99,
+        }
 
-        model = CountryCode(**test_data)
+        model = NBTenantWorkspacePaginate(**test_data)
         serialized = model.model_dump(by_alias=True)
 
         # Verify serialization
         assert isinstance(serialized, dict)
+        assert "items" in serialized
+        assert "offset" in serialized
+        assert "total" in serialized
+        assert "count" in serialized
 
         # Verify values are preserved
+        assert serialized["items"] == test_data["items"]
+        assert serialized["offset"] == test_data["offset"]
+        assert serialized["total"] == test_data["total"]
+        assert serialized["count"] == test_data["count"]
 
-    def test_countrycode_model_json_schema(self):
-        """Test CountryCode model JSON schema generation."""
-        schema = CountryCode.model_json_schema()
+    def test_nbtenantworkspacepaginate_model_json_schema(self):
+        """Test NBTenantWorkspacePaginate model JSON schema generation."""
+        schema = NBTenantWorkspacePaginate.model_json_schema()
 
         # Verify schema structure
         assert isinstance(schema, dict)
@@ -110,14 +156,323 @@ class TestModels:
         assert "properties" in schema
 
         # Verify all properties are in schema
-        expected_properties = {}
+        expected_properties = {
+            "items",
+            "offset",
+            "total",
+            "count",
+        }
 
         schema_properties = set(schema["properties"].keys())
         expected_properties_set = set(expected_properties) if expected_properties else set()
         assert expected_properties_set.issubset(schema_properties)
 
         # Verify required fields in schema (if any)
-        required_fields = []
+        required_fields = [
+            "items",
+            "offset",
+            "total",
+            "count",
+        ]
+        if required_fields:
+            assert "required" in schema
+            required_in_schema = set(schema["required"])
+            expected_required = set(required_fields)
+            assert expected_required.issubset(required_in_schema)
+
+    def test_standarderrorresponse_model_creation(self):
+        """Test StandardErrorResponse model creation with valid data."""
+        # Valid test data for StandardErrorResponse
+        valid_data = {
+            "errorCode": "test_value",
+            "httpStatusCode": 42,
+            "message": "test_value",
+            "debugId": "test_value",
+        }
+
+        # Create model instance
+        model = StandardErrorResponse(**valid_data)
+
+        # Verify model creation
+        assert isinstance(model, StandardErrorResponse)
+        assert model.errorCode == valid_data["errorCode"]
+        assert model.httpStatusCode == valid_data["httpStatusCode"]
+        assert model.message == valid_data["message"]
+        assert model.debugId == valid_data["debugId"]
+
+    def test_standarderrorresponse_model_validation(self):
+        """Test StandardErrorResponse model field validation."""
+        # Test with minimal required data
+        minimal_data = {
+            "errorCode": "required_value",
+            "httpStatusCode": 1,
+            "message": "required_value",
+            "debugId": "required_value",
+        }
+
+        model = StandardErrorResponse(**minimal_data)
+        assert isinstance(model, StandardErrorResponse)
+        assert model.errorCode == minimal_data["errorCode"]
+        assert model.httpStatusCode == minimal_data["httpStatusCode"]
+        assert model.message == minimal_data["message"]
+        assert model.debugId == minimal_data["debugId"]
+
+    def test_standarderrorresponse_model_required_fields(self):
+        """Test StandardErrorResponse model required field validation."""
+        # Check if this model has any required fields
+        required_fields = [
+            "errorCode",
+            "httpStatusCode",
+            "message",
+            "debugId",
+        ]
+
+        if required_fields:
+            # Test missing required fields
+            with pytest.raises(PydanticValidationError) as exc_info:
+                StandardErrorResponse()
+
+            # Verify validation error contains required field information
+            error_details = exc_info.value.errors()
+            required_fields_set = {
+                "errorCode",
+                "httpStatusCode",
+                "message",
+                "debugId",
+            }
+
+            # Check that at least one required field is mentioned in the error
+            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
+            assert len(error_fields.intersection(required_fields_set)) > 0
+        else:
+            # Model has no required fields - should create successfully with no arguments
+            model = StandardErrorResponse()
+            assert isinstance(model, StandardErrorResponse)
+
+    def test_standarderrorresponse_model_optional_fields(self):
+        """Test StandardErrorResponse model optional field handling."""
+        # Create with minimal required data
+        minimal_data = {
+            "errorCode": "required_value",
+            "httpStatusCode": 1,
+            "message": "required_value",
+            "debugId": "required_value",
+        }
+
+        model = StandardErrorResponse(**minimal_data)
+
+        # Verify model created with minimal required fields
+        assert model is not None
+        # Verify optional fields have default values
+
+    def test_standarderrorresponse_model_serialization(self):
+        """Test StandardErrorResponse model serialization to dict."""
+        test_data = {
+            "errorCode": "serialize_value",
+            "httpStatusCode": 99,
+            "message": "serialize_value",
+            "debugId": "serialize_value",
+        }
+
+        model = StandardErrorResponse(**test_data)
+        serialized = model.model_dump(by_alias=True)
+
+        # Verify serialization
+        assert isinstance(serialized, dict)
+        assert "errorCode" in serialized
+        assert "httpStatusCode" in serialized
+        assert "message" in serialized
+        assert "debugId" in serialized
+
+        # Verify values are preserved
+        assert serialized["errorCode"] == test_data["errorCode"]
+        assert serialized["httpStatusCode"] == test_data["httpStatusCode"]
+        assert serialized["message"] == test_data["message"]
+        assert serialized["debugId"] == test_data["debugId"]
+
+    def test_standarderrorresponse_model_json_schema(self):
+        """Test StandardErrorResponse model JSON schema generation."""
+        schema = StandardErrorResponse.model_json_schema()
+
+        # Verify schema structure
+        assert isinstance(schema, dict)
+        assert "type" in schema
+        assert schema["type"] == "object"
+        assert "properties" in schema
+
+        # Verify all properties are in schema
+        expected_properties = {
+            "errorCode",
+            "httpStatusCode",
+            "message",
+            "debugId",
+        }
+
+        schema_properties = set(schema["properties"].keys())
+        expected_properties_set = set(expected_properties) if expected_properties else set()
+        assert expected_properties_set.issubset(schema_properties)
+
+        # Verify required fields in schema (if any)
+        required_fields = [
+            "errorCode",
+            "httpStatusCode",
+            "message",
+            "debugId",
+        ]
+        if required_fields:
+            assert "required" in schema
+            required_in_schema = set(schema["required"])
+            expected_required = set(required_fields)
+            assert expected_required.issubset(required_in_schema)
+
+    def test_nbccsaddressv2_model_creation(self):
+        """Test NBCcsAddressV2 model creation with valid data."""
+        # Valid test data for NBCcsAddressV2
+        valid_data = {
+            "city": "test_value",
+            "countryCode": "test_value",
+            "stateOrRegion": "test_value",
+            "streetAddress": "test_value",
+            "streetAddressComplement": "test_value",
+            "zip": "test_value",
+        }
+
+        # Create model instance
+        model = NBCcsAddressV2(**valid_data)
+
+        # Verify model creation
+        assert isinstance(model, NBCcsAddressV2)
+        assert model.city == valid_data["city"]
+        assert model.countryCode == valid_data["countryCode"]
+        assert model.stateOrRegion == valid_data["stateOrRegion"]
+        assert model.streetAddress == valid_data["streetAddress"]
+        assert model.streetAddressComplement == valid_data["streetAddressComplement"]
+        assert model.zip == valid_data["zip"]
+
+    def test_nbccsaddressv2_model_validation(self):
+        """Test NBCcsAddressV2 model field validation."""
+        # Test with minimal required data
+        minimal_data = {
+            "countryCode": "required_value",
+        }
+
+        model = NBCcsAddressV2(**minimal_data)
+        assert isinstance(model, NBCcsAddressV2)
+        assert model.countryCode == minimal_data["countryCode"]
+
+    def test_nbccsaddressv2_model_required_fields(self):
+        """Test NBCcsAddressV2 model required field validation."""
+        # Check if this model has any required fields
+        required_fields = [
+            "countryCode",
+        ]
+
+        if required_fields:
+            # Test missing required fields
+            with pytest.raises(PydanticValidationError) as exc_info:
+                NBCcsAddressV2()
+
+            # Verify validation error contains required field information
+            error_details = exc_info.value.errors()
+            required_fields_set = {
+                "countryCode",
+            }
+
+            # Check that at least one required field is mentioned in the error
+            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
+            assert len(error_fields.intersection(required_fields_set)) > 0
+        else:
+            # Model has no required fields - should create successfully with no arguments
+            model = NBCcsAddressV2()
+            assert isinstance(model, NBCcsAddressV2)
+
+    def test_nbccsaddressv2_model_optional_fields(self):
+        """Test NBCcsAddressV2 model optional field handling."""
+        # Create with minimal required data
+        minimal_data = {
+            "countryCode": "required_value",
+        }
+
+        model = NBCcsAddressV2(**minimal_data)
+
+        # Verify model created with minimal required fields
+        assert model is not None
+        # Verify optional fields have default values
+        assert hasattr(model, "city")
+        # Optional field city should be None or have a default value
+        assert model.city is None or model.city is not None
+        assert hasattr(model, "stateOrRegion")
+        # Optional field stateOrRegion should be None or have a default value
+        assert model.stateOrRegion is None or model.stateOrRegion is not None
+        assert hasattr(model, "streetAddress")
+        # Optional field streetAddress should be None or have a default value
+        assert model.streetAddress is None or model.streetAddress is not None
+        assert hasattr(model, "streetAddressComplement")
+        # Optional field streetAddressComplement should be None or have a default value
+        assert model.streetAddressComplement is None or model.streetAddressComplement is not None
+        assert hasattr(model, "zip")
+        # Optional field zip should be None or have a default value
+        assert model.zip is None or model.zip is not None
+
+    def test_nbccsaddressv2_model_serialization(self):
+        """Test NBCcsAddressV2 model serialization to dict."""
+        test_data = {
+            "city": "serialize_value",
+            "countryCode": "serialize_value",
+            "stateOrRegion": "serialize_value",
+            "streetAddress": "serialize_value",
+            "streetAddressComplement": "serialize_value",
+            "zip": "serialize_value",
+        }
+
+        model = NBCcsAddressV2(**test_data)
+        serialized = model.model_dump(by_alias=True)
+
+        # Verify serialization
+        assert isinstance(serialized, dict)
+        assert "city" in serialized
+        assert "countryCode" in serialized
+        assert "stateOrRegion" in serialized
+        assert "streetAddress" in serialized
+        assert "streetAddressComplement" in serialized
+        assert "zip" in serialized
+
+        # Verify values are preserved
+        assert serialized["city"] == test_data["city"]
+        assert serialized["countryCode"] == test_data["countryCode"]
+        assert serialized["stateOrRegion"] == test_data["stateOrRegion"]
+        assert serialized["streetAddress"] == test_data["streetAddress"]
+        assert serialized["streetAddressComplement"] == test_data["streetAddressComplement"]
+        assert serialized["zip"] == test_data["zip"]
+
+    def test_nbccsaddressv2_model_json_schema(self):
+        """Test NBCcsAddressV2 model JSON schema generation."""
+        schema = NBCcsAddressV2.model_json_schema()
+
+        # Verify schema structure
+        assert isinstance(schema, dict)
+        assert "type" in schema
+        assert schema["type"] == "object"
+        assert "properties" in schema
+
+        # Verify all properties are in schema
+        expected_properties = {
+            "city",
+            "countryCode",
+            "stateOrRegion",
+            "streetAddress",
+            "streetAddressComplement",
+            "zip",
+        }
+
+        schema_properties = set(schema["properties"].keys())
+        expected_properties_set = set(expected_properties) if expected_properties else set()
+        assert expected_properties_set.issubset(schema_properties)
+
+        # Verify required fields in schema (if any)
+        required_fields = [
+            "countryCode",
+        ]
         if required_fields:
             assert "required" in schema
             required_in_schema = set(schema["required"])
@@ -270,129 +625,107 @@ class TestModels:
             expected_required = set(required_fields)
             assert expected_required.issubset(required_in_schema)
 
-    def test_nbccsaddressv2_model_creation(self):
-        """Test NBCcsAddressV2 model creation with valid data."""
-        # Valid test data for NBCcsAddressV2
+    def test_nbcontactworkspace_model_creation(self):
+        """Test NBContactWorkspace model creation with valid data."""
+        # Valid test data for NBContactWorkspace
         valid_data = {
-            "stateOrRegion": "test_value",
-            "streetAddress": "test_value",
-            "streetAddressComplement": "test_value",
-            "zip": "test_value",
-            "city": "test_value",
-            "countryCode": "test_value",
+            "resourceUri": "test_value",
+            "address": "test_value",
+            "email": "test_value",
+            "phoneNumber": "test_value",
         }
 
         # Create model instance
-        model = NBCcsAddressV2(**valid_data)
+        model = NBContactWorkspace(**valid_data)
 
         # Verify model creation
-        assert isinstance(model, NBCcsAddressV2)
-        assert model.stateOrRegion == valid_data["stateOrRegion"]
-        assert model.streetAddress == valid_data["streetAddress"]
-        assert model.streetAddressComplement == valid_data["streetAddressComplement"]
-        assert model.zip == valid_data["zip"]
-        assert model.city == valid_data["city"]
-        assert model.countryCode == valid_data["countryCode"]
+        assert isinstance(model, NBContactWorkspace)
+        assert model.resourceUri == valid_data["resourceUri"]
+        assert model.address == valid_data["address"]
+        assert model.email == valid_data["email"]
+        assert model.phoneNumber == valid_data["phoneNumber"]
 
-    def test_nbccsaddressv2_model_validation(self):
-        """Test NBCcsAddressV2 model field validation."""
+    def test_nbcontactworkspace_model_validation(self):
+        """Test NBContactWorkspace model field validation."""
         # Test with minimal required data
-        minimal_data = {
-            "countryCode": "required_value",
-        }
+        minimal_data = {}
 
-        model = NBCcsAddressV2(**minimal_data)
-        assert isinstance(model, NBCcsAddressV2)
-        assert model.countryCode == minimal_data["countryCode"]
+        model = NBContactWorkspace(**minimal_data)
+        assert isinstance(model, NBContactWorkspace)
 
-    def test_nbccsaddressv2_model_required_fields(self):
-        """Test NBCcsAddressV2 model required field validation."""
+    def test_nbcontactworkspace_model_required_fields(self):
+        """Test NBContactWorkspace model required field validation."""
         # Check if this model has any required fields
-        required_fields = [
-            "countryCode",
-        ]
+        required_fields = []
 
         if required_fields:
             # Test missing required fields
             with pytest.raises(PydanticValidationError) as exc_info:
-                NBCcsAddressV2()
+                NBContactWorkspace()
 
             # Verify validation error contains required field information
             error_details = exc_info.value.errors()
-            required_fields_set = {
-                "countryCode",
-            }
+            required_fields_set = {}
 
             # Check that at least one required field is mentioned in the error
             error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
             assert len(error_fields.intersection(required_fields_set)) > 0
         else:
             # Model has no required fields - should create successfully with no arguments
-            model = NBCcsAddressV2()
-            assert isinstance(model, NBCcsAddressV2)
+            model = NBContactWorkspace()
+            assert isinstance(model, NBContactWorkspace)
 
-    def test_nbccsaddressv2_model_optional_fields(self):
-        """Test NBCcsAddressV2 model optional field handling."""
+    def test_nbcontactworkspace_model_optional_fields(self):
+        """Test NBContactWorkspace model optional field handling."""
         # Create with minimal required data
-        minimal_data = {
-            "countryCode": "required_value",
-        }
+        minimal_data = {}
 
-        model = NBCcsAddressV2(**minimal_data)
+        model = NBContactWorkspace(**minimal_data)
 
         # Verify model created with minimal required fields
         assert model is not None
         # Verify optional fields have default values
-        assert hasattr(model, "stateOrRegion")
-        # Optional field stateOrRegion should be None or have a default value
-        assert model.stateOrRegion is None or model.stateOrRegion is not None
-        assert hasattr(model, "streetAddress")
-        # Optional field streetAddress should be None or have a default value
-        assert model.streetAddress is None or model.streetAddress is not None
-        assert hasattr(model, "streetAddressComplement")
-        # Optional field streetAddressComplement should be None or have a default value
-        assert model.streetAddressComplement is None or model.streetAddressComplement is not None
-        assert hasattr(model, "zip")
-        # Optional field zip should be None or have a default value
-        assert model.zip is None or model.zip is not None
-        assert hasattr(model, "city")
-        # Optional field city should be None or have a default value
-        assert model.city is None or model.city is not None
+        assert hasattr(model, "resourceUri")
+        # Optional field resourceUri should be None or have a default value
+        assert model.resourceUri is None or model.resourceUri is not None
+        assert hasattr(model, "address")
+        # Optional field address should be None or have a default value
+        assert model.address is None or model.address is not None
+        assert hasattr(model, "email")
+        # Optional field email should be None or have a default value
+        assert model.email is None or model.email is not None
+        assert hasattr(model, "phoneNumber")
+        # Optional field phoneNumber should be None or have a default value
+        assert model.phoneNumber is None or model.phoneNumber is not None
 
-    def test_nbccsaddressv2_model_serialization(self):
-        """Test NBCcsAddressV2 model serialization to dict."""
+    def test_nbcontactworkspace_model_serialization(self):
+        """Test NBContactWorkspace model serialization to dict."""
         test_data = {
-            "stateOrRegion": "serialize_value",
-            "streetAddress": "serialize_value",
-            "streetAddressComplement": "serialize_value",
-            "zip": "serialize_value",
-            "city": "serialize_value",
-            "countryCode": "serialize_value",
+            "resourceUri": "serialize_value",
+            "address": "serialize_value",
+            "email": "serialize_value",
+            "phoneNumber": "serialize_value",
         }
 
-        model = NBCcsAddressV2(**test_data)
+        model = NBContactWorkspace(**test_data)
         serialized = model.model_dump(by_alias=True)
 
         # Verify serialization
         assert isinstance(serialized, dict)
-        assert "stateOrRegion" in serialized
-        assert "streetAddress" in serialized
-        assert "streetAddressComplement" in serialized
-        assert "zip" in serialized
-        assert "city" in serialized
-        assert "countryCode" in serialized
+        assert "resourceUri" in serialized
+        assert "address" in serialized
+        assert "email" in serialized
+        assert "phoneNumber" in serialized
 
         # Verify values are preserved
-        assert serialized["stateOrRegion"] == test_data["stateOrRegion"]
-        assert serialized["streetAddress"] == test_data["streetAddress"]
-        assert serialized["streetAddressComplement"] == test_data["streetAddressComplement"]
-        assert serialized["zip"] == test_data["zip"]
-        assert serialized["city"] == test_data["city"]
-        assert serialized["countryCode"] == test_data["countryCode"]
+        assert serialized["resourceUri"] == test_data["resourceUri"]
+        assert serialized["address"] == test_data["address"]
+        assert serialized["email"] == test_data["email"]
+        assert serialized["phoneNumber"] == test_data["phoneNumber"]
 
-    def test_nbccsaddressv2_model_json_schema(self):
-        """Test NBCcsAddressV2 model JSON schema generation."""
-        schema = NBCcsAddressV2.model_json_schema()
+    def test_nbcontactworkspace_model_json_schema(self):
+        """Test NBContactWorkspace model JSON schema generation."""
+        schema = NBContactWorkspace.model_json_schema()
 
         # Verify schema structure
         assert isinstance(schema, dict)
@@ -402,12 +735,206 @@ class TestModels:
 
         # Verify all properties are in schema
         expected_properties = {
-            "stateOrRegion",
-            "streetAddress",
-            "streetAddressComplement",
-            "zip",
-            "city",
-            "countryCode",
+            "resourceUri",
+            "address",
+            "email",
+            "phoneNumber",
+        }
+
+        schema_properties = set(schema["properties"].keys())
+        expected_properties_set = set(expected_properties) if expected_properties else set()
+        assert expected_properties_set.issubset(schema_properties)
+
+        # Verify required fields in schema (if any)
+        required_fields = []
+        if required_fields:
+            assert "required" in schema
+            required_in_schema = set(schema["required"])
+            expected_required = set(required_fields)
+            assert expected_required.issubset(required_in_schema)
+
+    def test_countrycode_model_creation(self):
+        """Test CountryCode model creation with valid data."""
+        # Valid test data for CountryCode
+        valid_data = {}
+
+        # Create model instance
+        model = CountryCode(**valid_data)
+
+        # Verify model creation
+        assert isinstance(model, CountryCode)
+
+    def test_countrycode_model_validation(self):
+        """Test CountryCode model field validation."""
+        # Test with minimal required data
+        minimal_data = {}
+
+        model = CountryCode(**minimal_data)
+        assert isinstance(model, CountryCode)
+
+    def test_countrycode_model_required_fields(self):
+        """Test CountryCode model required field validation."""
+        # Check if this model has any required fields
+        required_fields = []
+
+        if required_fields:
+            # Test missing required fields
+            with pytest.raises(PydanticValidationError) as exc_info:
+                CountryCode()
+
+            # Verify validation error contains required field information
+            error_details = exc_info.value.errors()
+            required_fields_set = {}
+
+            # Check that at least one required field is mentioned in the error
+            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
+            assert len(error_fields.intersection(required_fields_set)) > 0
+        else:
+            # Model has no required fields - should create successfully with no arguments
+            model = CountryCode()
+            assert isinstance(model, CountryCode)
+
+    def test_countrycode_model_optional_fields(self):
+        """Test CountryCode model optional field handling."""
+        # Create with minimal required data
+        minimal_data = {}
+
+        model = CountryCode(**minimal_data)
+
+        # Verify model created with minimal required fields
+        assert model is not None
+        # Verify optional fields have default values
+
+    def test_countrycode_model_serialization(self):
+        """Test CountryCode model serialization to dict."""
+        test_data = {}
+
+        model = CountryCode(**test_data)
+        serialized = model.model_dump(by_alias=True)
+
+        # Verify serialization
+        assert isinstance(serialized, dict)
+
+        # Verify values are preserved
+
+    def test_countrycode_model_json_schema(self):
+        """Test CountryCode model JSON schema generation."""
+        schema = CountryCode.model_json_schema()
+
+        # Verify schema structure
+        assert isinstance(schema, dict)
+        assert "type" in schema
+        assert schema["type"] == "object"
+        assert "properties" in schema
+
+        # Verify all properties are in schema
+        expected_properties = {}
+
+        schema_properties = set(schema["properties"].keys())
+        expected_properties_set = set(expected_properties) if expected_properties else set()
+        assert expected_properties_set.issubset(schema_properties)
+
+        # Verify required fields in schema (if any)
+        required_fields = []
+        if required_fields:
+            assert "required" in schema
+            required_in_schema = set(schema["required"])
+            expected_required = set(required_fields)
+            assert expected_required.issubset(required_in_schema)
+
+    def test_message_model_creation(self):
+        """Test Message model creation with valid data."""
+        # Valid test data for Message
+        valid_data = {
+            "message": "test_value",
+        }
+
+        # Create model instance
+        model = Message(**valid_data)
+
+        # Verify model creation
+        assert isinstance(model, Message)
+        assert model.message == valid_data["message"]
+
+    def test_message_model_validation(self):
+        """Test Message model field validation."""
+        # Test with minimal required data
+        minimal_data = {
+            "message": "required_value",
+        }
+
+        model = Message(**minimal_data)
+        assert isinstance(model, Message)
+        assert model.message == minimal_data["message"]
+
+    def test_message_model_required_fields(self):
+        """Test Message model required field validation."""
+        # Check if this model has any required fields
+        required_fields = [
+            "message",
+        ]
+
+        if required_fields:
+            # Test missing required fields
+            with pytest.raises(PydanticValidationError) as exc_info:
+                Message()
+
+            # Verify validation error contains required field information
+            error_details = exc_info.value.errors()
+            required_fields_set = {
+                "message",
+            }
+
+            # Check that at least one required field is mentioned in the error
+            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
+            assert len(error_fields.intersection(required_fields_set)) > 0
+        else:
+            # Model has no required fields - should create successfully with no arguments
+            model = Message()
+            assert isinstance(model, Message)
+
+    def test_message_model_optional_fields(self):
+        """Test Message model optional field handling."""
+        # Create with minimal required data
+        minimal_data = {
+            "message": "required_value",
+        }
+
+        model = Message(**minimal_data)
+
+        # Verify model created with minimal required fields
+        assert model is not None
+        # Verify optional fields have default values
+
+    def test_message_model_serialization(self):
+        """Test Message model serialization to dict."""
+        test_data = {
+            "message": "serialize_value",
+        }
+
+        model = Message(**test_data)
+        serialized = model.model_dump(by_alias=True)
+
+        # Verify serialization
+        assert isinstance(serialized, dict)
+        assert "message" in serialized
+
+        # Verify values are preserved
+        assert serialized["message"] == test_data["message"]
+
+    def test_message_model_json_schema(self):
+        """Test Message model JSON schema generation."""
+        schema = Message.model_json_schema()
+
+        # Verify schema structure
+        assert isinstance(schema, dict)
+        assert "type" in schema
+        assert schema["type"] == "object"
+        assert "properties" in schema
+
+        # Verify all properties are in schema
+        expected_properties = {
+            "message",
         }
 
         schema_properties = set(schema["properties"].keys())
@@ -416,7 +943,357 @@ class TestModels:
 
         # Verify required fields in schema (if any)
         required_fields = [
-            "countryCode",
+            "message",
+        ]
+        if required_fields:
+            assert "required" in schema
+            required_in_schema = set(schema["required"])
+            expected_required = set(required_fields)
+            assert expected_required.issubset(required_in_schema)
+
+    def test_nbbasictenant_model_creation(self):
+        """Test NBBasicTenant model creation with valid data."""
+        # Valid test data for NBBasicTenant
+        valid_data = {
+            "type": "test_value",
+            "id": "test_value",
+            "updatedAt": "test_value",
+            "resourceUri": "test_value",
+            "workspaceName": "test_value",
+            "generation": 42,
+            "createdAt": "test_value",
+            "createdBy": "test_value",
+            "inventoryOwnership": "test_value",
+        }
+
+        # Create model instance
+        model = NBBasicTenant(**valid_data)
+
+        # Verify model creation
+        assert isinstance(model, NBBasicTenant)
+        assert model.type == valid_data["type"]
+        assert model.id == valid_data["id"]
+        assert model.updatedAt == valid_data["updatedAt"]
+        assert model.resourceUri == valid_data["resourceUri"]
+        assert model.workspaceName == valid_data["workspaceName"]
+        assert model.generation == valid_data["generation"]
+        assert model.createdAt == valid_data["createdAt"]
+        assert model.createdBy == valid_data["createdBy"]
+        assert model.inventoryOwnership == valid_data["inventoryOwnership"]
+
+    def test_nbbasictenant_model_validation(self):
+        """Test NBBasicTenant model field validation."""
+        # Test with minimal required data
+        minimal_data = {
+            "type": "required_value",
+            "id": "required_value",
+            "workspaceName": "required_value",
+        }
+
+        model = NBBasicTenant(**minimal_data)
+        assert isinstance(model, NBBasicTenant)
+        assert model.type == minimal_data["type"]
+        assert model.id == minimal_data["id"]
+        assert model.workspaceName == minimal_data["workspaceName"]
+
+    def test_nbbasictenant_model_required_fields(self):
+        """Test NBBasicTenant model required field validation."""
+        # Check if this model has any required fields
+        required_fields = [
+            "type",
+            "id",
+            "workspaceName",
+        ]
+
+        if required_fields:
+            # Test missing required fields
+            with pytest.raises(PydanticValidationError) as exc_info:
+                NBBasicTenant()
+
+            # Verify validation error contains required field information
+            error_details = exc_info.value.errors()
+            required_fields_set = {
+                "type",
+                "id",
+                "workspaceName",
+            }
+
+            # Check that at least one required field is mentioned in the error
+            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
+            assert len(error_fields.intersection(required_fields_set)) > 0
+        else:
+            # Model has no required fields - should create successfully with no arguments
+            model = NBBasicTenant()
+            assert isinstance(model, NBBasicTenant)
+
+    def test_nbbasictenant_model_optional_fields(self):
+        """Test NBBasicTenant model optional field handling."""
+        # Create with minimal required data
+        minimal_data = {
+            "type": "required_value",
+            "id": "required_value",
+            "workspaceName": "required_value",
+        }
+
+        model = NBBasicTenant(**minimal_data)
+
+        # Verify model created with minimal required fields
+        assert model is not None
+        # Verify optional fields have default values
+        assert hasattr(model, "updatedAt")
+        # Optional field updatedAt should be None or have a default value
+        assert model.updatedAt is None or model.updatedAt is not None
+        assert hasattr(model, "resourceUri")
+        # Optional field resourceUri should be None or have a default value
+        assert model.resourceUri is None or model.resourceUri is not None
+        assert hasattr(model, "generation")
+        # Optional field generation should be None or have a default value
+        assert model.generation is None or model.generation is not None
+        assert hasattr(model, "createdAt")
+        # Optional field createdAt should be None or have a default value
+        assert model.createdAt is None or model.createdAt is not None
+        assert hasattr(model, "createdBy")
+        # Optional field createdBy should be None or have a default value
+        assert model.createdBy is None or model.createdBy is not None
+        assert hasattr(model, "inventoryOwnership")
+        # Optional field inventoryOwnership should be None or have a default value
+        assert model.inventoryOwnership is None or model.inventoryOwnership is not None
+
+    def test_nbbasictenant_model_serialization(self):
+        """Test NBBasicTenant model serialization to dict."""
+        test_data = {
+            "type": "serialize_value",
+            "id": "serialize_value",
+            "updatedAt": "serialize_value",
+            "resourceUri": "serialize_value",
+            "workspaceName": "serialize_value",
+            "generation": 99,
+            "createdAt": "serialize_value",
+            "createdBy": "serialize_value",
+            "inventoryOwnership": "serialize_value",
+        }
+
+        model = NBBasicTenant(**test_data)
+        serialized = model.model_dump(by_alias=True)
+
+        # Verify serialization
+        assert isinstance(serialized, dict)
+        assert "type" in serialized
+        assert "id" in serialized
+        assert "updatedAt" in serialized
+        assert "resourceUri" in serialized
+        assert "workspaceName" in serialized
+        assert "generation" in serialized
+        assert "createdAt" in serialized
+        assert "createdBy" in serialized
+        assert "inventoryOwnership" in serialized
+
+        # Verify values are preserved
+        assert serialized["type"] == test_data["type"]
+        assert serialized["id"] == test_data["id"]
+        assert serialized["updatedAt"] == test_data["updatedAt"]
+        assert serialized["resourceUri"] == test_data["resourceUri"]
+        assert serialized["workspaceName"] == test_data["workspaceName"]
+        assert serialized["generation"] == test_data["generation"]
+        assert serialized["createdAt"] == test_data["createdAt"]
+        assert serialized["createdBy"] == test_data["createdBy"]
+        assert serialized["inventoryOwnership"] == test_data["inventoryOwnership"]
+
+    def test_nbbasictenant_model_json_schema(self):
+        """Test NBBasicTenant model JSON schema generation."""
+        schema = NBBasicTenant.model_json_schema()
+
+        # Verify schema structure
+        assert isinstance(schema, dict)
+        assert "type" in schema
+        assert schema["type"] == "object"
+        assert "properties" in schema
+
+        # Verify all properties are in schema
+        expected_properties = {
+            "type",
+            "id",
+            "updatedAt",
+            "resourceUri",
+            "workspaceName",
+            "generation",
+            "createdAt",
+            "createdBy",
+            "inventoryOwnership",
+        }
+
+        schema_properties = set(schema["properties"].keys())
+        expected_properties_set = set(expected_properties) if expected_properties else set()
+        assert expected_properties_set.issubset(schema_properties)
+
+        # Verify required fields in schema (if any)
+        required_fields = [
+            "type",
+            "id",
+            "workspaceName",
+        ]
+        if required_fields:
+            assert "required" in schema
+            required_in_schema = set(schema["required"])
+            expected_required = set(required_fields)
+            assert expected_required.issubset(required_in_schema)
+
+    def test_nbcontacttenant_model_creation(self):
+        """Test NBContactTenant model creation with valid data."""
+        # Valid test data for NBContactTenant
+        valid_data = {
+            "resourceUri": "test_value",
+            "workspaceName": "test_value",
+            "address": "test_value",
+            "description": "test_value",
+            "email": "test_value",
+            "inventoryOwnership": "test_value",
+            "phoneNumber": "test_value",
+        }
+
+        # Create model instance
+        model = NBContactTenant(**valid_data)
+
+        # Verify model creation
+        assert isinstance(model, NBContactTenant)
+        assert model.resourceUri == valid_data["resourceUri"]
+        assert model.workspaceName == valid_data["workspaceName"]
+        assert model.address == valid_data["address"]
+        assert model.description == valid_data["description"]
+        assert model.email == valid_data["email"]
+        assert model.inventoryOwnership == valid_data["inventoryOwnership"]
+        assert model.phoneNumber == valid_data["phoneNumber"]
+
+    def test_nbcontacttenant_model_validation(self):
+        """Test NBContactTenant model field validation."""
+        # Test with minimal required data
+        minimal_data = {
+            "workspaceName": "required_value",
+        }
+
+        model = NBContactTenant(**minimal_data)
+        assert isinstance(model, NBContactTenant)
+        assert model.workspaceName == minimal_data["workspaceName"]
+
+    def test_nbcontacttenant_model_required_fields(self):
+        """Test NBContactTenant model required field validation."""
+        # Check if this model has any required fields
+        required_fields = [
+            "workspaceName",
+        ]
+
+        if required_fields:
+            # Test missing required fields
+            with pytest.raises(PydanticValidationError) as exc_info:
+                NBContactTenant()
+
+            # Verify validation error contains required field information
+            error_details = exc_info.value.errors()
+            required_fields_set = {
+                "workspaceName",
+            }
+
+            # Check that at least one required field is mentioned in the error
+            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
+            assert len(error_fields.intersection(required_fields_set)) > 0
+        else:
+            # Model has no required fields - should create successfully with no arguments
+            model = NBContactTenant()
+            assert isinstance(model, NBContactTenant)
+
+    def test_nbcontacttenant_model_optional_fields(self):
+        """Test NBContactTenant model optional field handling."""
+        # Create with minimal required data
+        minimal_data = {
+            "workspaceName": "required_value",
+        }
+
+        model = NBContactTenant(**minimal_data)
+
+        # Verify model created with minimal required fields
+        assert model is not None
+        # Verify optional fields have default values
+        assert hasattr(model, "resourceUri")
+        # Optional field resourceUri should be None or have a default value
+        assert model.resourceUri is None or model.resourceUri is not None
+        assert hasattr(model, "address")
+        # Optional field address should be None or have a default value
+        assert model.address is None or model.address is not None
+        assert hasattr(model, "description")
+        # Optional field description should be None or have a default value
+        assert model.description is None or model.description is not None
+        assert hasattr(model, "email")
+        # Optional field email should be None or have a default value
+        assert model.email is None or model.email is not None
+        assert hasattr(model, "inventoryOwnership")
+        # Optional field inventoryOwnership should be None or have a default value
+        assert model.inventoryOwnership is None or model.inventoryOwnership is not None
+        assert hasattr(model, "phoneNumber")
+        # Optional field phoneNumber should be None or have a default value
+        assert model.phoneNumber is None or model.phoneNumber is not None
+
+    def test_nbcontacttenant_model_serialization(self):
+        """Test NBContactTenant model serialization to dict."""
+        test_data = {
+            "resourceUri": "serialize_value",
+            "workspaceName": "serialize_value",
+            "address": "serialize_value",
+            "description": "serialize_value",
+            "email": "serialize_value",
+            "inventoryOwnership": "serialize_value",
+            "phoneNumber": "serialize_value",
+        }
+
+        model = NBContactTenant(**test_data)
+        serialized = model.model_dump(by_alias=True)
+
+        # Verify serialization
+        assert isinstance(serialized, dict)
+        assert "resourceUri" in serialized
+        assert "workspaceName" in serialized
+        assert "address" in serialized
+        assert "description" in serialized
+        assert "email" in serialized
+        assert "inventoryOwnership" in serialized
+        assert "phoneNumber" in serialized
+
+        # Verify values are preserved
+        assert serialized["resourceUri"] == test_data["resourceUri"]
+        assert serialized["workspaceName"] == test_data["workspaceName"]
+        assert serialized["address"] == test_data["address"]
+        assert serialized["description"] == test_data["description"]
+        assert serialized["email"] == test_data["email"]
+        assert serialized["inventoryOwnership"] == test_data["inventoryOwnership"]
+        assert serialized["phoneNumber"] == test_data["phoneNumber"]
+
+    def test_nbcontacttenant_model_json_schema(self):
+        """Test NBContactTenant model JSON schema generation."""
+        schema = NBContactTenant.model_json_schema()
+
+        # Verify schema structure
+        assert isinstance(schema, dict)
+        assert "type" in schema
+        assert schema["type"] == "object"
+        assert "properties" in schema
+
+        # Verify all properties are in schema
+        expected_properties = {
+            "resourceUri",
+            "workspaceName",
+            "address",
+            "description",
+            "email",
+            "inventoryOwnership",
+            "phoneNumber",
+        }
+
+        schema_properties = set(schema["properties"].keys())
+        expected_properties_set = set(expected_properties) if expected_properties else set()
+        assert expected_properties_set.issubset(schema_properties)
+
+        # Verify required fields in schema (if any)
+        required_fields = [
+            "workspaceName",
         ]
         if required_fields:
             assert "required" in schema
@@ -500,279 +1377,6 @@ class TestModels:
 
         # Verify all properties are in schema
         expected_properties = {}
-
-        schema_properties = set(schema["properties"].keys())
-        expected_properties_set = set(expected_properties) if expected_properties else set()
-        assert expected_properties_set.issubset(schema_properties)
-
-        # Verify required fields in schema (if any)
-        required_fields = []
-        if required_fields:
-            assert "required" in schema
-            required_in_schema = set(schema["required"])
-            expected_required = set(required_fields)
-            assert expected_required.issubset(required_in_schema)
-
-    def test_standarderrorresponse_model_creation(self):
-        """Test StandardErrorResponse model creation with valid data."""
-        # Valid test data for StandardErrorResponse
-        valid_data = {
-            "debugId": "test_value",
-            "errorCode": "test_value",
-            "httpStatusCode": 42,
-            "message": "test_value",
-        }
-
-        # Create model instance
-        model = StandardErrorResponse(**valid_data)
-
-        # Verify model creation
-        assert isinstance(model, StandardErrorResponse)
-        assert model.debugId == valid_data["debugId"]
-        assert model.errorCode == valid_data["errorCode"]
-        assert model.httpStatusCode == valid_data["httpStatusCode"]
-        assert model.message == valid_data["message"]
-
-    def test_standarderrorresponse_model_validation(self):
-        """Test StandardErrorResponse model field validation."""
-        # Test with minimal required data
-        minimal_data = {
-            "debugId": "required_value",
-            "errorCode": "required_value",
-            "httpStatusCode": 1,
-            "message": "required_value",
-        }
-
-        model = StandardErrorResponse(**minimal_data)
-        assert isinstance(model, StandardErrorResponse)
-        assert model.debugId == minimal_data["debugId"]
-        assert model.errorCode == minimal_data["errorCode"]
-        assert model.httpStatusCode == minimal_data["httpStatusCode"]
-        assert model.message == minimal_data["message"]
-
-    def test_standarderrorresponse_model_required_fields(self):
-        """Test StandardErrorResponse model required field validation."""
-        # Check if this model has any required fields
-        required_fields = [
-            "debugId",
-            "errorCode",
-            "httpStatusCode",
-            "message",
-        ]
-
-        if required_fields:
-            # Test missing required fields
-            with pytest.raises(PydanticValidationError) as exc_info:
-                StandardErrorResponse()
-
-            # Verify validation error contains required field information
-            error_details = exc_info.value.errors()
-            required_fields_set = {
-                "debugId",
-                "errorCode",
-                "httpStatusCode",
-                "message",
-            }
-
-            # Check that at least one required field is mentioned in the error
-            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
-            assert len(error_fields.intersection(required_fields_set)) > 0
-        else:
-            # Model has no required fields - should create successfully with no arguments
-            model = StandardErrorResponse()
-            assert isinstance(model, StandardErrorResponse)
-
-    def test_standarderrorresponse_model_optional_fields(self):
-        """Test StandardErrorResponse model optional field handling."""
-        # Create with minimal required data
-        minimal_data = {
-            "debugId": "required_value",
-            "errorCode": "required_value",
-            "httpStatusCode": 1,
-            "message": "required_value",
-        }
-
-        model = StandardErrorResponse(**minimal_data)
-
-        # Verify model created with minimal required fields
-        assert model is not None
-        # Verify optional fields have default values
-
-    def test_standarderrorresponse_model_serialization(self):
-        """Test StandardErrorResponse model serialization to dict."""
-        test_data = {
-            "debugId": "serialize_value",
-            "errorCode": "serialize_value",
-            "httpStatusCode": 99,
-            "message": "serialize_value",
-        }
-
-        model = StandardErrorResponse(**test_data)
-        serialized = model.model_dump(by_alias=True)
-
-        # Verify serialization
-        assert isinstance(serialized, dict)
-        assert "debugId" in serialized
-        assert "errorCode" in serialized
-        assert "httpStatusCode" in serialized
-        assert "message" in serialized
-
-        # Verify values are preserved
-        assert serialized["debugId"] == test_data["debugId"]
-        assert serialized["errorCode"] == test_data["errorCode"]
-        assert serialized["httpStatusCode"] == test_data["httpStatusCode"]
-        assert serialized["message"] == test_data["message"]
-
-    def test_standarderrorresponse_model_json_schema(self):
-        """Test StandardErrorResponse model JSON schema generation."""
-        schema = StandardErrorResponse.model_json_schema()
-
-        # Verify schema structure
-        assert isinstance(schema, dict)
-        assert "type" in schema
-        assert schema["type"] == "object"
-        assert "properties" in schema
-
-        # Verify all properties are in schema
-        expected_properties = {
-            "debugId",
-            "errorCode",
-            "httpStatusCode",
-            "message",
-        }
-
-        schema_properties = set(schema["properties"].keys())
-        expected_properties_set = set(expected_properties) if expected_properties else set()
-        assert expected_properties_set.issubset(schema_properties)
-
-        # Verify required fields in schema (if any)
-        required_fields = [
-            "debugId",
-            "errorCode",
-            "httpStatusCode",
-            "message",
-        ]
-        if required_fields:
-            assert "required" in schema
-            required_in_schema = set(schema["required"])
-            expected_required = set(required_fields)
-            assert expected_required.issubset(required_in_schema)
-
-    def test_nbcontactworkspace_model_creation(self):
-        """Test NBContactWorkspace model creation with valid data."""
-        # Valid test data for NBContactWorkspace
-        valid_data = {
-            "phoneNumber": "test_value",
-            "resourceUri": "test_value",
-            "address": "test_value",
-            "email": "test_value",
-        }
-
-        # Create model instance
-        model = NBContactWorkspace(**valid_data)
-
-        # Verify model creation
-        assert isinstance(model, NBContactWorkspace)
-        assert model.phoneNumber == valid_data["phoneNumber"]
-        assert model.resourceUri == valid_data["resourceUri"]
-        assert model.address == valid_data["address"]
-        assert model.email == valid_data["email"]
-
-    def test_nbcontactworkspace_model_validation(self):
-        """Test NBContactWorkspace model field validation."""
-        # Test with minimal required data
-        minimal_data = {}
-
-        model = NBContactWorkspace(**minimal_data)
-        assert isinstance(model, NBContactWorkspace)
-
-    def test_nbcontactworkspace_model_required_fields(self):
-        """Test NBContactWorkspace model required field validation."""
-        # Check if this model has any required fields
-        required_fields = []
-
-        if required_fields:
-            # Test missing required fields
-            with pytest.raises(PydanticValidationError) as exc_info:
-                NBContactWorkspace()
-
-            # Verify validation error contains required field information
-            error_details = exc_info.value.errors()
-            required_fields_set = {}
-
-            # Check that at least one required field is mentioned in the error
-            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
-            assert len(error_fields.intersection(required_fields_set)) > 0
-        else:
-            # Model has no required fields - should create successfully with no arguments
-            model = NBContactWorkspace()
-            assert isinstance(model, NBContactWorkspace)
-
-    def test_nbcontactworkspace_model_optional_fields(self):
-        """Test NBContactWorkspace model optional field handling."""
-        # Create with minimal required data
-        minimal_data = {}
-
-        model = NBContactWorkspace(**minimal_data)
-
-        # Verify model created with minimal required fields
-        assert model is not None
-        # Verify optional fields have default values
-        assert hasattr(model, "phoneNumber")
-        # Optional field phoneNumber should be None or have a default value
-        assert model.phoneNumber is None or model.phoneNumber is not None
-        assert hasattr(model, "resourceUri")
-        # Optional field resourceUri should be None or have a default value
-        assert model.resourceUri is None or model.resourceUri is not None
-        assert hasattr(model, "address")
-        # Optional field address should be None or have a default value
-        assert model.address is None or model.address is not None
-        assert hasattr(model, "email")
-        # Optional field email should be None or have a default value
-        assert model.email is None or model.email is not None
-
-    def test_nbcontactworkspace_model_serialization(self):
-        """Test NBContactWorkspace model serialization to dict."""
-        test_data = {
-            "phoneNumber": "serialize_value",
-            "resourceUri": "serialize_value",
-            "address": "serialize_value",
-            "email": "serialize_value",
-        }
-
-        model = NBContactWorkspace(**test_data)
-        serialized = model.model_dump(by_alias=True)
-
-        # Verify serialization
-        assert isinstance(serialized, dict)
-        assert "phoneNumber" in serialized
-        assert "resourceUri" in serialized
-        assert "address" in serialized
-        assert "email" in serialized
-
-        # Verify values are preserved
-        assert serialized["phoneNumber"] == test_data["phoneNumber"]
-        assert serialized["resourceUri"] == test_data["resourceUri"]
-        assert serialized["address"] == test_data["address"]
-        assert serialized["email"] == test_data["email"]
-
-    def test_nbcontactworkspace_model_json_schema(self):
-        """Test NBContactWorkspace model JSON schema generation."""
-        schema = NBContactWorkspace.model_json_schema()
-
-        # Verify schema structure
-        assert isinstance(schema, dict)
-        assert "type" in schema
-        assert schema["type"] == "object"
-        assert "properties" in schema
-
-        # Verify all properties are in schema
-        expected_properties = {
-            "phoneNumber",
-            "resourceUri",
-            "address",
-            "email",
-        }
 
         schema_properties = set(schema["properties"].keys())
         expected_properties_set = set(expected_properties) if expected_properties else set()
@@ -964,610 +1568,6 @@ class TestModels:
             expected_required = set(required_fields)
             assert expected_required.issubset(required_in_schema)
 
-    def test_nbcontacttenant_model_creation(self):
-        """Test NBContactTenant model creation with valid data."""
-        # Valid test data for NBContactTenant
-        valid_data = {
-            "inventoryOwnership": "test_value",
-            "phoneNumber": "test_value",
-            "resourceUri": "test_value",
-            "workspaceName": "test_value",
-            "address": "test_value",
-            "description": "test_value",
-            "email": "test_value",
-        }
-
-        # Create model instance
-        model = NBContactTenant(**valid_data)
-
-        # Verify model creation
-        assert isinstance(model, NBContactTenant)
-        assert model.inventoryOwnership == valid_data["inventoryOwnership"]
-        assert model.phoneNumber == valid_data["phoneNumber"]
-        assert model.resourceUri == valid_data["resourceUri"]
-        assert model.workspaceName == valid_data["workspaceName"]
-        assert model.address == valid_data["address"]
-        assert model.description == valid_data["description"]
-        assert model.email == valid_data["email"]
-
-    def test_nbcontacttenant_model_validation(self):
-        """Test NBContactTenant model field validation."""
-        # Test with minimal required data
-        minimal_data = {
-            "workspaceName": "required_value",
-        }
-
-        model = NBContactTenant(**minimal_data)
-        assert isinstance(model, NBContactTenant)
-        assert model.workspaceName == minimal_data["workspaceName"]
-
-    def test_nbcontacttenant_model_required_fields(self):
-        """Test NBContactTenant model required field validation."""
-        # Check if this model has any required fields
-        required_fields = [
-            "workspaceName",
-        ]
-
-        if required_fields:
-            # Test missing required fields
-            with pytest.raises(PydanticValidationError) as exc_info:
-                NBContactTenant()
-
-            # Verify validation error contains required field information
-            error_details = exc_info.value.errors()
-            required_fields_set = {
-                "workspaceName",
-            }
-
-            # Check that at least one required field is mentioned in the error
-            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
-            assert len(error_fields.intersection(required_fields_set)) > 0
-        else:
-            # Model has no required fields - should create successfully with no arguments
-            model = NBContactTenant()
-            assert isinstance(model, NBContactTenant)
-
-    def test_nbcontacttenant_model_optional_fields(self):
-        """Test NBContactTenant model optional field handling."""
-        # Create with minimal required data
-        minimal_data = {
-            "workspaceName": "required_value",
-        }
-
-        model = NBContactTenant(**minimal_data)
-
-        # Verify model created with minimal required fields
-        assert model is not None
-        # Verify optional fields have default values
-        assert hasattr(model, "inventoryOwnership")
-        # Optional field inventoryOwnership should be None or have a default value
-        assert model.inventoryOwnership is None or model.inventoryOwnership is not None
-        assert hasattr(model, "phoneNumber")
-        # Optional field phoneNumber should be None or have a default value
-        assert model.phoneNumber is None or model.phoneNumber is not None
-        assert hasattr(model, "resourceUri")
-        # Optional field resourceUri should be None or have a default value
-        assert model.resourceUri is None or model.resourceUri is not None
-        assert hasattr(model, "address")
-        # Optional field address should be None or have a default value
-        assert model.address is None or model.address is not None
-        assert hasattr(model, "description")
-        # Optional field description should be None or have a default value
-        assert model.description is None or model.description is not None
-        assert hasattr(model, "email")
-        # Optional field email should be None or have a default value
-        assert model.email is None or model.email is not None
-
-    def test_nbcontacttenant_model_serialization(self):
-        """Test NBContactTenant model serialization to dict."""
-        test_data = {
-            "inventoryOwnership": "serialize_value",
-            "phoneNumber": "serialize_value",
-            "resourceUri": "serialize_value",
-            "workspaceName": "serialize_value",
-            "address": "serialize_value",
-            "description": "serialize_value",
-            "email": "serialize_value",
-        }
-
-        model = NBContactTenant(**test_data)
-        serialized = model.model_dump(by_alias=True)
-
-        # Verify serialization
-        assert isinstance(serialized, dict)
-        assert "inventoryOwnership" in serialized
-        assert "phoneNumber" in serialized
-        assert "resourceUri" in serialized
-        assert "workspaceName" in serialized
-        assert "address" in serialized
-        assert "description" in serialized
-        assert "email" in serialized
-
-        # Verify values are preserved
-        assert serialized["inventoryOwnership"] == test_data["inventoryOwnership"]
-        assert serialized["phoneNumber"] == test_data["phoneNumber"]
-        assert serialized["resourceUri"] == test_data["resourceUri"]
-        assert serialized["workspaceName"] == test_data["workspaceName"]
-        assert serialized["address"] == test_data["address"]
-        assert serialized["description"] == test_data["description"]
-        assert serialized["email"] == test_data["email"]
-
-    def test_nbcontacttenant_model_json_schema(self):
-        """Test NBContactTenant model JSON schema generation."""
-        schema = NBContactTenant.model_json_schema()
-
-        # Verify schema structure
-        assert isinstance(schema, dict)
-        assert "type" in schema
-        assert schema["type"] == "object"
-        assert "properties" in schema
-
-        # Verify all properties are in schema
-        expected_properties = {
-            "inventoryOwnership",
-            "phoneNumber",
-            "resourceUri",
-            "workspaceName",
-            "address",
-            "description",
-            "email",
-        }
-
-        schema_properties = set(schema["properties"].keys())
-        expected_properties_set = set(expected_properties) if expected_properties else set()
-        assert expected_properties_set.issubset(schema_properties)
-
-        # Verify required fields in schema (if any)
-        required_fields = [
-            "workspaceName",
-        ]
-        if required_fields:
-            assert "required" in schema
-            required_in_schema = set(schema["required"])
-            expected_required = set(required_fields)
-            assert expected_required.issubset(required_in_schema)
-
-    def test_nbtenantworkspacepaginate_model_creation(self):
-        """Test NBTenantWorkspacePaginate model creation with valid data."""
-        # Valid test data for NBTenantWorkspacePaginate
-        valid_data = {
-            "items": [{"key": "value"}, {"key": "value"}],
-            "offset": 42,
-            "total": 42,
-            "count": 42,
-        }
-
-        # Create model instance
-        model = NBTenantWorkspacePaginate(**valid_data)
-
-        # Verify model creation
-        assert isinstance(model, NBTenantWorkspacePaginate)
-        assert model.items == valid_data["items"]
-        assert model.offset == valid_data["offset"]
-        assert model.total == valid_data["total"]
-        assert model.count == valid_data["count"]
-
-    def test_nbtenantworkspacepaginate_model_validation(self):
-        """Test NBTenantWorkspacePaginate model field validation."""
-        # Test with minimal required data
-        minimal_data = {
-            "items": [{"key": "value"}, {"key": "value"}],
-            "offset": 1,
-            "total": 1,
-            "count": 1,
-        }
-
-        model = NBTenantWorkspacePaginate(**minimal_data)
-        assert isinstance(model, NBTenantWorkspacePaginate)
-        assert model.items == minimal_data["items"]
-        assert model.offset == minimal_data["offset"]
-        assert model.total == minimal_data["total"]
-        assert model.count == minimal_data["count"]
-
-    def test_nbtenantworkspacepaginate_model_required_fields(self):
-        """Test NBTenantWorkspacePaginate model required field validation."""
-        # Check if this model has any required fields
-        required_fields = [
-            "items",
-            "offset",
-            "total",
-            "count",
-        ]
-
-        if required_fields:
-            # Test missing required fields
-            with pytest.raises(PydanticValidationError) as exc_info:
-                NBTenantWorkspacePaginate()
-
-            # Verify validation error contains required field information
-            error_details = exc_info.value.errors()
-            required_fields_set = {
-                "items",
-                "offset",
-                "total",
-                "count",
-            }
-
-            # Check that at least one required field is mentioned in the error
-            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
-            assert len(error_fields.intersection(required_fields_set)) > 0
-        else:
-            # Model has no required fields - should create successfully with no arguments
-            model = NBTenantWorkspacePaginate()
-            assert isinstance(model, NBTenantWorkspacePaginate)
-
-    def test_nbtenantworkspacepaginate_model_optional_fields(self):
-        """Test NBTenantWorkspacePaginate model optional field handling."""
-        # Create with minimal required data
-        minimal_data = {
-            "items": [{"key": "value"}, {"key": "value"}],
-            "offset": 1,
-            "total": 1,
-            "count": 1,
-        }
-
-        model = NBTenantWorkspacePaginate(**minimal_data)
-
-        # Verify model created with minimal required fields
-        assert model is not None
-        # Verify optional fields have default values
-
-    def test_nbtenantworkspacepaginate_model_serialization(self):
-        """Test NBTenantWorkspacePaginate model serialization to dict."""
-        test_data = {
-            "items": [{"key": "value"}, {"key": "value"}],
-            "offset": 99,
-            "total": 99,
-            "count": 99,
-        }
-
-        model = NBTenantWorkspacePaginate(**test_data)
-        serialized = model.model_dump(by_alias=True)
-
-        # Verify serialization
-        assert isinstance(serialized, dict)
-        assert "items" in serialized
-        assert "offset" in serialized
-        assert "total" in serialized
-        assert "count" in serialized
-
-        # Verify values are preserved
-        assert serialized["items"] == test_data["items"]
-        assert serialized["offset"] == test_data["offset"]
-        assert serialized["total"] == test_data["total"]
-        assert serialized["count"] == test_data["count"]
-
-    def test_nbtenantworkspacepaginate_model_json_schema(self):
-        """Test NBTenantWorkspacePaginate model JSON schema generation."""
-        schema = NBTenantWorkspacePaginate.model_json_schema()
-
-        # Verify schema structure
-        assert isinstance(schema, dict)
-        assert "type" in schema
-        assert schema["type"] == "object"
-        assert "properties" in schema
-
-        # Verify all properties are in schema
-        expected_properties = {
-            "items",
-            "offset",
-            "total",
-            "count",
-        }
-
-        schema_properties = set(schema["properties"].keys())
-        expected_properties_set = set(expected_properties) if expected_properties else set()
-        assert expected_properties_set.issubset(schema_properties)
-
-        # Verify required fields in schema (if any)
-        required_fields = [
-            "items",
-            "offset",
-            "total",
-            "count",
-        ]
-        if required_fields:
-            assert "required" in schema
-            required_in_schema = set(schema["required"])
-            expected_required = set(required_fields)
-            assert expected_required.issubset(required_in_schema)
-
-    def test_message_model_creation(self):
-        """Test Message model creation with valid data."""
-        # Valid test data for Message
-        valid_data = {
-            "message": "test_value",
-        }
-
-        # Create model instance
-        model = Message(**valid_data)
-
-        # Verify model creation
-        assert isinstance(model, Message)
-        assert model.message == valid_data["message"]
-
-    def test_message_model_validation(self):
-        """Test Message model field validation."""
-        # Test with minimal required data
-        minimal_data = {
-            "message": "required_value",
-        }
-
-        model = Message(**minimal_data)
-        assert isinstance(model, Message)
-        assert model.message == minimal_data["message"]
-
-    def test_message_model_required_fields(self):
-        """Test Message model required field validation."""
-        # Check if this model has any required fields
-        required_fields = [
-            "message",
-        ]
-
-        if required_fields:
-            # Test missing required fields
-            with pytest.raises(PydanticValidationError) as exc_info:
-                Message()
-
-            # Verify validation error contains required field information
-            error_details = exc_info.value.errors()
-            required_fields_set = {
-                "message",
-            }
-
-            # Check that at least one required field is mentioned in the error
-            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
-            assert len(error_fields.intersection(required_fields_set)) > 0
-        else:
-            # Model has no required fields - should create successfully with no arguments
-            model = Message()
-            assert isinstance(model, Message)
-
-    def test_message_model_optional_fields(self):
-        """Test Message model optional field handling."""
-        # Create with minimal required data
-        minimal_data = {
-            "message": "required_value",
-        }
-
-        model = Message(**minimal_data)
-
-        # Verify model created with minimal required fields
-        assert model is not None
-        # Verify optional fields have default values
-
-    def test_message_model_serialization(self):
-        """Test Message model serialization to dict."""
-        test_data = {
-            "message": "serialize_value",
-        }
-
-        model = Message(**test_data)
-        serialized = model.model_dump(by_alias=True)
-
-        # Verify serialization
-        assert isinstance(serialized, dict)
-        assert "message" in serialized
-
-        # Verify values are preserved
-        assert serialized["message"] == test_data["message"]
-
-    def test_message_model_json_schema(self):
-        """Test Message model JSON schema generation."""
-        schema = Message.model_json_schema()
-
-        # Verify schema structure
-        assert isinstance(schema, dict)
-        assert "type" in schema
-        assert schema["type"] == "object"
-        assert "properties" in schema
-
-        # Verify all properties are in schema
-        expected_properties = {
-            "message",
-        }
-
-        schema_properties = set(schema["properties"].keys())
-        expected_properties_set = set(expected_properties) if expected_properties else set()
-        assert expected_properties_set.issubset(schema_properties)
-
-        # Verify required fields in schema (if any)
-        required_fields = [
-            "message",
-        ]
-        if required_fields:
-            assert "required" in schema
-            required_in_schema = set(schema["required"])
-            expected_required = set(required_fields)
-            assert expected_required.issubset(required_in_schema)
-
-    def test_nbbasictenant_model_creation(self):
-        """Test NBBasicTenant model creation with valid data."""
-        # Valid test data for NBBasicTenant
-        valid_data = {
-            "inventoryOwnership": "test_value",
-            "generation": 42,
-            "resourceUri": "test_value",
-            "updatedAt": "test_value",
-            "workspaceName": "test_value",
-            "id": "test_value",
-            "createdAt": "test_value",
-            "type": "test_value",
-            "createdBy": "test_value",
-        }
-
-        # Create model instance
-        model = NBBasicTenant(**valid_data)
-
-        # Verify model creation
-        assert isinstance(model, NBBasicTenant)
-        assert model.inventoryOwnership == valid_data["inventoryOwnership"]
-        assert model.generation == valid_data["generation"]
-        assert model.resourceUri == valid_data["resourceUri"]
-        assert model.updatedAt == valid_data["updatedAt"]
-        assert model.workspaceName == valid_data["workspaceName"]
-        assert model.id == valid_data["id"]
-        assert model.createdAt == valid_data["createdAt"]
-        assert model.type == valid_data["type"]
-        assert model.createdBy == valid_data["createdBy"]
-
-    def test_nbbasictenant_model_validation(self):
-        """Test NBBasicTenant model field validation."""
-        # Test with minimal required data
-        minimal_data = {
-            "workspaceName": "required_value",
-            "id": "required_value",
-            "type": "required_value",
-        }
-
-        model = NBBasicTenant(**minimal_data)
-        assert isinstance(model, NBBasicTenant)
-        assert model.workspaceName == minimal_data["workspaceName"]
-        assert model.id == minimal_data["id"]
-        assert model.type == minimal_data["type"]
-
-    def test_nbbasictenant_model_required_fields(self):
-        """Test NBBasicTenant model required field validation."""
-        # Check if this model has any required fields
-        required_fields = [
-            "workspaceName",
-            "id",
-            "type",
-        ]
-
-        if required_fields:
-            # Test missing required fields
-            with pytest.raises(PydanticValidationError) as exc_info:
-                NBBasicTenant()
-
-            # Verify validation error contains required field information
-            error_details = exc_info.value.errors()
-            required_fields_set = {
-                "workspaceName",
-                "id",
-                "type",
-            }
-
-            # Check that at least one required field is mentioned in the error
-            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
-            assert len(error_fields.intersection(required_fields_set)) > 0
-        else:
-            # Model has no required fields - should create successfully with no arguments
-            model = NBBasicTenant()
-            assert isinstance(model, NBBasicTenant)
-
-    def test_nbbasictenant_model_optional_fields(self):
-        """Test NBBasicTenant model optional field handling."""
-        # Create with minimal required data
-        minimal_data = {
-            "workspaceName": "required_value",
-            "id": "required_value",
-            "type": "required_value",
-        }
-
-        model = NBBasicTenant(**minimal_data)
-
-        # Verify model created with minimal required fields
-        assert model is not None
-        # Verify optional fields have default values
-        assert hasattr(model, "inventoryOwnership")
-        # Optional field inventoryOwnership should be None or have a default value
-        assert model.inventoryOwnership is None or model.inventoryOwnership is not None
-        assert hasattr(model, "generation")
-        # Optional field generation should be None or have a default value
-        assert model.generation is None or model.generation is not None
-        assert hasattr(model, "resourceUri")
-        # Optional field resourceUri should be None or have a default value
-        assert model.resourceUri is None or model.resourceUri is not None
-        assert hasattr(model, "updatedAt")
-        # Optional field updatedAt should be None or have a default value
-        assert model.updatedAt is None or model.updatedAt is not None
-        assert hasattr(model, "createdAt")
-        # Optional field createdAt should be None or have a default value
-        assert model.createdAt is None or model.createdAt is not None
-        assert hasattr(model, "createdBy")
-        # Optional field createdBy should be None or have a default value
-        assert model.createdBy is None or model.createdBy is not None
-
-    def test_nbbasictenant_model_serialization(self):
-        """Test NBBasicTenant model serialization to dict."""
-        test_data = {
-            "inventoryOwnership": "serialize_value",
-            "generation": 99,
-            "resourceUri": "serialize_value",
-            "updatedAt": "serialize_value",
-            "workspaceName": "serialize_value",
-            "id": "serialize_value",
-            "createdAt": "serialize_value",
-            "type": "serialize_value",
-            "createdBy": "serialize_value",
-        }
-
-        model = NBBasicTenant(**test_data)
-        serialized = model.model_dump(by_alias=True)
-
-        # Verify serialization
-        assert isinstance(serialized, dict)
-        assert "inventoryOwnership" in serialized
-        assert "generation" in serialized
-        assert "resourceUri" in serialized
-        assert "updatedAt" in serialized
-        assert "workspaceName" in serialized
-        assert "id" in serialized
-        assert "createdAt" in serialized
-        assert "type" in serialized
-        assert "createdBy" in serialized
-
-        # Verify values are preserved
-        assert serialized["inventoryOwnership"] == test_data["inventoryOwnership"]
-        assert serialized["generation"] == test_data["generation"]
-        assert serialized["resourceUri"] == test_data["resourceUri"]
-        assert serialized["updatedAt"] == test_data["updatedAt"]
-        assert serialized["workspaceName"] == test_data["workspaceName"]
-        assert serialized["id"] == test_data["id"]
-        assert serialized["createdAt"] == test_data["createdAt"]
-        assert serialized["type"] == test_data["type"]
-        assert serialized["createdBy"] == test_data["createdBy"]
-
-    def test_nbbasictenant_model_json_schema(self):
-        """Test NBBasicTenant model JSON schema generation."""
-        schema = NBBasicTenant.model_json_schema()
-
-        # Verify schema structure
-        assert isinstance(schema, dict)
-        assert "type" in schema
-        assert schema["type"] == "object"
-        assert "properties" in schema
-
-        # Verify all properties are in schema
-        expected_properties = {
-            "inventoryOwnership",
-            "generation",
-            "resourceUri",
-            "updatedAt",
-            "workspaceName",
-            "id",
-            "createdAt",
-            "type",
-            "createdBy",
-        }
-
-        schema_properties = set(schema["properties"].keys())
-        expected_properties_set = set(expected_properties) if expected_properties else set()
-        assert expected_properties_set.issubset(schema_properties)
-
-        # Verify required fields in schema (if any)
-        required_fields = [
-            "workspaceName",
-            "id",
-            "type",
-        ]
-        if required_fields:
-            assert "required" in schema
-            required_in_schema = set(schema["required"])
-            expected_required = set(required_fields)
-            assert expected_required.issubset(required_in_schema)
-
 
 class TestModelInteractions:
     """Test interactions between different models."""
@@ -1591,17 +1591,17 @@ class TestModelInteractions:
     def test_all_models_have_base_methods(self):
         """Test that all models inherit proper base functionality."""
         models_to_test = [
-            CountryCode,
-            NBCcsAddress,
-            NBCcsAddressV2,
-            NBTenantInventoryOwnership,
-            StandardErrorResponse,
-            NBContactWorkspace,
-            NBBasicWorkspace,
-            NBContactTenant,
             NBTenantWorkspacePaginate,
+            StandardErrorResponse,
+            NBCcsAddressV2,
+            NBCcsAddress,
+            NBContactWorkspace,
+            CountryCode,
             Message,
             NBBasicTenant,
+            NBContactTenant,
+            NBTenantInventoryOwnership,
+            NBBasicWorkspace,
         ]
 
         for model_class in models_to_test:
@@ -1616,17 +1616,17 @@ class TestModelInteractions:
     def test_model_error_handling(self):
         """Test model error handling with invalid data."""
         models_to_test = [
-            CountryCode,
-            NBCcsAddress,
-            NBCcsAddressV2,
-            NBTenantInventoryOwnership,
-            StandardErrorResponse,
-            NBContactWorkspace,
-            NBBasicWorkspace,
-            NBContactTenant,
             NBTenantWorkspacePaginate,
+            StandardErrorResponse,
+            NBCcsAddressV2,
+            NBCcsAddress,
+            NBContactWorkspace,
+            CountryCode,
             Message,
             NBBasicTenant,
+            NBContactTenant,
+            NBTenantInventoryOwnership,
+            NBBasicWorkspace,
         ]
 
         for model_class in models_to_test:
@@ -1670,17 +1670,17 @@ class TestModelValidationEdgeCases:
         """Test handling of models with no required fields."""
         # Find models that might accept empty initialization
         models_to_test = [
-            CountryCode,
-            NBCcsAddress,
-            NBCcsAddressV2,
-            NBTenantInventoryOwnership,
-            StandardErrorResponse,
-            NBContactWorkspace,
-            NBBasicWorkspace,
-            NBContactTenant,
             NBTenantWorkspacePaginate,
+            StandardErrorResponse,
+            NBCcsAddressV2,
+            NBCcsAddress,
+            NBContactWorkspace,
+            CountryCode,
             Message,
             NBBasicTenant,
+            NBContactTenant,
+            NBTenantInventoryOwnership,
+            NBBasicWorkspace,
         ]
 
         for model_class in models_to_test:
@@ -1695,17 +1695,17 @@ class TestModelValidationEdgeCases:
     def test_model_field_types(self):
         """Test that model fields have correct types."""
         models_to_test = [
-            CountryCode,
-            NBCcsAddress,
-            NBCcsAddressV2,
-            NBTenantInventoryOwnership,
-            StandardErrorResponse,
-            NBContactWorkspace,
-            NBBasicWorkspace,
-            NBContactTenant,
             NBTenantWorkspacePaginate,
+            StandardErrorResponse,
+            NBCcsAddressV2,
+            NBCcsAddress,
+            NBContactWorkspace,
+            CountryCode,
             Message,
             NBBasicTenant,
+            NBContactTenant,
+            NBTenantInventoryOwnership,
+            NBBasicWorkspace,
         ]
 
         for model_class in models_to_test:

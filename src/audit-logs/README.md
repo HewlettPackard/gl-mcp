@@ -304,7 +304,7 @@ This MCP server implements read-only access to the following audit-logs API endp
 - `GET /audit-log/v1/logs/{id}/detail` - Get additional detail of an audit log.
 
 
-API Version: 1.0.1
+API Version: v1
 
 
 ## Development
@@ -444,6 +444,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](../../
 
 ---
 
+
 **Service**: audit-logs  
-**API Version**: 1.0.1  
+**API Version**: v1  
 **MCP Server Version**: 0.1.0

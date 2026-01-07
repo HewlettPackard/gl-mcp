@@ -209,6 +209,15 @@ Add to your `claude_desktop_config.json`:
 
 This server provides the following MCP tools:
 
+### getsubscriptiondetailsbyidv1
+
+- **Description**: Get detailed information for a single subscription by `id`. \<br\>\<br\>**NOTE:** You need to have the view permission of device management to invoke this API. \<br\>\<br\> Rate limits are enforced on this API. 20 requests per minute is supported per workspace. The API returns `429` if this threshold is breached.
+- **Method**: GET /subscriptions/v1/subscriptions/{id}
+- **Parameters**:
+
+- `id` (str, required): The unique identifier of the subscription.
+
+
 ### getsubscriptionsv1
 
 - **Description**: Get subscriptions managed in a workspace. Filters can be passed to filter  the subscriptions based on conditional expressions.\<br\>\<br\>**NOTE:** You need to have  view permission for the **Devices and subscription service** to invoke this API. \<br\>\<br\> Rate limits are enforced on this API. 60 requests per minute is supported per workspace. API will result in `429` if this threshold is breached.
@@ -244,25 +253,25 @@ The following is a non-exhaustive list of possible filtering options.
 
 
 Examples:
-  - startTime gt '2024-01-23T00:00:00.000Z' and endTime lt '2025-02-22T00:00:00.000Z' and not productType eq 'SERVICE'
-    The AND, OR, and NOT operators can be combined to return results that satisfy all specified filter criteria.
   - updatedAt le '2024-02-18T19:53:51.480Z'
     Return subscriptions where a property is less than or equal to a value. Example syntax,
 \<property\> le \<value\>.
+  - key eq 'STIQQ4L04' and subscriptionType eq 'CENTRAL_STORAGE'
+    The AND operator returns results that meet all filter queries. In the example, the query only returns subscriptions with the exact key and with the specified subscription type. Example syntax,
+\<property\> eq \<value\> and \<property\> eq \<value\>.
+  - startTime gt '2024-01-23T00:00:00.000Z' and endTime lt '2025-02-22T00:00:00.000Z' and not productType eq 'SERVICE'
+    The AND, OR, and NOT operators can be combined to return results that satisfy all specified filter criteria.
   - tier ne 'BRIDGE'
     Return subscriptions where a property does not equate to a value. Example syntax, 
 \<property\> ne \<value\>.
   - not key eq 'STIAPL6404'
     Return subscriptions where a property does not equal a value. Example syntax, 
 not \<property\> eq \<value\>.
+  - key eq 'STIQQ4L04' or subscriptionType eq 'CENTRAL_STORAGE'
+    The OR operator returns results that meet any of the filter queries. In the example, the query returns subscriptions with the exact key or with the specified subscription type.
   - subscriptionType in 'CENTRAL_STORAGE', 'CENTRAL_CONTROLLER'
     Return subscriptions where the property is one of multiple values. Example syntax, 
 \<property\> in \<value\>,\<value\>.
-  - key eq 'STIQQ4L04' and subscriptionType eq 'CENTRAL_STORAGE'
-    The AND operator returns results that meet all filter queries. In the example, the query only returns subscriptions with the exact key and with the specified subscription type. Example syntax,
-\<property\> eq \<value\> and \<property\> eq \<value\>.
-  - key eq 'STIQQ4L04' or subscriptionType eq 'CENTRAL_STORAGE'
-    The OR operator returns results that meet any of the filter queries. In the example, the query returns subscriptions with the exact key or with the specified subscription type.
   - key eq 'STIAPL6404'
     Return subscriptions where a property equals a value. Example syntax, 
 \<property\> eq \<value\>.
@@ -284,9 +293,6 @@ values.\<br\>
 
 
 Examples:
-  - 'city' eq 'London' and 'street' eq 'Piccadilly'
-    Return subscriptions containing the tag key and the corresponding value that satisfy all conditionals. Example syntax, 
-\<property\> eq \<value\> and \<property\> eq \<value\>.
   - 'street' eq 'Oxford Street' or 'street' eq 'Piccadilly'
     Return subscriptions containing the tag key and the corresponding value that satisfy at least one of the conditionals. Example syntax, 
 \<property\> eq \<value\> or \<property\> eq \<value\>.
@@ -296,6 +302,9 @@ Examples:
   - 'city' ne 'London'
     Return subscriptions that have a pair of tags with the exact same tag key and the exact different tag value. Example syntax, 
 \<tagKey\> ne \<tagValue\>.
+  - 'city' eq 'London' and 'street' eq 'Piccadilly'
+    Return subscriptions containing the tag key and the corresponding value that satisfy all conditionals. Example syntax, 
+\<property\> eq \<value\> and \<property\> eq \<value\>.
 
 **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`.
 
@@ -308,15 +317,6 @@ Example: key, quote desc
 Example: id,key
 - `limit` (int, optional): Specifies the number of results to be returned. The default value  is 50.
 - `offset` (int, optional): Specifies the zero-based resource offset to start the response from. The default value is 0.
-
-
-### getsubscriptiondetailsbyidv1
-
-- **Description**: Get detailed information for a single subscription by `id`. \<br\>\<br\>**NOTE:** You need to have the view permission of device management to invoke this API. \<br\>\<br\> Rate limits are enforced on this API. 20 requests per minute is supported per workspace. The API returns `429` if this threshold is breached.
-- **Method**: GET /subscriptions/v1/subscriptions/{id}
-- **Parameters**:
-
-- `id` (str, required): The unique identifier of the subscription.
 
 
 
@@ -337,11 +337,11 @@ These are just examples - you can ask questions in your own words, and the AI as
 
 This MCP server implements read-only access to the following subscriptions API endpoints:
 
-- `GET /subscriptions/v1/subscriptions` - Get subscriptions managed in a workspace. Filters can be passed to filter  the subscriptions based on conditional expressions.\<br\>\<br\>**NOTE:** You need to have  view permission for the **Devices and subscription service** to invoke this API. \<br\>\<br\> Rate limits are enforced on this API. 60 requests per minute is supported per workspace. API will result in `429` if this threshold is breached.
 - `GET /subscriptions/v1/subscriptions/{id}` - Get detailed information for a single subscription by `id`. \<br\>\<br\>**NOTE:** You need to have the view permission of device management to invoke this API. \<br\>\<br\> Rate limits are enforced on this API. 20 requests per minute is supported per workspace. The API returns `429` if this threshold is breached.
+- `GET /subscriptions/v1/subscriptions` - Get subscriptions managed in a workspace. Filters can be passed to filter  the subscriptions based on conditional expressions.\<br\>\<br\>**NOTE:** You need to have  view permission for the **Devices and subscription service** to invoke this API. \<br\>\<br\> Rate limits are enforced on this API. 60 requests per minute is supported per workspace. API will result in `429` if this threshold is breached.
 
 
-API Version: 1.0.1
+API Version: latest
 
 
 ## Development
@@ -482,5 +482,5 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](../../
 ---
 
 **Service**: subscriptions  
-**API Version**: 1.0.1  
+**API Version**: latest  
 **MCP Server Version**: 0.1.0

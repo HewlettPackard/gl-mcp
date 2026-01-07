@@ -104,16 +104,92 @@ class ResourceMetadata(BaseModel):
 # SERVICE-SPECIFIC MODELS GENERATED FROM OPENAPI SCHEMAS
 
 
+class AuditLog(BaseModel):
+    """AuditLog model"""
+
+    category: Optional[str] = Field(default=None, alias="category", description="The category of the audit log.")
+
+    updatedAt: Optional[str] = Field(default=None, alias="updatedAt", description="The time the audit log was updated.")
+
+    workspace: Optional[Dict[str, Any]] = Field(default=None, alias="workspace", description="workspace field")
+
+    additionalInfo: Optional[Dict[str, Any]] = Field(
+        default=None, alias="additionalInfo", description="Returns additional attributes."
+    )
+
+    id: str = Field(alias="id", description="Unique audit log ID")
+
+    region: Optional[str] = Field(
+        default=None, alias="region", description="The region code associated with the application."
+    )
+
+    application: Optional[Dict[str, Any]] = Field(default=None, alias="application", description="application field")
+
+    type: str = Field(alias="type", description="Resource type")
+
+    description: Optional[str] = Field(
+        default=None,
+        alias="description",
+        description="A short description of the changes such as subscription assignment, firmware upgrade, and configuration updates.",
+    )
+
+    createdAt: Optional[str] = Field(default=None, alias="createdAt", description="The time the audit log was created.")
+
+    generation: Optional[int] = Field(
+        default=None, alias="generation", description="if any update happened then field count will get increased."
+    )
+
+    hasDetails: Optional[bool] = Field(
+        default=None,
+        alias="hasDetails",
+        description="If set to `true`, additional details are available for the audit log.",
+    )
+
+    user: Optional[Dict[str, Any]] = Field(default=None, alias="user", description="user field")
+
+
 class AuditLogDetails(BaseModel):
     """AuditLogDetails model"""
-
-    type: str = Field(alias="type", description="resource type")
 
     body: List[str] = Field(alias="body", description="body field")
 
     header: str = Field(alias="header", description="header field")
 
     id: str = Field(alias="id", description="audit log id")
+
+    type: str = Field(alias="type", description="resource type")
+
+
+class ErrorBadRequestDetails(BaseModel):
+    """ErrorBadRequestDetails model"""
+
+    errorDetails: Optional[List[str]] = Field(
+        default=None, alias="errorDetails", description="Additional detailed information about the error."
+    )
+
+
+class ErrorGeneralDetails(BaseModel):
+    """ErrorGeneralDetails model"""
+
+    errorDetails: Optional[List[str]] = Field(
+        default=None, alias="errorDetails", description="Additional detailed information about the error."
+    )
+
+
+class ErrorNotFoundDetails(BaseModel):
+    """ErrorNotFoundDetails model"""
+
+    errorDetails: Optional[List[str]] = Field(
+        default=None, alias="errorDetails", description="Additional detailed information about the error."
+    )
+
+
+class ErrorRetryDetails(BaseModel):
+    """ErrorRetryDetails model"""
+
+    errorDetails: Optional[List[str]] = Field(
+        default=None, alias="errorDetails", description="Additional detailed information about the error."
+    )
 
 
 class AuditLogs(BaseModel):
@@ -135,82 +211,6 @@ class AuditLogs(BaseModel):
         default=None,
         alias="offset",
         description="Specifies the offset of the returned page. Only when offset based pagination is used.",
-    )
-
-
-class ErrorGeneralDetails(BaseModel):
-    """ErrorGeneralDetails model"""
-
-    errorDetails: Optional[List[str]] = Field(
-        default=None, alias="errorDetails", description="Additional detailed information about the error."
-    )
-
-
-class ErrorNotFoundDetails(BaseModel):
-    """ErrorNotFoundDetails model"""
-
-    errorDetails: Optional[List[str]] = Field(
-        default=None, alias="errorDetails", description="Additional detailed information about the error."
-    )
-
-
-class AuditLog(BaseModel):
-    """AuditLog model"""
-
-    application: Optional[Dict[str, Any]] = Field(default=None, alias="application", description="application field")
-
-    updatedAt: Optional[str] = Field(default=None, alias="updatedAt", description="The time the audit log was updated.")
-
-    workspace: Optional[Dict[str, Any]] = Field(default=None, alias="workspace", description="workspace field")
-
-    description: Optional[str] = Field(
-        default=None,
-        alias="description",
-        description="A short description of the changes such as subscription assignment, firmware upgrade, and configuration updates.",
-    )
-
-    region: Optional[str] = Field(
-        default=None, alias="region", description="The region code associated with the application."
-    )
-
-    createdAt: Optional[str] = Field(default=None, alias="createdAt", description="The time the audit log was created.")
-
-    id: str = Field(alias="id", description="Unique audit log ID")
-
-    category: Optional[str] = Field(default=None, alias="category", description="The category of the audit log.")
-
-    generation: Optional[int] = Field(
-        default=None, alias="generation", description="if any update happened then field count will get increased."
-    )
-
-    user: Optional[Dict[str, Any]] = Field(default=None, alias="user", description="user field")
-
-    additionalInfo: Optional[Dict[str, Any]] = Field(
-        default=None, alias="additionalInfo", description="Returns additional attributes."
-    )
-
-    hasDetails: Optional[bool] = Field(
-        default=None,
-        alias="hasDetails",
-        description="If set to `true`, additional details are available for the audit log.",
-    )
-
-    type: str = Field(alias="type", description="Resource type")
-
-
-class ErrorBadRequestDetails(BaseModel):
-    """ErrorBadRequestDetails model"""
-
-    errorDetails: Optional[List[str]] = Field(
-        default=None, alias="errorDetails", description="Additional detailed information about the error."
-    )
-
-
-class ErrorRetryDetails(BaseModel):
-    """ErrorRetryDetails model"""
-
-    errorDetails: Optional[List[str]] = Field(
-        default=None, alias="errorDetails", description="Additional detailed information about the error."
     )
 
 
@@ -237,10 +237,10 @@ class PaginatedApiResponse(BaseModel):
 class Error(BaseModel):
     """Error model"""
 
-    message: str = Field(alias="message", description="User-friendly error message.")
-
     debugId: str = Field(alias="debugId", description="Unique identifier for the instance of this error.")
 
     errorCode: str = Field(alias="errorCode", description="Unique machine-friendly identifier for the error.")
 
     httpStatusCode: int = Field(alias="httpStatusCode", description="HTTP status code for the error.")
+
+    message: str = Field(alias="message", description="User-friendly error message.")

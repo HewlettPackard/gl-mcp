@@ -67,18 +67,20 @@ class TokenManager:
                 workspace_id=getattr(settings, "workspace_id", None),
             )
 
-        # Set initial token if provided (for testing/pre-authenticated scenarios)
+        # Set initial token if provided
         if initial_token:
             self._set_token(initial_token)
-        # For test environments, set a test token
-        elif settings and settings.is_testing:
-            logger.info("Setting test token for test environment")
-            self._set_token("test_token_12345")
-        # Otherwise, use LAZY initialization - token will be generated on first use
-        else:
-            logger.info(
-                "Token manager initialized with lazy token generation", has_oauth2=self._oauth2_provider is not None
-            )
+
+        # Generate token if OAuth2 provider is available and no initial token
+        elif self._oauth2_provider:
+            # Skip token generation for test environments or test credentials
+            if settings and (settings.is_testing or getattr(settings, "client_id", "") == "test"):
+                logger.info("Skipping token generation for test environment")
+                self._set_token("test_token_12345")
+            else:
+                self._generate_new_token()
+
+        logger.info("Token manager initialized", has_oauth2=self._oauth2_provider is not None)
 
     def _set_token(self, token: str, expires_at: float | None = None) -> None:
         """Set a new token.
@@ -131,14 +133,6 @@ class TokenManager:
 
     def get_auth_headers(self) -> dict[str, str]:
         """Get authentication headers for API requests.
-
-        This method implements lazy token initialization:
-        - On first call: Fetches a new token from OAuth2 provider
-        - Subsequent calls: Returns cached token if still valid
-        - Auto-refresh: Automatically refreshes expired tokens with retry logic
-
-        The token is fetched on-demand, not during TokenManager initialization,
-        which improves startup time and ensures token freshness.
 
         Returns:
             Dictionary containing authorization headers

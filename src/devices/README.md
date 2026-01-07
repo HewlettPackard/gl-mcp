@@ -227,9 +227,6 @@ The following examples are not an exhaustive list of all possible filtering opti
 
 
 Examples:
-  - deviceType in 'COMPUTE', 'STORAGE'
-    Return devices where a property is one of multiple values.
-Example syntax, \<property\> in \<value\>,\<value\>.
   - deviceType eq 'STORAGE' and partNumber eq 'RTICXL6413'
     Return devices that exactly satisfy multiple filter queries.
 Example syntax, \<property\> eq \<value\> and \<property\> eq \<value\>.
@@ -248,6 +245,9 @@ Example syntax, \<property\> ge \<value\>.
   - not serialNumber eq 'STIAPL6404'
     Return devices where a property does not equal a value.
 Example syntax, not \<property\> eq \<value\>.
+  - deviceType in 'COMPUTE', 'STORAGE'
+    Return devices where a property is one of multiple values.
+Example syntax, \<property\> in \<value\>,\<value\>.
 
 **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`.
 
@@ -263,6 +263,12 @@ values.\<br\>
 
 
 Examples:
+  - 'city' eq 'London'
+    Return devices where a tag key is equal to a tag value.
+Example syntax, \<tagKey\> eq \<tagValue\>.
+  - not 'city' eq 'Tokyo'
+    Return devices where a tag key does not equal a tag value.
+Example syntax, not \<property\> eq \<value\>.
   - 'street' in 'Regent Street', 'Oxford Street', 'Piccadilly'
     Return devices containing the tag key and at least one of the specified values.
 Example syntax, \<property\> in \<value\>,\<value\>.
@@ -272,12 +278,6 @@ Example syntax, \<property\> eq \<value\> and \<property\> eq \<value\>.
   - 'street' eq 'Oxford Street' or 'street' eq 'Piccadilly'
     Return devices that satisfy any of multiple filter queries applied to tag keys.
 Example syntax, \<property\> eq \<value\> or \<property\> eq \<value\>.
-  - 'city' eq 'London'
-    Return devices where a tag key is equal to a tag value.
-Example syntax, \<tagKey\> eq \<tagValue\>.
-  - not 'city' eq 'Tokyo'
-    Return devices where a tag key does not equal a tag value.
-Example syntax, not \<property\> eq \<value\>.
 
 **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`.
 
@@ -322,9 +322,6 @@ This MCP server implements read-only access to the following devices API endpoin
 
 - `GET /devices/v1/devices` - With this API, you can: \<ul\>\<li\>Retrieve a list of devices managed in a workspace.\</li\> \<li\>Filter  devices based on conditional expressions.\</li\>\</ul\>\<p\>\<b\>NOTE\</b\>: You need view  permissions for Devices and Subscription service to invoke this API.\</p\>  Rate limits are enforced on this API. 160 requests per minute is supported per workspace. The API returns `429` if this threshold is breached.
 - `GET /devices/v1/devices/{id}` - Get details on a specific device by passing its resourceId. \<p\>\<b\>NOTE\</b\>: You need  view permissions for device management to invoke this API.\</p\> Rate limits are enforced on this API. 40 requests per minute is supported per workspace. The API returns `429` if this threshold is breached.
-
-
-API Version: latest
 
 
 ## Development
@@ -461,9 +458,3 @@ The generated suite provides:
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](../../LICENSE) file for details.
-
----
-
-**Service**: devices  
-**API Version**: latest  
-**MCP Server Version**: 1.0.0

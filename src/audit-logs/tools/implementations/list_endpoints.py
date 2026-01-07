@@ -46,8 +46,8 @@ class ListEndpointsTool(BaseTool):
 
             # Define all available endpoints in METHOD:PATH format
             all_endpoints: List[str] = [
-                "GET:/audit-log/v1/logs",
                 "GET:/audit-log/v1/logs/{id}/detail",
+                "GET:/audit-log/v1/logs",
             ]
 
             # Apply filter if provided

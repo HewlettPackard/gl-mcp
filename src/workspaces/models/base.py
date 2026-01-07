@@ -104,6 +104,10 @@ class ResourceMetadata(BaseModel):
 # SERVICE-SPECIFIC MODELS GENERATED FROM OPENAPI SCHEMAS
 
 
+class NBTenantInventoryOwnership(BaseModel):
+    """An enumeration."""
+
+
 class NBTenantWorkspacePaginate(BaseModel):
     """NBTenantWorkspacePaginate model"""
 
@@ -116,18 +120,82 @@ class NBTenantWorkspacePaginate(BaseModel):
     count: int = Field(alias="count", description="The number of returned items")
 
 
-class StandardErrorResponse(BaseModel):
-    """Standard GreenLake error response model"""
+class NBContactTenant(BaseModel):
+    """NBContactTenant model"""
 
-    errorCode: str = Field(alias="errorCode", description="HPE GreenLake standard error code")
-
-    httpStatusCode: int = Field(alias="httpStatusCode", description="HTTP status code")
-
-    message: str = Field(alias="message", description="A user-friendly error message.")
-
-    debugId: str = Field(
-        alias="debugId", description="A unique identifier for this error used to help with troubleshooting."
+    inventoryOwnership: Optional[str] = Field(
+        default=None,
+        alias="inventoryOwnership",
+        description='Devices and Subscriptions Ownership for this tenant. If not specified, the tenant is created with the default value of "MSP_OWNED_INVENTORY".',
     )
+
+    phoneNumber: Optional[str] = Field(
+        default=None, alias="phoneNumber", description="The phone number associated with this workspace."
+    )
+
+    resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
+
+    workspaceName: str = Field(alias="workspaceName", description="Name of the tenant.")
+
+    address: Optional[str] = Field(default=None, alias="address", description="Company Address.")
+
+    description: Optional[str] = Field(default=None, alias="description", description="A description of the tenant.")
+
+    email: Optional[str] = Field(
+        default=None, alias="email", description="The primary email address associated with the workspace."
+    )
+
+
+class NBBasicTenant(BaseModel):
+    """NBBasicTenant model"""
+
+    inventoryOwnership: Optional[str] = Field(
+        default=None, alias="inventoryOwnership", description="Devices and Subscriptions Ownership for this tenant."
+    )
+
+    createdAt: Optional[str] = Field(default=None, alias="createdAt", description="The time the resource was created.")
+
+    resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
+
+    id: str = Field(alias="id", description="Resource unique identification")
+
+    type: str = Field(alias="type", description="Type of data")
+
+    workspaceName: str = Field(alias="workspaceName", description="Company name of the workspace.")
+
+    createdBy: Optional[str] = Field(
+        default=None, alias="createdBy", description="Email address of the user that created the account."
+    )
+
+    generation: Optional[int] = Field(default=None, alias="generation", description="Resource history of updates")
+
+    updatedAt: Optional[str] = Field(
+        default=None, alias="updatedAt", description="The time the resource was last updated."
+    )
+
+
+class NBBasicWorkspace(BaseModel):
+    """NBBasicWorkspace model"""
+
+    resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
+
+    type: str = Field(alias="type", description="Type of data")
+
+    updatedAt: Optional[str] = Field(
+        default=None, alias="updatedAt", description="The time the resource was last updated."
+    )
+
+    workspaceName: str = Field(alias="workspaceName", description="Company name of the workspace.")
+
+    createdAt: Optional[str] = Field(default=None, alias="createdAt", description="The time the resource was created.")
+
+    createdBy: Optional[str] = Field(
+        default=None, alias="createdBy", description="Email address of the user that created the account."
+    )
+
+    generation: Optional[int] = Field(default=None, alias="generation", description="Resource history of updates")
+
+    id: str = Field(alias="id", description="Resource unique identification")
 
 
 class NBCcsAddressV2(BaseModel):
@@ -136,24 +204,6 @@ class NBCcsAddressV2(BaseModel):
     city: Optional[str] = Field(default=None, alias="city", description="city field")
 
     countryCode: str = Field(alias="countryCode", description="Only country is mandatory.")
-
-    stateOrRegion: Optional[str] = Field(default=None, alias="stateOrRegion", description="State or region")
-
-    streetAddress: Optional[str] = Field(default=None, alias="streetAddress", description="Street address")
-
-    streetAddressComplement: Optional[str] = Field(
-        default=None, alias="streetAddressComplement", description="Apt or suite or building"
-    )
-
-    zip: Optional[str] = Field(default=None, alias="zip", description="zip field")
-
-
-class NBCcsAddress(BaseModel):
-    """NBCcsAddress model"""
-
-    city: Optional[str] = Field(default=None, alias="city", description="city field")
-
-    countryCode: Optional[str] = Field(default=None, alias="countryCode", description="Country code")
 
     stateOrRegion: Optional[str] = Field(default=None, alias="stateOrRegion", description="State or region")
 
@@ -182,6 +232,20 @@ class NBContactWorkspace(BaseModel):
     )
 
 
+class StandardErrorResponse(BaseModel):
+    """Standard GreenLake error response model"""
+
+    httpStatusCode: int = Field(alias="httpStatusCode", description="HTTP status code")
+
+    message: str = Field(alias="message", description="A user-friendly error message.")
+
+    debugId: str = Field(
+        alias="debugId", description="A unique identifier for this error used to help with troubleshooting."
+    )
+
+    errorCode: str = Field(alias="errorCode", description="HPE GreenLake standard error code")
+
+
 class CountryCode(BaseModel):
     """An enumeration."""
 
@@ -192,83 +256,19 @@ class Message(BaseModel):
     message: str = Field(alias="message", description="Message")
 
 
-class NBBasicTenant(BaseModel):
-    """NBBasicTenant model"""
+class NBCcsAddress(BaseModel):
+    """NBCcsAddress model"""
 
-    type: str = Field(alias="type", description="Type of data")
+    stateOrRegion: Optional[str] = Field(default=None, alias="stateOrRegion", description="State or region")
 
-    id: str = Field(alias="id", description="Resource unique identification")
+    streetAddress: Optional[str] = Field(default=None, alias="streetAddress", description="Street address")
 
-    updatedAt: Optional[str] = Field(
-        default=None, alias="updatedAt", description="The time the resource was last updated."
+    streetAddressComplement: Optional[str] = Field(
+        default=None, alias="streetAddressComplement", description="Apt or suite or building"
     )
 
-    resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
+    zip: Optional[str] = Field(default=None, alias="zip", description="zip field")
 
-    workspaceName: str = Field(alias="workspaceName", description="Company name of the workspace.")
+    city: Optional[str] = Field(default=None, alias="city", description="city field")
 
-    generation: Optional[int] = Field(default=None, alias="generation", description="Resource history of updates")
-
-    createdAt: Optional[str] = Field(default=None, alias="createdAt", description="The time the resource was created.")
-
-    createdBy: Optional[str] = Field(
-        default=None, alias="createdBy", description="Email address of the user that created the account."
-    )
-
-    inventoryOwnership: Optional[str] = Field(
-        default=None, alias="inventoryOwnership", description="Devices and Subscriptions Ownership for this tenant."
-    )
-
-
-class NBContactTenant(BaseModel):
-    """NBContactTenant model"""
-
-    resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
-
-    workspaceName: str = Field(alias="workspaceName", description="Name of the tenant.")
-
-    address: Optional[str] = Field(default=None, alias="address", description="Company Address.")
-
-    description: Optional[str] = Field(default=None, alias="description", description="A description of the tenant.")
-
-    email: Optional[str] = Field(
-        default=None, alias="email", description="The primary email address associated with the workspace."
-    )
-
-    inventoryOwnership: Optional[str] = Field(
-        default=None,
-        alias="inventoryOwnership",
-        description='Devices and Subscriptions Ownership for this tenant. If not specified, the tenant is created with the default value of "MSP_OWNED_INVENTORY".',
-    )
-
-    phoneNumber: Optional[str] = Field(
-        default=None, alias="phoneNumber", description="The phone number associated with this workspace."
-    )
-
-
-class NBTenantInventoryOwnership(BaseModel):
-    """An enumeration."""
-
-
-class NBBasicWorkspace(BaseModel):
-    """NBBasicWorkspace model"""
-
-    generation: Optional[int] = Field(default=None, alias="generation", description="Resource history of updates")
-
-    id: str = Field(alias="id", description="Resource unique identification")
-
-    resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
-
-    type: str = Field(alias="type", description="Type of data")
-
-    updatedAt: Optional[str] = Field(
-        default=None, alias="updatedAt", description="The time the resource was last updated."
-    )
-
-    workspaceName: str = Field(alias="workspaceName", description="Company name of the workspace.")
-
-    createdAt: Optional[str] = Field(default=None, alias="createdAt", description="The time the resource was created.")
-
-    createdBy: Optional[str] = Field(
-        default=None, alias="createdBy", description="Email address of the user that created the account."
-    )
+    countryCode: Optional[str] = Field(default=None, alias="countryCode", description="Country code")

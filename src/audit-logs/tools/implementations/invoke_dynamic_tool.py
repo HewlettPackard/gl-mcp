@@ -86,6 +86,15 @@ class InvokeDynamicTool(BaseTool):
 
             # Get endpoint schema for validation
             endpoint_schemas: Dict[str, Any] = {
+                "GET:/audit-log/v1/logs/{id}/detail": {
+                    "path": "/audit-log/v1/logs/{id}/detail",
+                    "method": "GET",
+                    "summary": "getauditlogdetails",
+                    "description": "getauditlogdetails",
+                    "parameters": [
+                        {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
+                    ],
+                },
                 "GET:/audit-log/v1/logs": {
                     "path": "/audit-log/v1/logs",
                     "method": "GET",
@@ -122,15 +131,6 @@ class InvokeDynamicTool(BaseTool):
                             "required": False,
                             "location": "query",
                         },
-                    ],
-                },
-                "GET:/audit-log/v1/logs/{id}/detail": {
-                    "path": "/audit-log/v1/logs/{id}/detail",
-                    "method": "GET",
-                    "summary": "getauditlogdetails",
-                    "description": "getauditlogdetails",
-                    "parameters": [
-                        {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
                     ],
                 },
             }

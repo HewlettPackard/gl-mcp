@@ -10,36 +10,270 @@ from pydantic import ValidationError as PydanticValidationError
 
 from models import (
     BaseModel,
-    HpeGreenLakeServerError,
-    AutoSubscriptionsResponsePaginatedDto,
     BadRequestErrorDetail,
-    SubscriptionDetail,
-    SubscriptionsPatchRequest,
-    AutoSubscriptionsResponseDtoWithTenant,
-    GeneralErrorDetail,
-    SubscriptionsGetResponse,
-    RequestPostSubscription,
-    RequestPostAutoSubscription,
-    V1Beta1SubscriptionsGetResponse,
-    Appointment,
-    SubscriptionsPostRequest,
     AsyncOperationResource,
+    AutoSubscriptionsPostRequest,
+    V1Beta1SubscriptionsGetResponse,
     AutoSubscriptionSettings,
+    HpeGreenLakeGeneralError,
+    ErrorIssue,
+    GeneralErrorDetail,
+    HpeGreenLakeServerError,
+    SubscriptionsPostRequest,
+    AsyncResponse,
+    V1Beta1SubscriptionDetail,
     HpeGreenLakeBadRequestError,
     AutoSubscriptionsResponseDto,
-    ErrorIssue,
-    HpeGreenLakeGeneralError,
+    AutoSubscriptionsResponseDtoWithTenant,
     ServerErrorDetail,
-    V1Beta1SubscriptionDetail,
-    AsyncResponse,
-    AutoSubscriptionsPostRequest,
+    SubscriptionsPatchRequest,
+    RequestPostSubscription,
+    Appointment,
+    AutoSubscriptionsResponsePaginatedDto,
+    RequestPostAutoSubscription,
+    SubscriptionDetail,
+    SubscriptionsGetResponse,
 )
 
 MODEL_TEST_MATRIX = [
     {
+        "model": BadRequestErrorDetail,
+        "name": "BadRequestErrorDetail",
+        "fields": [
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "issues",
+                "sanitized": "issues",
+                "type": r"List[Dict[str, Any]]",
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": AsyncOperationResource,
+        "name": "AsyncOperationResource",
+        "fields": [
+            {
+                "name": "status",
+                "sanitized": "status",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "timeoutMinutes",
+                "sanitized": "timeoutMinutes",
+                "type": r"int",
+                "required": False,
+            },
+            {
+                "name": "result",
+                "sanitized": "result",
+                "type": r"Dict[str, Any]",
+                "required": False,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "progressPercent",
+                "sanitized": "progressPercent",
+                "type": r"int",
+                "required": False,
+            },
+            {
+                "name": "resultType",
+                "sanitized": "resultType",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "suggestedPollingIntervalSeconds",
+                "sanitized": "suggestedPollingIntervalSeconds",
+                "type": r"int",
+                "required": False,
+            },
+            {
+                "name": "startedAt",
+                "sanitized": "startedAt",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "endedAt",
+                "sanitized": "endedAt",
+                "type": r"str",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": AutoSubscriptionsPostRequest,
+        "name": "AutoSubscriptionsPostRequest",
+        "fields": [
+            {
+                "name": "autoSubscriptionSettings",
+                "sanitized": "autoSubscriptionSettings",
+                "type": r"List[Dict[str, Any]]",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": V1Beta1SubscriptionsGetResponse,
+        "name": "V1Beta1SubscriptionsGetResponse",
+        "fields": [
+            {
+                "name": "total",
+                "sanitized": "total",
+                "type": r"int",
+                "required": False,
+            },
+            {
+                "name": "count",
+                "sanitized": "count",
+                "type": r"int",
+                "required": True,
+            },
+            {
+                "name": "items",
+                "sanitized": "items",
+                "type": r"List[Dict[str, Any]]",
+                "required": True,
+            },
+            {
+                "name": "offset",
+                "sanitized": "offset",
+                "type": r"int",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": AutoSubscriptionSettings,
+        "name": "AutoSubscriptionSettings",
+        "fields": [
+            {
+                "name": "deviceType",
+                "sanitized": "deviceType",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "tier",
+                "sanitized": "tier",
+                "type": r"str",
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": HpeGreenLakeGeneralError,
+        "name": "HpeGreenLakeGeneralError",
+        "fields": [
+            {
+                "name": "message",
+                "sanitized": "message",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "debugId",
+                "sanitized": "debugId",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "errorCode",
+                "sanitized": "errorCode",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "generalErrorDetails",
+                "sanitized": "generalErrorDetails",
+                "type": r"List[Dict[str, Any]]",
+                "required": False,
+            },
+            {
+                "name": "httpStatusCode",
+                "sanitized": "httpStatusCode",
+                "type": r"int",
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": ErrorIssue,
+        "name": "ErrorIssue",
+        "fields": [
+            {
+                "name": "subject",
+                "sanitized": "subject",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "description",
+                "sanitized": "description",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "source",
+                "sanitized": "source",
+                "type": r"str",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": GeneralErrorDetail,
+        "name": "GeneralErrorDetail",
+        "fields": [
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "metadata",
+                "sanitized": "metadata",
+                "type": r"Dict[str, Any]",
+                "required": True,
+            },
+            {
+                "name": "source",
+                "sanitized": "source",
+                "type": r"str",
+                "required": True,
+            },
+        ],
+    },
+    {
         "model": HpeGreenLakeServerError,
         "name": "HpeGreenLakeServerError",
         "fields": [
+            {
+                "name": "errorCode",
+                "sanitized": "errorCode",
+                "type": r"str",
+                "required": True,
+            },
             {
                 "name": "httpStatusCode",
                 "sanitized": "httpStatusCode",
@@ -64,94 +298,58 @@ MODEL_TEST_MATRIX = [
                 "type": r"str",
                 "required": True,
             },
-            {
-                "name": "errorCode",
-                "sanitized": "errorCode",
-                "type": r"str",
-                "required": True,
-            },
         ],
     },
     {
-        "model": AutoSubscriptionsResponsePaginatedDto,
-        "name": "AutoSubscriptionsResponsePaginatedDto",
+        "model": SubscriptionsPostRequest,
+        "name": "SubscriptionsPostRequest",
         "fields": [
             {
-                "name": "offset",
-                "sanitized": "offset",
-                "type": r"int",
-                "required": False,
-            },
-            {
-                "name": "total",
-                "sanitized": "total",
-                "type": r"int",
-                "required": False,
-            },
-            {
-                "name": "count",
-                "sanitized": "count",
-                "type": r"int",
-                "required": True,
-            },
-            {
-                "name": "items",
-                "sanitized": "items",
+                "name": "subscriptions",
+                "sanitized": "subscriptions",
                 "type": r"List[Dict[str, Any]]",
                 "required": True,
             },
         ],
     },
     {
-        "model": BadRequestErrorDetail,
-        "name": "BadRequestErrorDetail",
+        "model": AsyncResponse,
+        "name": "AsyncResponse",
         "fields": [
             {
-                "name": "issues",
-                "sanitized": "issues",
-                "type": r"List[Dict[str, Any]]",
+                "name": "status",
+                "sanitized": "status",
+                "type": r"str",
                 "required": True,
             },
             {
-                "name": "type",
-                "sanitized": "type",
+                "name": "transactionId",
+                "sanitized": "transactionId",
                 "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "code",
+                "sanitized": "code",
+                "type": r"int",
                 "required": True,
             },
         ],
     },
     {
-        "model": SubscriptionDetail,
-        "name": "SubscriptionDetail",
+        "model": V1Beta1SubscriptionDetail,
+        "name": "V1Beta1SubscriptionDetail",
         "fields": [
             {
-                "name": "productDescription",
-                "sanitized": "productDescription",
-                "type": r"str",
+                "name": "isEval",
+                "sanitized": "isEval",
+                "type": r"bool",
                 "required": False,
             },
             {
-                "name": "aasType",
-                "sanitized": "aasType",
+                "name": "skuDescription",
+                "sanitized": "skuDescription",
                 "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "quote",
-                "sanitized": "quote",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "evaluationType",
-                "sanitized": "evaluationType",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "appointment",
-                "sanitized": "appointment",
-                "type": r"Dict[str, Any]",
                 "required": False,
             },
             {
@@ -161,8 +359,80 @@ MODEL_TEST_MATRIX = [
                 "required": False,
             },
             {
-                "name": "endUserName",
-                "sanitized": "endUserName",
+                "name": "tags",
+                "sanitized": "tags",
+                "type": r"Dict[str, Any]",
+                "required": False,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "availableQuantity",
+                "sanitized": "availableQuantity",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "createdAt",
+                "sanitized": "createdAt",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "updatedAt",
+                "sanitized": "updatedAt",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "endTime",
+                "sanitized": "endTime",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "productType",
+                "sanitized": "productType",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "startTime",
+                "sanitized": "startTime",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "tier",
+                "sanitized": "tier",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "sku",
+                "sanitized": "sku",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "subscriptionStatus",
+                "sanitized": "subscriptionStatus",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "contract",
+                "sanitized": "contract",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "subscriptionType",
+                "sanitized": "subscriptionType",
                 "type": r"str",
                 "required": False,
             },
@@ -178,40 +448,88 @@ MODEL_TEST_MATRIX = [
                 "type": r"str",
                 "required": True,
             },
+        ],
+    },
+    {
+        "model": HpeGreenLakeBadRequestError,
+        "name": "HpeGreenLakeBadRequestError",
+        "fields": [
             {
-                "name": "orderClass",
-                "sanitized": "orderClass",
+                "name": "errorCode",
+                "sanitized": "errorCode",
                 "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "httpStatusCode",
+                "sanitized": "httpStatusCode",
+                "type": r"int",
+                "required": True,
+            },
+            {
+                "name": "message",
+                "sanitized": "message",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "badRequestErrorDetails",
+                "sanitized": "badRequestErrorDetails",
+                "type": r"List[Dict[str, Any]]",
                 "required": False,
             },
             {
-                "name": "po",
-                "sanitized": "po",
+                "name": "debugId",
+                "sanitized": "debugId",
                 "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "productSku",
-                "sanitized": "productSku",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "contract",
-                "sanitized": "contract",
-                "type": r"str",
-                "required": False,
+                "required": True,
             },
         ],
     },
     {
-        "model": SubscriptionsPatchRequest,
-        "name": "SubscriptionsPatchRequest",
+        "model": AutoSubscriptionsResponseDto,
+        "name": "AutoSubscriptionsResponseDto",
         "fields": [
             {
-                "name": "tags",
-                "sanitized": "tags",
-                "type": r"Dict[str, Any]",
+                "name": "resourceUri",
+                "sanitized": "resourceUri",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "updatedAt",
+                "sanitized": "updatedAt",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "autoSubscriptionSettings",
+                "sanitized": "autoSubscriptionSettings",
+                "type": r"List[Dict[str, Any]]",
+                "required": False,
+            },
+            {
+                "name": "createdAt",
+                "sanitized": "createdAt",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "generation",
+                "sanitized": "generation",
+                "type": r"int",
+                "required": False,
+            },
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r"str",
                 "required": True,
             },
         ],
@@ -271,19 +589,13 @@ MODEL_TEST_MATRIX = [
         ],
     },
     {
-        "model": GeneralErrorDetail,
-        "name": "GeneralErrorDetail",
+        "model": ServerErrorDetail,
+        "name": "ServerErrorDetail",
         "fields": [
             {
-                "name": "metadata",
-                "sanitized": "metadata",
-                "type": r"Dict[str, Any]",
-                "required": True,
-            },
-            {
-                "name": "source",
-                "sanitized": "source",
-                "type": r"str",
+                "name": "retryAfterSeconds",
+                "sanitized": "retryAfterSeconds",
+                "type": r"int",
                 "required": True,
             },
             {
@@ -295,9 +607,69 @@ MODEL_TEST_MATRIX = [
         ],
     },
     {
-        "model": SubscriptionsGetResponse,
-        "name": "SubscriptionsGetResponse",
+        "model": SubscriptionsPatchRequest,
+        "name": "SubscriptionsPatchRequest",
         "fields": [
+            {
+                "name": "tags",
+                "sanitized": "tags",
+                "type": r"Dict[str, Any]",
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": RequestPostSubscription,
+        "name": "RequestPostSubscription",
+        "fields": [
+            {
+                "name": "tags",
+                "sanitized": "tags",
+                "type": r"Dict[str, Any]",
+                "required": False,
+            },
+            {
+                "name": "key",
+                "sanitized": "key",
+                "type": r"str",
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": Appointment,
+        "name": "Appointment",
+        "fields": [
+            {
+                "name": "subscriptionStart",
+                "sanitized": "subscriptionStart",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "delayedActivation",
+                "sanitized": "delayedActivation",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "subscriptionEnd",
+                "sanitized": "subscriptionEnd",
+                "type": r"str",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": AutoSubscriptionsResponsePaginatedDto,
+        "name": "AutoSubscriptionsResponsePaginatedDto",
+        "fields": [
+            {
+                "name": "offset",
+                "sanitized": "offset",
+                "type": r"int",
+                "required": False,
+            },
             {
                 "name": "total",
                 "sanitized": "total",
@@ -315,30 +687,6 @@ MODEL_TEST_MATRIX = [
                 "sanitized": "items",
                 "type": r"List[Dict[str, Any]]",
                 "required": True,
-            },
-            {
-                "name": "offset",
-                "sanitized": "offset",
-                "type": r"int",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": RequestPostSubscription,
-        "name": "RequestPostSubscription",
-        "fields": [
-            {
-                "name": "key",
-                "sanitized": "key",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "tags",
-                "sanitized": "tags",
-                "type": r"Dict[str, Any]",
-                "required": False,
             },
         ],
     },
@@ -361,21 +709,93 @@ MODEL_TEST_MATRIX = [
         ],
     },
     {
-        "model": V1Beta1SubscriptionsGetResponse,
-        "name": "V1Beta1SubscriptionsGetResponse",
+        "model": SubscriptionDetail,
+        "name": "SubscriptionDetail",
         "fields": [
             {
-                "name": "count",
-                "sanitized": "count",
-                "type": r"int",
+                "name": "aasType",
+                "sanitized": "aasType",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "productSku",
+                "sanitized": "productSku",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "productDescription",
+                "sanitized": "productDescription",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "contract",
+                "sanitized": "contract",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "po",
+                "sanitized": "po",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "endUserName",
+                "sanitized": "endUserName",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "key",
+                "sanitized": "key",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "quantity",
+                "sanitized": "quantity",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "appointment",
+                "sanitized": "appointment",
+                "type": r"Dict[str, Any]",
+                "required": False,
+            },
+            {
+                "name": "orderClass",
+                "sanitized": "orderClass",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "evaluationType",
+                "sanitized": "evaluationType",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r"str",
                 "required": True,
             },
             {
-                "name": "items",
-                "sanitized": "items",
-                "type": r"List[Dict[str, Any]]",
-                "required": True,
+                "name": "quote",
+                "sanitized": "quote",
+                "type": r"str",
+                "required": False,
             },
+        ],
+    },
+    {
+        "model": SubscriptionsGetResponse,
+        "name": "SubscriptionsGetResponse",
+        "fields": [
             {
                 "name": "offset",
                 "sanitized": "offset",
@@ -388,437 +808,17 @@ MODEL_TEST_MATRIX = [
                 "type": r"int",
                 "required": False,
             },
-        ],
-    },
-    {
-        "model": Appointment,
-        "name": "Appointment",
-        "fields": [
             {
-                "name": "delayedActivation",
-                "sanitized": "delayedActivation",
-                "type": r"str",
-                "required": False,
+                "name": "count",
+                "sanitized": "count",
+                "type": r"int",
+                "required": True,
             },
             {
-                "name": "subscriptionEnd",
-                "sanitized": "subscriptionEnd",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "subscriptionStart",
-                "sanitized": "subscriptionStart",
-                "type": r"str",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": SubscriptionsPostRequest,
-        "name": "SubscriptionsPostRequest",
-        "fields": [
-            {
-                "name": "subscriptions",
-                "sanitized": "subscriptions",
+                "name": "items",
+                "sanitized": "items",
                 "type": r"List[Dict[str, Any]]",
                 "required": True,
-            },
-        ],
-    },
-    {
-        "model": AsyncOperationResource,
-        "name": "AsyncOperationResource",
-        "fields": [
-            {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "endedAt",
-                "sanitized": "endedAt",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "resultType",
-                "sanitized": "resultType",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "timeoutMinutes",
-                "sanitized": "timeoutMinutes",
-                "type": r"int",
-                "required": False,
-            },
-            {
-                "name": "result",
-                "sanitized": "result",
-                "type": r"Dict[str, Any]",
-                "required": False,
-            },
-            {
-                "name": "startedAt",
-                "sanitized": "startedAt",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "suggestedPollingIntervalSeconds",
-                "sanitized": "suggestedPollingIntervalSeconds",
-                "type": r"int",
-                "required": False,
-            },
-            {
-                "name": "id",
-                "sanitized": "id",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "progressPercent",
-                "sanitized": "progressPercent",
-                "type": r"int",
-                "required": False,
-            },
-            {
-                "name": "status",
-                "sanitized": "status",
-                "type": r"str",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": AutoSubscriptionSettings,
-        "name": "AutoSubscriptionSettings",
-        "fields": [
-            {
-                "name": "tier",
-                "sanitized": "tier",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "deviceType",
-                "sanitized": "deviceType",
-                "type": r"str",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": HpeGreenLakeBadRequestError,
-        "name": "HpeGreenLakeBadRequestError",
-        "fields": [
-            {
-                "name": "httpStatusCode",
-                "sanitized": "httpStatusCode",
-                "type": r"int",
-                "required": True,
-            },
-            {
-                "name": "message",
-                "sanitized": "message",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "badRequestErrorDetails",
-                "sanitized": "badRequestErrorDetails",
-                "type": r"List[Dict[str, Any]]",
-                "required": False,
-            },
-            {
-                "name": "debugId",
-                "sanitized": "debugId",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "errorCode",
-                "sanitized": "errorCode",
-                "type": r"str",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": AutoSubscriptionsResponseDto,
-        "name": "AutoSubscriptionsResponseDto",
-        "fields": [
-            {
-                "name": "resourceUri",
-                "sanitized": "resourceUri",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "updatedAt",
-                "sanitized": "updatedAt",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "autoSubscriptionSettings",
-                "sanitized": "autoSubscriptionSettings",
-                "type": r"List[Dict[str, Any]]",
-                "required": False,
-            },
-            {
-                "name": "createdAt",
-                "sanitized": "createdAt",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "generation",
-                "sanitized": "generation",
-                "type": r"int",
-                "required": False,
-            },
-            {
-                "name": "id",
-                "sanitized": "id",
-                "type": r"str",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": ErrorIssue,
-        "name": "ErrorIssue",
-        "fields": [
-            {
-                "name": "source",
-                "sanitized": "source",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "subject",
-                "sanitized": "subject",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "description",
-                "sanitized": "description",
-                "type": r"str",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": HpeGreenLakeGeneralError,
-        "name": "HpeGreenLakeGeneralError",
-        "fields": [
-            {
-                "name": "generalErrorDetails",
-                "sanitized": "generalErrorDetails",
-                "type": r"List[Dict[str, Any]]",
-                "required": False,
-            },
-            {
-                "name": "httpStatusCode",
-                "sanitized": "httpStatusCode",
-                "type": r"int",
-                "required": True,
-            },
-            {
-                "name": "message",
-                "sanitized": "message",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "debugId",
-                "sanitized": "debugId",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "errorCode",
-                "sanitized": "errorCode",
-                "type": r"str",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": ServerErrorDetail,
-        "name": "ServerErrorDetail",
-        "fields": [
-            {
-                "name": "retryAfterSeconds",
-                "sanitized": "retryAfterSeconds",
-                "type": r"int",
-                "required": True,
-            },
-            {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"str",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": V1Beta1SubscriptionDetail,
-        "name": "V1Beta1SubscriptionDetail",
-        "fields": [
-            {
-                "name": "tier",
-                "sanitized": "tier",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "skuDescription",
-                "sanitized": "skuDescription",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "sku",
-                "sanitized": "sku",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "createdAt",
-                "sanitized": "createdAt",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "endTime",
-                "sanitized": "endTime",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "key",
-                "sanitized": "key",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "startTime",
-                "sanitized": "startTime",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "contract",
-                "sanitized": "contract",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "quantity",
-                "sanitized": "quantity",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "subscriptionType",
-                "sanitized": "subscriptionType",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "id",
-                "sanitized": "id",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "productType",
-                "sanitized": "productType",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "availableQuantity",
-                "sanitized": "availableQuantity",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "subscriptionStatus",
-                "sanitized": "subscriptionStatus",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "isEval",
-                "sanitized": "isEval",
-                "type": r"bool",
-                "required": False,
-            },
-            {
-                "name": "tags",
-                "sanitized": "tags",
-                "type": r"Dict[str, Any]",
-                "required": False,
-            },
-            {
-                "name": "updatedAt",
-                "sanitized": "updatedAt",
-                "type": r"str",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": AsyncResponse,
-        "name": "AsyncResponse",
-        "fields": [
-            {
-                "name": "code",
-                "sanitized": "code",
-                "type": r"int",
-                "required": True,
-            },
-            {
-                "name": "status",
-                "sanitized": "status",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "transactionId",
-                "sanitized": "transactionId",
-                "type": r"str",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": AutoSubscriptionsPostRequest,
-        "name": "AutoSubscriptionsPostRequest",
-        "fields": [
-            {
-                "name": "autoSubscriptionSettings",
-                "sanitized": "autoSubscriptionSettings",
-                "type": r"List[Dict[str, Any]]",
-                "required": False,
             },
         ],
     },
@@ -854,6 +854,19 @@ def _value_for_type(type_name: str) -> Any:
     # Handle List[Dict[...]] specifically
     if "list[dict" in normalized or "list[mapping" in normalized:
         return [{"key": "value"}]
+    # Handle List[int] and List[integer]
+    if "list[int" in normalized:
+        return [1]
+    # Handle List[float] and List[number]
+    if "list[float" in normalized or "list[number" in normalized:
+        return [1.0]
+    # Handle List[bool] or List[boolean]
+    if "list[bool" in normalized:
+        return [True]
+    # Handle List[str] or List[string]
+    if "list[str" in normalized:
+        return ["example"]
+    # Generic list handler (fallback)
     if "list" in normalized or "sequence" in normalized:
         return ["example"]
     if "dict" in normalized or "mapping" in normalized:

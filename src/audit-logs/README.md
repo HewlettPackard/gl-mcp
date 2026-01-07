@@ -209,6 +209,15 @@ Add to your `claude_desktop_config.json`:
 
 This server provides the following MCP tools:
 
+### getauditlogdetails
+
+- **Description**: Get additional detail of an audit log.
+- **Method**: GET /audit-log/v1/logs/{id}/detail
+- **Parameters**:
+
+- `id` (str, required): Provide the ID of the audit log record that has the `hasDetails` value set to `true` to fetch the additional details.
+
+
 ### getauditlogs
 
 - **Description**: The audit logs can be filtered using a variety of parameters. Queries should be separated by `and` and can utilize `eq`, `contains`, and `in` operators to construct the final query. Each query should follow the format:
@@ -255,15 +264,6 @@ Example: logged in user
 - `offset` (int, optional): Specifies the zero-based resource offset to start the response from.
 
 
-### getauditlogdetails
-
-- **Description**: Get additional detail of an audit log.
-- **Method**: GET /audit-log/v1/logs/{id}/detail
-- **Parameters**:
-
-- `id` (str, required): Provide the ID of the audit log record that has the `hasDetails` value set to `true` to fetch the additional details.
-
-
 
 
 ## Typical Use Cases
@@ -284,6 +284,7 @@ These are just examples - you can ask questions in your own words, and the AI as
 
 This MCP server implements read-only access to the following audit-logs API endpoints:
 
+- `GET /audit-log/v1/logs/{id}/detail` - Get additional detail of an audit log.
 - `GET /audit-log/v1/logs` - The audit logs can be filtered using a variety of parameters. Queries should be separated by `and` and can utilize `eq`, `contains`, and `in` operators to construct the final query. Each query should follow the format:
 * key eq 'value' for equality operation.
 * contains(key, 'value') for contains operation.
@@ -301,10 +302,6 @@ This MCP server implements read-only access to the following audit-logs API endp
 | region                   | eq                  | region code in string   | region eq 'us-west'                                                                             |
 | hasDetails               | eq                  | boolean                 | hasDetails eq 'true'                                                                              |
 
-- `GET /audit-log/v1/logs/{id}/detail` - Get additional detail of an audit log.
-
-
-API Version: v1
 
 
 ## Development
@@ -441,9 +438,3 @@ The generated suite provides:
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](../../LICENSE) file for details.
-
----
-
-**Service**: audit-logs  
-**API Version**: v1  
-**MCP Server Version**: 1.0.0

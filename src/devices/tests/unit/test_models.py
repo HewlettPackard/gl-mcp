@@ -10,34 +10,76 @@ from pydantic import ValidationError as PydanticValidationError
 
 from models import (
     BaseModel,
-    RequestSubscription,
-    ErrorIssue,
-    ResponseApplication,
-    DevicesPostRequestV2Beta1,
-    RequestApplication,
-    GeneralErrorDetail,
-    RequestNetwork,
-    ResponseLocation,
-    ResponseWarranty,
-    ServerErrorDetail,
-    PatchDevicesRequest,
-    AsyncResponse,
-    DevicesGetResponse,
-    ResponseSupportLevel,
-    AsyncOperationResource,
-    DeviceDetail,
-    HpeGreenLakeBadRequestError,
-    HpeGreenLakeServerError,
-    RequestStorage,
-    ResponseSubscription,
-    RequestCompute,
-    DevicesPostRequest,
     PatchDevicesRequestV2,
-    BadRequestErrorDetail,
+    RequestSubscription,
+    DevicesGetResponse,
+    ResponseApplication,
+    RequestCompute,
+    AsyncResponse,
+    ResponseLocation,
+    ResponseSubscription,
+    RequestNetwork,
+    GeneralErrorDetail,
+    AsyncOperationResource,
+    DevicesPostRequest,
     HpeGreenLakeGeneralError,
+    HpeGreenLakeServerError,
+    ErrorIssue,
+    RequestStorage,
+    RequestApplication,
+    ResponseSupportLevel,
+    BadRequestErrorDetail,
+    ServerErrorDetail,
+    DeviceDetail,
+    ResponseWarranty,
+    DevicesPostRequestV2Beta1,
+    HpeGreenLakeBadRequestError,
+    PatchDevicesRequest,
 )
 
 MODEL_TEST_MATRIX = [
+    {
+        "model": PatchDevicesRequestV2,
+        "name": "PatchDevicesRequestV2",
+        "fields": [
+            {
+                "name": "tags",
+                "sanitized": "tags",
+                "type": r"Dict[str, Any]",
+                "required": False,
+            },
+            {
+                "name": "tenantWorkspaceId",
+                "sanitized": "tenantWorkspaceId",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "application",
+                "sanitized": "application",
+                "type": r"Dict[str, Any]",
+                "required": False,
+            },
+            {
+                "name": "archived",
+                "sanitized": "archived",
+                "type": r"bool",
+                "required": False,
+            },
+            {
+                "name": "region",
+                "sanitized": "region",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "subscription",
+                "sanitized": "subscription",
+                "type": r"List[Dict[str, Any]]",
+                "required": False,
+            },
+        ],
+    },
     {
         "model": RequestSubscription,
         "name": "RequestSubscription",
@@ -51,25 +93,31 @@ MODEL_TEST_MATRIX = [
         ],
     },
     {
-        "model": ErrorIssue,
-        "name": "ErrorIssue",
+        "model": DevicesGetResponse,
+        "name": "DevicesGetResponse",
         "fields": [
             {
-                "name": "description",
-                "sanitized": "description",
-                "type": r"str",
+                "name": "count",
+                "sanitized": "count",
+                "type": r"int",
+                "required": True,
+            },
+            {
+                "name": "items",
+                "sanitized": "items",
+                "type": r"List[Dict[str, Any]]",
+                "required": True,
+            },
+            {
+                "name": "offset",
+                "sanitized": "offset",
+                "type": r"int",
                 "required": False,
             },
             {
-                "name": "source",
-                "sanitized": "source",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "subject",
-                "sanitized": "subject",
-                "type": r"str",
+                "name": "total",
+                "sanitized": "total",
+                "type": r"int",
                 "required": False,
             },
         ],
@@ -93,14 +141,14 @@ MODEL_TEST_MATRIX = [
         ],
     },
     {
-        "model": DevicesPostRequestV2Beta1,
-        "name": "DevicesPostRequestV2Beta1",
+        "model": RequestCompute,
+        "name": "RequestCompute",
         "fields": [
             {
                 "name": "partNumber",
                 "sanitized": "partNumber",
                 "type": r"str",
-                "required": False,
+                "required": True,
             },
             {
                 "name": "serialNumber",
@@ -114,29 +162,35 @@ MODEL_TEST_MATRIX = [
                 "type": r"Dict[str, Any]",
                 "required": False,
             },
+        ],
+    },
+    {
+        "model": AsyncResponse,
+        "name": "AsyncResponse",
+        "fields": [
             {
-                "name": "deviceType",
-                "sanitized": "deviceType",
+                "name": "code",
+                "sanitized": "code",
+                "type": r"int",
+                "required": True,
+            },
+            {
+                "name": "status",
+                "sanitized": "status",
                 "type": r"str",
                 "required": True,
             },
             {
-                "name": "location",
-                "sanitized": "location",
-                "type": r"Dict[str, Any]",
-                "required": False,
-            },
-            {
-                "name": "macAddress",
-                "sanitized": "macAddress",
+                "name": "transactionId",
+                "sanitized": "transactionId",
                 "type": r"str",
-                "required": False,
+                "required": True,
             },
         ],
     },
     {
-        "model": RequestApplication,
-        "name": "RequestApplication",
+        "model": ResponseLocation,
+        "name": "ResponseLocation",
         "fields": [
             {
                 "name": "id",
@@ -144,28 +198,28 @@ MODEL_TEST_MATRIX = [
                 "type": r"str",
                 "required": True,
             },
+            {
+                "name": "resourceUri",
+                "sanitized": "resourceUri",
+                "type": r"str",
+                "required": True,
+            },
         ],
     },
     {
-        "model": GeneralErrorDetail,
-        "name": "GeneralErrorDetail",
+        "model": ResponseSubscription,
+        "name": "ResponseSubscription",
         "fields": [
             {
-                "name": "source",
-                "sanitized": "source",
+                "name": "id",
+                "sanitized": "id",
                 "type": r"str",
                 "required": True,
             },
             {
-                "name": "type",
-                "sanitized": "type",
+                "name": "resourceUri",
+                "sanitized": "resourceUri",
                 "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "metadata",
-                "sanitized": "metadata",
-                "type": r"Dict[str, Any]",
                 "required": True,
             },
         ],
@@ -195,9 +249,45 @@ MODEL_TEST_MATRIX = [
         ],
     },
     {
-        "model": ResponseLocation,
-        "name": "ResponseLocation",
+        "model": GeneralErrorDetail,
+        "name": "GeneralErrorDetail",
         "fields": [
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "metadata",
+                "sanitized": "metadata",
+                "type": r"Dict[str, Any]",
+                "required": True,
+            },
+            {
+                "name": "source",
+                "sanitized": "source",
+                "type": r"str",
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": AsyncOperationResource,
+        "name": "AsyncOperationResource",
+        "fields": [
+            {
+                "name": "progressPercent",
+                "sanitized": "progressPercent",
+                "type": r"int",
+                "required": False,
+            },
+            {
+                "name": "endedAt",
+                "sanitized": "endedAt",
+                "type": r"str",
+                "required": False,
+            },
             {
                 "name": "id",
                 "sanitized": "id",
@@ -205,46 +295,40 @@ MODEL_TEST_MATRIX = [
                 "required": True,
             },
             {
-                "name": "resourceUri",
-                "sanitized": "resourceUri",
-                "type": r"str",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": ResponseWarranty,
-        "name": "ResponseWarranty",
-        "fields": [
-            {
-                "name": "currentSupportLevel",
-                "sanitized": "currentSupportLevel",
+                "name": "result",
+                "sanitized": "result",
                 "type": r"Dict[str, Any]",
                 "required": False,
             },
             {
-                "name": "supportLevels",
-                "sanitized": "supportLevels",
-                "type": r"List[Dict[str, Any]]",
+                "name": "suggestedPollingIntervalSeconds",
+                "sanitized": "suggestedPollingIntervalSeconds",
+                "type": r"int",
                 "required": False,
             },
             {
-                "name": "country",
-                "sanitized": "country",
+                "name": "timeoutMinutes",
+                "sanitized": "timeoutMinutes",
+                "type": r"int",
+                "required": False,
+            },
+            {
+                "name": "resultType",
+                "sanitized": "resultType",
                 "type": r"str",
                 "required": False,
             },
-        ],
-    },
-    {
-        "model": ServerErrorDetail,
-        "name": "ServerErrorDetail",
-        "fields": [
             {
-                "name": "retryAfterSeconds",
-                "sanitized": "retryAfterSeconds",
-                "type": r"int",
-                "required": True,
+                "name": "startedAt",
+                "sanitized": "startedAt",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "status",
+                "sanitized": "status",
+                "type": r"str",
+                "required": False,
             },
             {
                 "name": "type",
@@ -255,86 +339,158 @@ MODEL_TEST_MATRIX = [
         ],
     },
     {
-        "model": PatchDevicesRequest,
-        "name": "PatchDevicesRequest",
+        "model": DevicesPostRequest,
+        "name": "DevicesPostRequest",
         "fields": [
             {
-                "name": "region",
-                "sanitized": "region",
-                "type": r"str",
-                "required": False,
+                "name": "network",
+                "sanitized": "network",
+                "type": r"List[Dict[str, Any]]",
+                "required": True,
             },
             {
-                "name": "subscription",
-                "sanitized": "subscription",
+                "name": "storage",
+                "sanitized": "storage",
+                "type": r"List[Dict[str, Any]]",
+                "required": True,
+            },
+            {
+                "name": "compute",
+                "sanitized": "compute",
+                "type": r"List[Dict[str, Any]]",
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": HpeGreenLakeGeneralError,
+        "name": "HpeGreenLakeGeneralError",
+        "fields": [
+            {
+                "name": "debugId",
+                "sanitized": "debugId",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "errorCode",
+                "sanitized": "errorCode",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "generalErrorDetails",
+                "sanitized": "generalErrorDetails",
                 "type": r"List[Dict[str, Any]]",
                 "required": False,
             },
             {
-                "name": "tenantPlatformCustomerId",
-                "sanitized": "tenantPlatformCustomerId",
+                "name": "httpStatusCode",
+                "sanitized": "httpStatusCode",
+                "type": r"int",
+                "required": True,
+            },
+            {
+                "name": "message",
+                "sanitized": "message",
+                "type": r"str",
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": HpeGreenLakeServerError,
+        "name": "HpeGreenLakeServerError",
+        "fields": [
+            {
+                "name": "debugId",
+                "sanitized": "debugId",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "errorCode",
+                "sanitized": "errorCode",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "httpStatusCode",
+                "sanitized": "httpStatusCode",
+                "type": r"int",
+                "required": True,
+            },
+            {
+                "name": "message",
+                "sanitized": "message",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "serverErrorDetails",
+                "sanitized": "serverErrorDetails",
+                "type": r"List[Dict[str, Any]]",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": ErrorIssue,
+        "name": "ErrorIssue",
+        "fields": [
+            {
+                "name": "subject",
+                "sanitized": "subject",
                 "type": r"str",
                 "required": False,
             },
             {
-                "name": "application",
-                "sanitized": "application",
+                "name": "description",
+                "sanitized": "description",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "source",
+                "sanitized": "source",
+                "type": r"str",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": RequestStorage,
+        "name": "RequestStorage",
+        "fields": [
+            {
+                "name": "partNumber",
+                "sanitized": "partNumber",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "serialNumber",
+                "sanitized": "serialNumber",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "tags",
+                "sanitized": "tags",
                 "type": r"Dict[str, Any]",
                 "required": False,
             },
         ],
     },
     {
-        "model": AsyncResponse,
-        "name": "AsyncResponse",
+        "model": RequestApplication,
+        "name": "RequestApplication",
         "fields": [
             {
-                "name": "status",
-                "sanitized": "status",
+                "name": "id",
+                "sanitized": "id",
                 "type": r"str",
                 "required": True,
-            },
-            {
-                "name": "transactionId",
-                "sanitized": "transactionId",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "code",
-                "sanitized": "code",
-                "type": r"int",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": DevicesGetResponse,
-        "name": "DevicesGetResponse",
-        "fields": [
-            {
-                "name": "total",
-                "sanitized": "total",
-                "type": r"int",
-                "required": False,
-            },
-            {
-                "name": "count",
-                "sanitized": "count",
-                "type": r"int",
-                "required": True,
-            },
-            {
-                "name": "items",
-                "sanitized": "items",
-                "type": r"List[Dict[str, Any]]",
-                "required": True,
-            },
-            {
-                "name": "offset",
-                "sanitized": "offset",
-                "type": r"int",
-                "required": False,
             },
         ],
     },
@@ -381,30 +537,60 @@ MODEL_TEST_MATRIX = [
         ],
     },
     {
-        "model": AsyncOperationResource,
-        "name": "AsyncOperationResource",
+        "model": BadRequestErrorDetail,
+        "name": "BadRequestErrorDetail",
         "fields": [
             {
-                "name": "status",
-                "sanitized": "status",
+                "name": "issues",
+                "sanitized": "issues",
+                "type": r"List[Dict[str, Any]]",
+                "required": True,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"str",
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": ServerErrorDetail,
+        "name": "ServerErrorDetail",
+        "fields": [
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "retryAfterSeconds",
+                "sanitized": "retryAfterSeconds",
+                "type": r"int",
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": DeviceDetail,
+        "name": "DeviceDetail",
+        "fields": [
+            {
+                "name": "assignedState",
+                "sanitized": "assignedState",
                 "type": r"str",
                 "required": False,
             },
             {
-                "name": "suggestedPollingIntervalSeconds",
-                "sanitized": "suggestedPollingIntervalSeconds",
-                "type": r"int",
+                "name": "createdAt",
+                "sanitized": "createdAt",
+                "type": r"str",
                 "required": False,
             },
             {
-                "name": "progressPercent",
-                "sanitized": "progressPercent",
-                "type": r"int",
-                "required": False,
-            },
-            {
-                "name": "startedAt",
-                "sanitized": "startedAt",
+                "name": "deviceType",
+                "sanitized": "deviceType",
                 "type": r"str",
                 "required": False,
             },
@@ -415,51 +601,15 @@ MODEL_TEST_MATRIX = [
                 "required": True,
             },
             {
-                "name": "result",
-                "sanitized": "result",
-                "type": r"Dict[str, Any]",
-                "required": False,
-            },
-            {
-                "name": "resultType",
-                "sanitized": "resultType",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "timeoutMinutes",
-                "sanitized": "timeoutMinutes",
-                "type": r"int",
-                "required": False,
-            },
-            {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "endedAt",
-                "sanitized": "endedAt",
-                "type": r"str",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": DeviceDetail,
-        "name": "DeviceDetail",
-        "fields": [
-            {
                 "name": "partNumber",
                 "sanitized": "partNumber",
                 "type": r"str",
                 "required": True,
             },
             {
-                "name": "createdAt",
-                "sanitized": "createdAt",
-                "type": r"str",
+                "name": "warranty",
+                "sanitized": "warranty",
+                "type": r"Dict[str, Any]",
                 "required": False,
             },
             {
@@ -469,16 +619,28 @@ MODEL_TEST_MATRIX = [
                 "required": False,
             },
             {
-                "name": "id",
-                "sanitized": "id",
+                "name": "macAddress",
+                "sanitized": "macAddress",
                 "type": r"str",
-                "required": True,
+                "required": False,
             },
             {
-                "name": "tags",
-                "sanitized": "tags",
-                "type": r"Dict[str, Any]",
+                "name": "archived",
+                "sanitized": "archived",
+                "type": r"bool",
                 "required": False,
+            },
+            {
+                "name": "tenantWorkspaceId",
+                "sanitized": "tenantWorkspaceId",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "serialNumber",
+                "sanitized": "serialNumber",
+                "type": r"str",
+                "required": True,
             },
             {
                 "name": "application",
@@ -487,14 +649,26 @@ MODEL_TEST_MATRIX = [
                 "required": False,
             },
             {
-                "name": "assignedState",
-                "sanitized": "assignedState",
-                "type": r"str",
+                "name": "tags",
+                "sanitized": "tags",
+                "type": r"Dict[str, Any]",
                 "required": False,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"str",
+                "required": True,
             },
             {
                 "name": "region",
                 "sanitized": "region",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "updatedAt",
+                "sanitized": "updatedAt",
                 "type": r"str",
                 "required": False,
             },
@@ -510,17 +684,59 @@ MODEL_TEST_MATRIX = [
                 "type": r"str",
                 "required": False,
             },
+        ],
+    },
+    {
+        "model": ResponseWarranty,
+        "name": "ResponseWarranty",
+        "fields": [
             {
-                "name": "archived",
-                "sanitized": "archived",
-                "type": r"bool",
+                "name": "country",
+                "sanitized": "country",
+                "type": r"str",
                 "required": False,
             },
+            {
+                "name": "currentSupportLevel",
+                "sanitized": "currentSupportLevel",
+                "type": r"Dict[str, Any]",
+                "required": False,
+            },
+            {
+                "name": "supportLevels",
+                "sanitized": "supportLevels",
+                "type": r"List[Dict[str, Any]]",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": DevicesPostRequestV2Beta1,
+        "name": "DevicesPostRequestV2Beta1",
+        "fields": [
             {
                 "name": "serialNumber",
                 "sanitized": "serialNumber",
                 "type": r"str",
                 "required": True,
+            },
+            {
+                "name": "tags",
+                "sanitized": "tags",
+                "type": r"Dict[str, Any]",
+                "required": False,
+            },
+            {
+                "name": "deviceType",
+                "sanitized": "deviceType",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "location",
+                "sanitized": "location",
+                "type": r"Dict[str, Any]",
+                "required": False,
             },
             {
                 "name": "macAddress",
@@ -529,32 +745,8 @@ MODEL_TEST_MATRIX = [
                 "required": False,
             },
             {
-                "name": "warranty",
-                "sanitized": "warranty",
-                "type": r"Dict[str, Any]",
-                "required": False,
-            },
-            {
-                "name": "updatedAt",
-                "sanitized": "updatedAt",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "deviceType",
-                "sanitized": "deviceType",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "tenantWorkspaceId",
-                "sanitized": "tenantWorkspaceId",
+                "name": "partNumber",
+                "sanitized": "partNumber",
                 "type": r"str",
                 "required": False,
             },
@@ -564,6 +756,18 @@ MODEL_TEST_MATRIX = [
         "model": HpeGreenLakeBadRequestError,
         "name": "HpeGreenLakeBadRequestError",
         "fields": [
+            {
+                "name": "httpStatusCode",
+                "sanitized": "httpStatusCode",
+                "type": r"int",
+                "required": True,
+            },
+            {
+                "name": "message",
+                "sanitized": "message",
+                "type": r"str",
+                "required": True,
+            },
             {
                 "name": "badRequestErrorDetails",
                 "sanitized": "badRequestErrorDetails",
@@ -582,168 +786,12 @@ MODEL_TEST_MATRIX = [
                 "type": r"str",
                 "required": True,
             },
-            {
-                "name": "httpStatusCode",
-                "sanitized": "httpStatusCode",
-                "type": r"int",
-                "required": True,
-            },
-            {
-                "name": "message",
-                "sanitized": "message",
-                "type": r"str",
-                "required": True,
-            },
         ],
     },
     {
-        "model": HpeGreenLakeServerError,
-        "name": "HpeGreenLakeServerError",
+        "model": PatchDevicesRequest,
+        "name": "PatchDevicesRequest",
         "fields": [
-            {
-                "name": "message",
-                "sanitized": "message",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "serverErrorDetails",
-                "sanitized": "serverErrorDetails",
-                "type": r"List[Dict[str, Any]]",
-                "required": False,
-            },
-            {
-                "name": "debugId",
-                "sanitized": "debugId",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "errorCode",
-                "sanitized": "errorCode",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "httpStatusCode",
-                "sanitized": "httpStatusCode",
-                "type": r"int",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": RequestStorage,
-        "name": "RequestStorage",
-        "fields": [
-            {
-                "name": "partNumber",
-                "sanitized": "partNumber",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "serialNumber",
-                "sanitized": "serialNumber",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "tags",
-                "sanitized": "tags",
-                "type": r"Dict[str, Any]",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": ResponseSubscription,
-        "name": "ResponseSubscription",
-        "fields": [
-            {
-                "name": "id",
-                "sanitized": "id",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "resourceUri",
-                "sanitized": "resourceUri",
-                "type": r"str",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": RequestCompute,
-        "name": "RequestCompute",
-        "fields": [
-            {
-                "name": "partNumber",
-                "sanitized": "partNumber",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "serialNumber",
-                "sanitized": "serialNumber",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "tags",
-                "sanitized": "tags",
-                "type": r"Dict[str, Any]",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": DevicesPostRequest,
-        "name": "DevicesPostRequest",
-        "fields": [
-            {
-                "name": "network",
-                "sanitized": "network",
-                "type": r"List[Dict[str, Any]]",
-                "required": True,
-            },
-            {
-                "name": "storage",
-                "sanitized": "storage",
-                "type": r"List[Dict[str, Any]]",
-                "required": True,
-            },
-            {
-                "name": "compute",
-                "sanitized": "compute",
-                "type": r"List[Dict[str, Any]]",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": PatchDevicesRequestV2,
-        "name": "PatchDevicesRequestV2",
-        "fields": [
-            {
-                "name": "application",
-                "sanitized": "application",
-                "type": r"Dict[str, Any]",
-                "required": False,
-            },
-            {
-                "name": "archived",
-                "sanitized": "archived",
-                "type": r"bool",
-                "required": False,
-            },
-            {
-                "name": "region",
-                "sanitized": "region",
-                "type": r"str",
-                "required": False,
-            },
             {
                 "name": "subscription",
                 "sanitized": "subscription",
@@ -751,70 +799,22 @@ MODEL_TEST_MATRIX = [
                 "required": False,
             },
             {
-                "name": "tags",
-                "sanitized": "tags",
+                "name": "tenantPlatformCustomerId",
+                "sanitized": "tenantPlatformCustomerId",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "application",
+                "sanitized": "application",
                 "type": r"Dict[str, Any]",
                 "required": False,
             },
             {
-                "name": "tenantWorkspaceId",
-                "sanitized": "tenantWorkspaceId",
+                "name": "region",
+                "sanitized": "region",
                 "type": r"str",
                 "required": False,
-            },
-        ],
-    },
-    {
-        "model": BadRequestErrorDetail,
-        "name": "BadRequestErrorDetail",
-        "fields": [
-            {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "issues",
-                "sanitized": "issues",
-                "type": r"List[Dict[str, Any]]",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": HpeGreenLakeGeneralError,
-        "name": "HpeGreenLakeGeneralError",
-        "fields": [
-            {
-                "name": "debugId",
-                "sanitized": "debugId",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "errorCode",
-                "sanitized": "errorCode",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "generalErrorDetails",
-                "sanitized": "generalErrorDetails",
-                "type": r"List[Dict[str, Any]]",
-                "required": False,
-            },
-            {
-                "name": "httpStatusCode",
-                "sanitized": "httpStatusCode",
-                "type": r"int",
-                "required": True,
-            },
-            {
-                "name": "message",
-                "sanitized": "message",
-                "type": r"str",
-                "required": True,
             },
         ],
     },
@@ -850,6 +850,19 @@ def _value_for_type(type_name: str) -> Any:
     # Handle List[Dict[...]] specifically
     if "list[dict" in normalized or "list[mapping" in normalized:
         return [{"key": "value"}]
+    # Handle List[int] and List[integer]
+    if "list[int" in normalized:
+        return [1]
+    # Handle List[float] and List[number]
+    if "list[float" in normalized or "list[number" in normalized:
+        return [1.0]
+    # Handle List[bool] or List[boolean]
+    if "list[bool" in normalized:
+        return [True]
+    # Handle List[str] or List[string]
+    if "list[str" in normalized:
+        return ["example"]
+    # Generic list handler (fallback)
     if "list" in normalized or "sequence" in normalized:
         return ["example"]
     if "dict" in normalized or "mapping" in normalized:

@@ -146,7 +146,7 @@ class TestGetEndpointSchemaTool:
         """Test execution with valid endpoint."""
 
         # Use first available endpoint from the API
-        result = await tool.execute({"endpoint_identifier": "GET:/audit-log/v1/logs"})
+        result = await tool.execute({"endpoint_identifier": "GET:/audit-log/v1/logs/{id}/detail"})
 
         assert len(result) == 1
         response = result[0]
@@ -173,7 +173,9 @@ class TestGetEndpointSchemaTool:
     async def test_execute_with_examples(self, tool):
         """Test execution with examples enabled."""
 
-        result = await tool.execute({"endpoint_identifier": "GET:/audit-log/v1/logs", "include_examples": True})
+        result = await tool.execute(
+            {"endpoint_identifier": "GET:/audit-log/v1/logs/{id}/detail", "include_examples": True}
+        )
 
         assert len(result) == 1
         response = result[0]
@@ -248,7 +250,7 @@ class TestInvokeDynamicTool:
         # Patch the http_client
         with patch.object(tool, "http_client", mock_http_client):
             result = await tool.execute(
-                {"endpoint_identifier": "GET:/audit-log/v1/logs", "parameters": test_parameters}
+                {"endpoint_identifier": "GET:/audit-log/v1/logs/{id}/detail", "parameters": test_parameters}
             )
 
         assert len(result) == 1
@@ -294,7 +296,7 @@ class TestInvokeDynamicTool:
         # Use a valid endpoint path but with POST method (not allowed in MCP read-only servers)
         result = await tool.execute(
             {
-                "endpoint_identifier": "POST:/audit-log/v1/logs",  # Valid path but unsupported method
+                "endpoint_identifier": "POST:/audit-log/v1/logs/{id}/detail",  # Valid path but unsupported method
                 "parameters": {},
             }
         )
@@ -366,6 +368,15 @@ def sample_endpoints():
     """Sample endpoint data for testing."""
     return [
         {
+            "path": "/audit-log/v1/logs/{id}/detail",
+            "method": "GET",
+            "summary": "getauditlogdetails",
+            "operationId": "getauditlogdetails",
+            "parameters": [
+                {"name": "id", "type": "str", "required": True, "location": "query"},
+            ],
+        },
+        {
             "path": "/audit-log/v1/logs",
             "method": "GET",
             "summary": "getauditlogs",
@@ -378,15 +389,6 @@ def sample_endpoints():
                 {"name": "offset", "type": "int", "required": False, "location": "query"},
             ],
         },
-        {
-            "path": "/audit-log/v1/logs/{id}/detail",
-            "method": "GET",
-            "summary": "getauditlogdetails",
-            "operationId": "getauditlogdetails",
-            "parameters": [
-                {"name": "id", "type": "str", "required": True, "location": "query"},
-            ],
-        },
     ]
 
 
@@ -396,9 +398,13 @@ def sample_tool_arguments():
     return {
         "list_endpoints": {"filter": "", "method": "", "include_deprecated": True},
         "get_endpoint_schema": {
-            "endpoint_identifier": "GET:/audit-log/v1/logs",
+            "endpoint_identifier": "GET:/audit-log/v1/logs/{id}/detail",
             "include_examples": True,
             "include_validation": True,
         },
-        "execute_dynamic_tool": {"endpoint_identifier": "GET:/audit-log/v1/logs", "parameters": {}, "headers": {}},
+        "execute_dynamic_tool": {
+            "endpoint_identifier": "GET:/audit-log/v1/logs/{id}/detail",
+            "parameters": {},
+            "headers": {},
+        },
     }

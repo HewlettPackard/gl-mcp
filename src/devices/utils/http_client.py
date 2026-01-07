@@ -12,18 +12,17 @@ import httpx
 from config.settings import settings
 
 from auth.token_manager import TokenManager
+from _version import USER_AGENT
 
 
 class DevicesHttpClient:
     """HTTP client for devices API with authentication."""
 
     def __init__(self):
-        """Initialize the HTTP client."""
+        """Initialize the HTTP client with lazy token authentication."""
         self.settings = settings
         self.base_url = settings.greenlake_api_base_url
         self.logger = logger  # Use global loguru logger
-
-        # Initialize authentication - ONLY when actually needed, not at import time
         self.token_manager = TokenManager(settings=self.settings)
 
         # HTTP client configuration
@@ -178,11 +177,14 @@ class DevicesHttpClient:
             raise
 
     async def _get_auth_headers(self) -> Dict[str, str]:
-        """Get authentication headers with automatic token refresh."""
-        # Use token_manager.get_auth_headers() which automatically refreshes expired tokens
+        """Get authentication headers with automatic token refresh.
+
+        Returns:
+            Dictionary with Authorization, Accept, and User-Agent headers
+        """
         headers: Dict[str, str] = self.token_manager.get_auth_headers()
-        # Add additional headers not provided by token manager
         headers["Accept"] = "application/json"
+        headers["User-Agent"] = USER_AGENT
         return headers
 
     async def close(self):

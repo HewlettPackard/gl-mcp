@@ -6,5 +6,5 @@ This package contains concrete tool implementations generated from OpenAPI endpo
 
 # Tool implementations are discovered dynamically by the registry
 # Generated tools:
-# - getauditlogsTool (GET /audit-log/v1/logs)
 # - getauditlogdetailsTool (GET /audit-log/v1/logs/{id}/detail)
+# - getauditlogsTool (GET /audit-log/v1/logs)

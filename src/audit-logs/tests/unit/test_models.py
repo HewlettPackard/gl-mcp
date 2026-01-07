@@ -10,22 +10,46 @@ from pydantic import ValidationError as PydanticValidationError
 
 from models import (
     BaseModel,
-    AuditLog,
-    AuditLogDetails,
-    ErrorBadRequestDetails,
-    ErrorGeneralDetails,
     ErrorNotFoundDetails,
-    ErrorRetryDetails,
+    AuditLog,
     AuditLogs,
+    ErrorRetryDetails,
+    AuditLogDetails,
+    ErrorGeneralDetails,
     PaginatedApiResponse,
     Error,
+    ErrorBadRequestDetails,
 )
 
 MODEL_TEST_MATRIX = [
     {
+        "model": ErrorNotFoundDetails,
+        "name": "ErrorNotFoundDetails",
+        "fields": [
+            {
+                "name": "errorDetails",
+                "sanitized": "errorDetails",
+                "type": r"List[str]",
+                "required": False,
+            },
+        ],
+    },
+    {
         "model": AuditLog,
         "name": "AuditLog",
         "fields": [
+            {
+                "name": "createdAt",
+                "sanitized": "createdAt",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "description",
+                "sanitized": "description",
+                "type": r"str",
+                "required": False,
+            },
             {
                 "name": "category",
                 "sanitized": "category",
@@ -39,14 +63,8 @@ MODEL_TEST_MATRIX = [
                 "required": False,
             },
             {
-                "name": "workspace",
-                "sanitized": "workspace",
-                "type": r"Dict[str, Any]",
-                "required": False,
-            },
-            {
-                "name": "additionalInfo",
-                "sanitized": "additionalInfo",
+                "name": "application",
+                "sanitized": "application",
                 "type": r"Dict[str, Any]",
                 "required": False,
             },
@@ -57,33 +75,15 @@ MODEL_TEST_MATRIX = [
                 "required": True,
             },
             {
-                "name": "region",
-                "sanitized": "region",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "application",
-                "sanitized": "application",
+                "name": "user",
+                "sanitized": "user",
                 "type": r"Dict[str, Any]",
                 "required": False,
             },
             {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "description",
-                "sanitized": "description",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "createdAt",
-                "sanitized": "createdAt",
-                "type": r"str",
+                "name": "workspace",
+                "sanitized": "workspace",
+                "type": r"Dict[str, Any]",
                 "required": False,
             },
             {
@@ -93,15 +93,75 @@ MODEL_TEST_MATRIX = [
                 "required": False,
             },
             {
+                "name": "region",
+                "sanitized": "region",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"str",
+                "required": True,
+            },
+            {
                 "name": "hasDetails",
                 "sanitized": "hasDetails",
                 "type": r"bool",
                 "required": False,
             },
             {
-                "name": "user",
-                "sanitized": "user",
+                "name": "additionalInfo",
+                "sanitized": "additionalInfo",
                 "type": r"Dict[str, Any]",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": AuditLogs,
+        "name": "AuditLogs",
+        "fields": [
+            {
+                "name": "remainingRecords",
+                "sanitized": "remainingRecords",
+                "type": r"bool",
+                "required": False,
+            },
+            {
+                "name": "total",
+                "sanitized": "total",
+                "type": r"int",
+                "required": True,
+            },
+            {
+                "name": "items",
+                "sanitized": "items",
+                "type": r"List[Dict[str, Any]]",
+                "required": True,
+            },
+            {
+                "name": "count",
+                "sanitized": "count",
+                "type": r"int",
+                "required": True,
+            },
+            {
+                "name": "offset",
+                "sanitized": "offset",
+                "type": r"int",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": ErrorRetryDetails,
+        "name": "ErrorRetryDetails",
+        "fields": [
+            {
+                "name": "errorDetails",
+                "sanitized": "errorDetails",
+                "type": r"List[str]",
                 "required": False,
             },
         ],
@@ -137,18 +197,6 @@ MODEL_TEST_MATRIX = [
         ],
     },
     {
-        "model": ErrorBadRequestDetails,
-        "name": "ErrorBadRequestDetails",
-        "fields": [
-            {
-                "name": "errorDetails",
-                "sanitized": "errorDetails",
-                "type": r"List[str]",
-                "required": False,
-            },
-        ],
-    },
-    {
         "model": ErrorGeneralDetails,
         "name": "ErrorGeneralDetails",
         "fields": [
@@ -161,76 +209,10 @@ MODEL_TEST_MATRIX = [
         ],
     },
     {
-        "model": ErrorNotFoundDetails,
-        "name": "ErrorNotFoundDetails",
-        "fields": [
-            {
-                "name": "errorDetails",
-                "sanitized": "errorDetails",
-                "type": r"List[str]",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": ErrorRetryDetails,
-        "name": "ErrorRetryDetails",
-        "fields": [
-            {
-                "name": "errorDetails",
-                "sanitized": "errorDetails",
-                "type": r"List[str]",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": AuditLogs,
-        "name": "AuditLogs",
-        "fields": [
-            {
-                "name": "items",
-                "sanitized": "items",
-                "type": r"List[Dict[str, Any]]",
-                "required": True,
-            },
-            {
-                "name": "remainingRecords",
-                "sanitized": "remainingRecords",
-                "type": r"bool",
-                "required": False,
-            },
-            {
-                "name": "total",
-                "sanitized": "total",
-                "type": r"int",
-                "required": True,
-            },
-            {
-                "name": "count",
-                "sanitized": "count",
-                "type": r"int",
-                "required": True,
-            },
-            {
-                "name": "offset",
-                "sanitized": "offset",
-                "type": r"int",
-                "required": False,
-            },
-        ],
-    },
-    {
         "model": PaginatedApiResponse,
         "name": "PaginatedApiResponse",
         "fields": [
             {
-                "name": "count",
-                "sanitized": "count",
-                "type": r"int",
-                "required": True,
-            },
-            {
                 "name": "offset",
                 "sanitized": "offset",
                 "type": r"int",
@@ -245,6 +227,12 @@ MODEL_TEST_MATRIX = [
             {
                 "name": "total",
                 "sanitized": "total",
+                "type": r"int",
+                "required": True,
+            },
+            {
+                "name": "count",
+                "sanitized": "count",
                 "type": r"int",
                 "required": True,
             },
@@ -254,6 +242,18 @@ MODEL_TEST_MATRIX = [
         "model": Error,
         "name": "Error",
         "fields": [
+            {
+                "name": "httpStatusCode",
+                "sanitized": "httpStatusCode",
+                "type": r"int",
+                "required": True,
+            },
+            {
+                "name": "message",
+                "sanitized": "message",
+                "type": r"str",
+                "required": True,
+            },
             {
                 "name": "debugId",
                 "sanitized": "debugId",
@@ -266,17 +266,17 @@ MODEL_TEST_MATRIX = [
                 "type": r"str",
                 "required": True,
             },
+        ],
+    },
+    {
+        "model": ErrorBadRequestDetails,
+        "name": "ErrorBadRequestDetails",
+        "fields": [
             {
-                "name": "httpStatusCode",
-                "sanitized": "httpStatusCode",
-                "type": r"int",
-                "required": True,
-            },
-            {
-                "name": "message",
-                "sanitized": "message",
-                "type": r"str",
-                "required": True,
+                "name": "errorDetails",
+                "sanitized": "errorDetails",
+                "type": r"List[str]",
+                "required": False,
             },
         ],
     },
@@ -312,6 +312,19 @@ def _value_for_type(type_name: str) -> Any:
     # Handle List[Dict[...]] specifically
     if "list[dict" in normalized or "list[mapping" in normalized:
         return [{"key": "value"}]
+    # Handle List[int] and List[integer]
+    if "list[int" in normalized:
+        return [1]
+    # Handle List[float] and List[number]
+    if "list[float" in normalized or "list[number" in normalized:
+        return [1.0]
+    # Handle List[bool] or List[boolean]
+    if "list[bool" in normalized:
+        return [True]
+    # Handle List[str] or List[string]
+    if "list[str" in normalized:
+        return ["example"]
+    # Generic list handler (fallback)
     if "list" in normalized or "sequence" in normalized:
         return ["example"]
     if "dict" in normalized or "mapping" in normalized:

@@ -104,20 +104,52 @@ class ResourceMetadata(BaseModel):
 # SERVICE-SPECIFIC MODELS GENERATED FROM OPENAPI SCHEMAS
 
 
+class PatchDevicesRequestV2(BaseModel):
+    """PatchDevicesRequestV2 model"""
+
+    tags: Optional[Dict[str, Any]] = Field(
+        default=None,
+        alias="tags",
+        description="Provide a map of `tags` to create or delete for the given `DeviceID` (or multiple `DeviceID`'s). Tags are saved with the character casing preserved (uppercase, lowercase, mixed, and so on). For example, adding a new tag with the key `Location` will fail if the Device already has a tag with the key `LOCATION` as they are considered the same key. Tag keys and tag values can comprise letters, numbers, spaces (represented in UTF-8), and only the characters: `_`, `.`, `:`, `=`, `+`, `-`, and  `@`. **NOTE:** Do not store sensitive data, such as personally identifiable information, in tags.",
+    )
+
+    tenantWorkspaceId: Optional[str] = Field(
+        default=None, alias="tenantWorkspaceId", description="The platform customer ID of the tenant."
+    )
+
+    application: Optional[Dict[str, Any]] = Field(default=None, alias="application", description="application field")
+
+    archived: Optional[bool] = Field(default=None, alias="archived", description="archived field")
+
+    region: Optional[str] = Field(
+        default=None, alias="region", description="The region of the application the device is provisioned in."
+    )
+
+    subscription: Optional[List[Dict[str, Any]]] = Field(
+        default=None, alias="subscription", description="subscription field"
+    )
+
+
 class RequestSubscription(BaseModel):
     """RequestSubscription model"""
 
     id: str = Field(alias="id", description="The unique identifier of the subscription.")
 
 
-class ErrorIssue(BaseModel):
-    """ErrorIssue model"""
+class DevicesGetResponse(BaseModel):
+    """DevicesGetResponse model"""
 
-    description: Optional[str] = Field(default=None, alias="description", description="An explanation of the issue.")
+    count: int = Field(alias="count", description="Number of items returned")
 
-    source: Optional[str] = Field(default=None, alias="source", description="The part of the request with an issue.")
+    items: List[Dict[str, Any]] = Field(alias="items", description="items field")
 
-    subject: Optional[str] = Field(default=None, alias="subject", description="The issue key.")
+    offset: Optional[int] = Field(default=None, alias="offset", description="Zero-based resource offset")
+
+    total: Optional[int] = Field(
+        default=None,
+        alias="total",
+        description="Total number of items in the collection that match the filter query, if one was provided in the request",
+    )
 
 
 class ResponseApplication(BaseModel):
@@ -128,46 +160,40 @@ class ResponseApplication(BaseModel):
     resourceUri: str = Field(alias="resourceUri", description="URI to the application")
 
 
-class DevicesPostRequestV2Beta1(BaseModel):
-    """DevicesPostRequestV2Beta1 model"""
+class RequestCompute(BaseModel):
+    """RequestCompute model"""
 
-    partNumber: Optional[str] = Field(
-        default=None,
-        alias="partNumber",
-        description="The part number of the device. This is required for claiming `COMPUTE` or `STORAGE` devices.",
-    )
+    partNumber: str = Field(alias="partNumber", description="Identifier of a product component or part.")
 
     serialNumber: str = Field(alias="serialNumber", description="The serial number of the device.")
 
     tags: Optional[Dict[str, Any]] = Field(default=None, alias="tags", description="tags field")
 
-    deviceType: str = Field(alias="deviceType", description="The type of device.")
 
-    location: Optional[Dict[str, Any]] = Field(
-        default=None, alias="location", description="The location ID of the device."
-    )
+class AsyncResponse(BaseModel):
+    """AsyncResponse model"""
 
-    macAddress: Optional[str] = Field(
-        default=None,
-        alias="macAddress",
-        description="The media access control (MAC) address of the device. This is required for claiming `NETWORK` devices.",
-    )
+    code: int = Field(alias="code", description="Three digit HTTP status code.")
+
+    status: str = Field(alias="status", description="Three digit HTTPS status code and message.")
+
+    transactionId: str = Field(alias="transactionId", description="The unique identifier of the transaction.")
 
 
-class RequestApplication(BaseModel):
-    """RequestApplication model"""
+class ResponseLocation(BaseModel):
+    """ResponseLocation model"""
 
-    id: str = Field(alias="id", description="The unique identifier of the application.")
+    id: str = Field(alias="id", description="Identifier of the location of the device")
+
+    resourceUri: str = Field(alias="resourceUri", description="URI to the location of the device")
 
 
-class GeneralErrorDetail(BaseModel):
-    """GeneralErrorDetail model"""
+class ResponseSubscription(BaseModel):
+    """ResponseSubscription model"""
 
-    source: str = Field(alias="source", description="The source of the error.")
+    id: str = Field(alias="id", description="Unique identifier of the subscription assigned to the device")
 
-    type: str = Field(alias="type", description="The type of error.")
-
-    metadata: Dict[str, Any] = Field(alias="metadata", description="Additional key pairs.")
+    resourceUri: str = Field(alias="resourceUri", description="URI to the the subscription")
 
 
 class RequestNetwork(BaseModel):
@@ -180,80 +206,134 @@ class RequestNetwork(BaseModel):
     tags: Optional[Dict[str, Any]] = Field(default=None, alias="tags", description="tags field")
 
 
-class ResponseLocation(BaseModel):
-    """ResponseLocation model"""
+class GeneralErrorDetail(BaseModel):
+    """GeneralErrorDetail model"""
 
-    id: str = Field(alias="id", description="Identifier of the location of the device")
+    type: str = Field(alias="type", description="The type of error.")
 
-    resourceUri: str = Field(alias="resourceUri", description="URI to the location of the device")
+    metadata: Dict[str, Any] = Field(alias="metadata", description="Additional key pairs.")
+
+    source: str = Field(alias="source", description="The source of the error.")
 
 
-class ResponseWarranty(BaseModel):
-    """The warranty information for the device."""
+class AsyncOperationResource(BaseModel):
+    """AsyncOperationResource model"""
 
-    currentSupportLevel: Optional[Dict[str, Any]] = Field(
+    progressPercent: Optional[int] = Field(
         default=None,
-        alias="currentSupportLevel",
-        description="The support levels are ranked to differentiate and display the support provided to customers.",
+        alias="progressPercent",
+        description="A number that indicates how close to completion the asynchronous operation is.",
     )
 
-    supportLevels: Optional[List[Dict[str, Any]]] = Field(
-        default=None, alias="supportLevels", description="supportLevels field"
+    endedAt: Optional[str] = Field(
+        default=None, alias="endedAt", description="Date and time the asynchronous operation ended in UTC format."
     )
 
-    country: Optional[str] = Field(default=None, alias="country", description="country field")
+    id: str = Field(alias="id", description="The unique identifier of the device.")
 
-
-class ServerErrorDetail(BaseModel):
-    """ServerErrorDetail model"""
-
-    retryAfterSeconds: int = Field(alias="retryAfterSeconds", description="retryAfterSeconds field")
-
-    type: str = Field(alias="type", description="type field")
-
-
-class PatchDevicesRequest(BaseModel):
-    """PatchDevicesRequest model"""
-
-    region: Optional[str] = Field(
-        default=None, alias="region", description="The region of the application the device is provisioned in."
-    )
-
-    subscription: Optional[List[Dict[str, Any]]] = Field(
-        default=None, alias="subscription", description="subscription field"
-    )
-
-    tenantPlatformCustomerId: Optional[str] = Field(
-        default=None, alias="tenantPlatformCustomerId", description="The platform customer ID of the tenant."
-    )
-
-    application: Optional[Dict[str, Any]] = Field(default=None, alias="application", description="application field")
-
-
-class AsyncResponse(BaseModel):
-    """AsyncResponse model"""
-
-    status: str = Field(alias="status", description="Three digit HTTPS status code and message.")
-
-    transactionId: str = Field(alias="transactionId", description="The unique identifier of the transaction.")
-
-    code: int = Field(alias="code", description="Three digit HTTP status code.")
-
-
-class DevicesGetResponse(BaseModel):
-    """DevicesGetResponse model"""
-
-    total: Optional[int] = Field(
+    result: Optional[Dict[str, Any]] = Field(
         default=None,
-        alias="total",
-        description="Total number of items in the collection that match the filter query, if one was provided in the request",
+        alias="result",
+        description="An array that provides information on successful or unsuccessful operations.",
     )
 
-    count: int = Field(alias="count", description="Number of items returned")
+    suggestedPollingIntervalSeconds: Optional[int] = Field(
+        default=None,
+        alias="suggestedPollingIntervalSeconds",
+        description="The suggested time to wait (in minutes) before calling the operation again.",
+    )
 
-    items: List[Dict[str, Any]] = Field(alias="items", description="items field")
+    timeoutMinutes: Optional[int] = Field(
+        default=None, alias="timeoutMinutes", description="The number of minutes it took for the operation to time out."
+    )
 
-    offset: Optional[int] = Field(default=None, alias="offset", description="Zero-based resource offset")
+    resultType: Optional[str] = Field(
+        default=None,
+        alias="resultType",
+        description="Relates individual devices to a result type. A result type declares if an operation was successful or unsuccessful.",
+    )
+
+    startedAt: Optional[str] = Field(
+        default=None, alias="startedAt", description="Date and time the asynchronous operation began in UTC format."
+    )
+
+    status: Optional[str] = Field(
+        default=None, alias="status", description="The current status of an asynchronous operation."
+    )
+
+    type: str = Field(alias="type", description="The type of the resource")
+
+
+class DevicesPostRequest(BaseModel):
+    """DevicesPostRequest model"""
+
+    network: List[Dict[str, Any]] = Field(alias="network", description="network field")
+
+    storage: List[Dict[str, Any]] = Field(alias="storage", description="storage field")
+
+    compute: List[Dict[str, Any]] = Field(alias="compute", description="compute field")
+
+
+class HpeGreenLakeGeneralError(BaseModel):
+    """HpeGreenLakeGeneralError model"""
+
+    debugId: str = Field(alias="debugId", description="Unique identifier for the instance of this error")
+
+    errorCode: str = Field(alias="errorCode", description="Unique machine-friendly identifier for the error")
+
+    generalErrorDetails: Optional[List[Dict[str, Any]]] = Field(
+        default=None, alias="generalErrorDetails", description="generalErrorDetails field"
+    )
+
+    httpStatusCode: int = Field(alias="httpStatusCode", description="HTTP equivalent status code")
+
+    message: str = Field(
+        alias="message", description="A unique machine-friendly, but human-readable identifier for the error"
+    )
+
+
+class HpeGreenLakeServerError(BaseModel):
+    """HpeGreenLakeServerError model"""
+
+    debugId: str = Field(alias="debugId", description="Unique identifier for the instance of this error")
+
+    errorCode: str = Field(alias="errorCode", description="Unique machine-friendly identifier for the error")
+
+    httpStatusCode: int = Field(alias="httpStatusCode", description="HTTP equivalent status code")
+
+    message: str = Field(
+        alias="message", description="A unique machine-friendly, but human-readable identifier for the error"
+    )
+
+    serverErrorDetails: Optional[List[Dict[str, Any]]] = Field(
+        default=None, alias="serverErrorDetails", description="serverErrorDetails field"
+    )
+
+
+class ErrorIssue(BaseModel):
+    """ErrorIssue model"""
+
+    subject: Optional[str] = Field(default=None, alias="subject", description="The issue key.")
+
+    description: Optional[str] = Field(default=None, alias="description", description="An explanation of the issue.")
+
+    source: Optional[str] = Field(default=None, alias="source", description="The part of the request with an issue.")
+
+
+class RequestStorage(BaseModel):
+    """RequestStorage model"""
+
+    partNumber: str = Field(alias="partNumber", description="The part number of the device.")
+
+    serialNumber: str = Field(alias="serialNumber", description="The serial number of the device.")
+
+    tags: Optional[Dict[str, Any]] = Field(default=None, alias="tags", description="tags field")
+
+
+class RequestApplication(BaseModel):
+    """RequestApplication model"""
+
+    id: str = Field(alias="id", description="The unique identifier of the application.")
 
 
 class ResponseSupportLevel(BaseModel):
@@ -288,70 +368,24 @@ class ResponseSupportLevel(BaseModel):
     )
 
 
-class AsyncOperationResource(BaseModel):
-    """AsyncOperationResource model"""
+class BadRequestErrorDetail(BaseModel):
+    """BadRequestErrorDetail model"""
 
-    status: Optional[str] = Field(
-        default=None, alias="status", description="The current status of an asynchronous operation."
-    )
+    issues: List[Dict[str, Any]] = Field(alias="issues", description="An array of request issues.")
 
-    suggestedPollingIntervalSeconds: Optional[int] = Field(
-        default=None,
-        alias="suggestedPollingIntervalSeconds",
-        description="The suggested time to wait (in minutes) before calling the operation again.",
-    )
+    type: str = Field(alias="type", description="The type of error details.")
 
-    progressPercent: Optional[int] = Field(
-        default=None,
-        alias="progressPercent",
-        description="A number that indicates how close to completion the asynchronous operation is.",
-    )
 
-    startedAt: Optional[str] = Field(
-        default=None, alias="startedAt", description="Date and time the asynchronous operation began in UTC format."
-    )
+class ServerErrorDetail(BaseModel):
+    """ServerErrorDetail model"""
 
-    id: str = Field(alias="id", description="The unique identifier of the device.")
+    type: str = Field(alias="type", description="type field")
 
-    result: Optional[Dict[str, Any]] = Field(
-        default=None,
-        alias="result",
-        description="An array that provides information on successful or unsuccessful operations.",
-    )
-
-    resultType: Optional[str] = Field(
-        default=None,
-        alias="resultType",
-        description="Relates individual devices to a result type. A result type declares if an operation was successful or unsuccessful.",
-    )
-
-    timeoutMinutes: Optional[int] = Field(
-        default=None, alias="timeoutMinutes", description="The number of minutes it took for the operation to time out."
-    )
-
-    type: str = Field(alias="type", description="The type of the resource")
-
-    endedAt: Optional[str] = Field(
-        default=None, alias="endedAt", description="Date and time the asynchronous operation ended in UTC format."
-    )
+    retryAfterSeconds: int = Field(alias="retryAfterSeconds", description="retryAfterSeconds field")
 
 
 class DeviceDetail(BaseModel):
     """DeviceDetail model"""
-
-    partNumber: str = Field(alias="partNumber", description="Identifier of the a device component or part.")
-
-    createdAt: Optional[str] = Field(
-        default=None, alias="createdAt", description="Date and time the device was created in UTC."
-    )
-
-    location: Optional[Dict[str, Any]] = Field(default=None, alias="location", description="location field")
-
-    id: str = Field(alias="id", description="The unique identifier of the device.")
-
-    tags: Optional[Dict[str, Any]] = Field(default=None, alias="tags", description="tags field")
-
-    application: Optional[Dict[str, Any]] = Field(default=None, alias="application", description="application field")
 
     assignedState: Optional[str] = Field(
         default=None,
@@ -359,8 +393,54 @@ class DeviceDetail(BaseModel):
         description="The current assignment state of the device.\n- `ASSIGNED_TO_ACTIVATE_CONFIG`—The device was moved to the custom activate configuration.\n- `ASSIGNED_TO_DEDICATED_PLATFORM`—The device is used in a dedicated platform workspace.\n- `ASSIGNED_TO_SERVICE`—The device is assigned to a service.\n- `UNASSIGNED`—The device is available for service provisioning.\n",
     )
 
+    createdAt: Optional[str] = Field(
+        default=None, alias="createdAt", description="Date and time the device was created in UTC."
+    )
+
+    deviceType: Optional[str] = Field(
+        default=None, alias="deviceType", description="The category (type) the device belongs to."
+    )
+
+    id: str = Field(alias="id", description="The unique identifier of the device.")
+
+    partNumber: str = Field(alias="partNumber", description="Identifier of the a device component or part.")
+
+    warranty: Optional[Dict[str, Any]] = Field(
+        default=None, alias="warranty", description="The warranty information for the device."
+    )
+
+    location: Optional[Dict[str, Any]] = Field(default=None, alias="location", description="location field")
+
+    macAddress: Optional[str] = Field(
+        default=None, alias="macAddress", description="The media access control (MAC) address of the device"
+    )
+
+    archived: Optional[bool] = Field(
+        default=None,
+        alias="archived",
+        description="A boolean that indicates whether the device has been archived or not. Archived devices are no longer in service.",
+    )
+
+    tenantWorkspaceId: Optional[str] = Field(
+        default=None,
+        alias="tenantWorkspaceId",
+        description="The unique identifier of the tenant workspace belonging to an MSP. This field is populated only for MSP-owned inventory tenants (the MSP owns the devices and subscriptions and also manages the workspace on behalf of their customers).",
+    )
+
+    serialNumber: str = Field(alias="serialNumber", description="The serial number of the device.")
+
+    application: Optional[Dict[str, Any]] = Field(default=None, alias="application", description="application field")
+
+    tags: Optional[Dict[str, Any]] = Field(default=None, alias="tags", description="tags field")
+
+    type: str = Field(alias="type", description="The type of the resource.")
+
     region: Optional[str] = Field(
         default=None, alias="region", description="The region of the application the device is provisioned in"
+    )
+
+    updatedAt: Optional[str] = Field(
+        default=None, alias="updatedAt", description="Date and time the device was last updated in UTC."
     )
 
     subscription: Optional[List[Dict[str, Any]]] = Field(
@@ -369,41 +449,57 @@ class DeviceDetail(BaseModel):
 
     model: Optional[str] = Field(default=None, alias="model", description="Hardware model of the device")
 
-    archived: Optional[bool] = Field(
+
+class ResponseWarranty(BaseModel):
+    """The warranty information for the device."""
+
+    country: Optional[str] = Field(default=None, alias="country", description="country field")
+
+    currentSupportLevel: Optional[Dict[str, Any]] = Field(
         default=None,
-        alias="archived",
-        description="A boolean that indicates whether the device has been archived or not. Archived devices are no longer in service.",
+        alias="currentSupportLevel",
+        description="The support levels are ranked to differentiate and display the support provided to customers.",
     )
+
+    supportLevels: Optional[List[Dict[str, Any]]] = Field(
+        default=None, alias="supportLevels", description="supportLevels field"
+    )
+
+
+class DevicesPostRequestV2Beta1(BaseModel):
+    """DevicesPostRequestV2Beta1 model"""
 
     serialNumber: str = Field(alias="serialNumber", description="The serial number of the device.")
 
+    tags: Optional[Dict[str, Any]] = Field(default=None, alias="tags", description="tags field")
+
+    deviceType: str = Field(alias="deviceType", description="The type of device.")
+
+    location: Optional[Dict[str, Any]] = Field(
+        default=None, alias="location", description="The location ID of the device."
+    )
+
     macAddress: Optional[str] = Field(
-        default=None, alias="macAddress", description="The media access control (MAC) address of the device"
-    )
-
-    warranty: Optional[Dict[str, Any]] = Field(
-        default=None, alias="warranty", description="The warranty information for the device."
-    )
-
-    updatedAt: Optional[str] = Field(
-        default=None, alias="updatedAt", description="Date and time the device was last updated in UTC."
-    )
-
-    deviceType: Optional[str] = Field(
-        default=None, alias="deviceType", description="The category (type) the device belongs to."
-    )
-
-    type: str = Field(alias="type", description="The type of the resource.")
-
-    tenantWorkspaceId: Optional[str] = Field(
         default=None,
-        alias="tenantWorkspaceId",
-        description="The unique identifier of the tenant workspace belonging to an MSP. This field is populated only for MSP-owned inventory tenants (the MSP owns the devices and subscriptions and also manages the workspace on behalf of their customers).",
+        alias="macAddress",
+        description="The media access control (MAC) address of the device. This is required for claiming `NETWORK` devices.",
+    )
+
+    partNumber: Optional[str] = Field(
+        default=None,
+        alias="partNumber",
+        description="The part number of the device. This is required for claiming `COMPUTE` or `STORAGE` devices.",
     )
 
 
 class HpeGreenLakeBadRequestError(BaseModel):
     """HpeGreenLakeBadRequestError model"""
+
+    httpStatusCode: int = Field(alias="httpStatusCode", description="HTTP equivalent status code")
+
+    message: str = Field(
+        alias="message", description="A unique machine-friendly, but human-readable identifier for the error"
+    )
 
     badRequestErrorDetails: Optional[List[Dict[str, Any]]] = Field(
         default=None, alias="badRequestErrorDetails", description="badRequestErrorDetails field"
@@ -413,116 +509,20 @@ class HpeGreenLakeBadRequestError(BaseModel):
 
     errorCode: str = Field(alias="errorCode", description="Unique machine-friendly identifier for the error")
 
-    httpStatusCode: int = Field(alias="httpStatusCode", description="HTTP equivalent status code")
 
-    message: str = Field(
-        alias="message", description="A unique machine-friendly, but human-readable identifier for the error"
-    )
-
-
-class HpeGreenLakeServerError(BaseModel):
-    """HpeGreenLakeServerError model"""
-
-    message: str = Field(
-        alias="message", description="A unique machine-friendly, but human-readable identifier for the error"
-    )
-
-    serverErrorDetails: Optional[List[Dict[str, Any]]] = Field(
-        default=None, alias="serverErrorDetails", description="serverErrorDetails field"
-    )
-
-    debugId: str = Field(alias="debugId", description="Unique identifier for the instance of this error")
-
-    errorCode: str = Field(alias="errorCode", description="Unique machine-friendly identifier for the error")
-
-    httpStatusCode: int = Field(alias="httpStatusCode", description="HTTP equivalent status code")
-
-
-class RequestStorage(BaseModel):
-    """RequestStorage model"""
-
-    partNumber: str = Field(alias="partNumber", description="The part number of the device.")
-
-    serialNumber: str = Field(alias="serialNumber", description="The serial number of the device.")
-
-    tags: Optional[Dict[str, Any]] = Field(default=None, alias="tags", description="tags field")
-
-
-class ResponseSubscription(BaseModel):
-    """ResponseSubscription model"""
-
-    id: str = Field(alias="id", description="Unique identifier of the subscription assigned to the device")
-
-    resourceUri: str = Field(alias="resourceUri", description="URI to the the subscription")
-
-
-class RequestCompute(BaseModel):
-    """RequestCompute model"""
-
-    partNumber: str = Field(alias="partNumber", description="Identifier of a product component or part.")
-
-    serialNumber: str = Field(alias="serialNumber", description="The serial number of the device.")
-
-    tags: Optional[Dict[str, Any]] = Field(default=None, alias="tags", description="tags field")
-
-
-class DevicesPostRequest(BaseModel):
-    """DevicesPostRequest model"""
-
-    network: List[Dict[str, Any]] = Field(alias="network", description="network field")
-
-    storage: List[Dict[str, Any]] = Field(alias="storage", description="storage field")
-
-    compute: List[Dict[str, Any]] = Field(alias="compute", description="compute field")
-
-
-class PatchDevicesRequestV2(BaseModel):
-    """PatchDevicesRequestV2 model"""
-
-    application: Optional[Dict[str, Any]] = Field(default=None, alias="application", description="application field")
-
-    archived: Optional[bool] = Field(default=None, alias="archived", description="archived field")
-
-    region: Optional[str] = Field(
-        default=None, alias="region", description="The region of the application the device is provisioned in."
-    )
+class PatchDevicesRequest(BaseModel):
+    """PatchDevicesRequest model"""
 
     subscription: Optional[List[Dict[str, Any]]] = Field(
         default=None, alias="subscription", description="subscription field"
     )
 
-    tags: Optional[Dict[str, Any]] = Field(
-        default=None,
-        alias="tags",
-        description="Provide a map of `tags` to create or delete for the given `DeviceID` (or multiple `DeviceID`'s). Tags are saved with the character casing preserved (uppercase, lowercase, mixed, and so on). For example, adding a new tag with the key `Location` will fail if the Device already has a tag with the key `LOCATION` as they are considered the same key. Tag keys and tag values can comprise letters, numbers, spaces (represented in UTF-8), and only the characters: `_`, `.`, `:`, `=`, `+`, `-`, and  `@`. **NOTE:** Do not store sensitive data, such as personally identifiable information, in tags.",
+    tenantPlatformCustomerId: Optional[str] = Field(
+        default=None, alias="tenantPlatformCustomerId", description="The platform customer ID of the tenant."
     )
 
-    tenantWorkspaceId: Optional[str] = Field(
-        default=None, alias="tenantWorkspaceId", description="The platform customer ID of the tenant."
-    )
+    application: Optional[Dict[str, Any]] = Field(default=None, alias="application", description="application field")
 
-
-class BadRequestErrorDetail(BaseModel):
-    """BadRequestErrorDetail model"""
-
-    type: str = Field(alias="type", description="The type of error details.")
-
-    issues: List[Dict[str, Any]] = Field(alias="issues", description="An array of request issues.")
-
-
-class HpeGreenLakeGeneralError(BaseModel):
-    """HpeGreenLakeGeneralError model"""
-
-    debugId: str = Field(alias="debugId", description="Unique identifier for the instance of this error")
-
-    errorCode: str = Field(alias="errorCode", description="Unique machine-friendly identifier for the error")
-
-    generalErrorDetails: Optional[List[Dict[str, Any]]] = Field(
-        default=None, alias="generalErrorDetails", description="generalErrorDetails field"
-    )
-
-    httpStatusCode: int = Field(alias="httpStatusCode", description="HTTP equivalent status code")
-
-    message: str = Field(
-        alias="message", description="A unique machine-friendly, but human-readable identifier for the error"
+    region: Optional[str] = Field(
+        default=None, alias="region", description="The region of the application the device is provisioned in."
     )

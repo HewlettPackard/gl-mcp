@@ -252,9 +252,6 @@ This MCP server implements read-only access to the following workspaces API endp
 - `GET /workspaces/v1/workspaces/{workspaceId}/contact` - Retrieve detailed workspace information.
 
 
-API Version: 1.0.0
-
-
 ## Development
 
 ### Commands
@@ -389,9 +386,3 @@ The generated suite provides:
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](../../LICENSE) file for details.
-
----
-
-**Service**: workspaces  
-**API Version**: 1.0.0  
-**MCP Server Version**: 0.1.0

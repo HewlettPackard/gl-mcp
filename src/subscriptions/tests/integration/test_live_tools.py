@@ -44,19 +44,6 @@ pytestmark = pytest.mark.skipif(
 )
 TOOL_CASES = [
     {
-        "name": "getsubscriptiondetailsbyidv1",
-        "method": "get",
-        "parameters": [
-            {
-                "name": "id",
-                "required": True,
-                "type": "str",
-                "env": "MCP_TEST_SUBSCRIPTIONS_ID",
-                "default": None,
-            },
-        ],
-    },
-    {
         "name": "getsubscriptionsv1",
         "method": "get",
         "parameters": [
@@ -100,6 +87,19 @@ TOOL_CASES = [
                 "required": False,
                 "type": "int",
                 "env": "MCP_TEST_SUBSCRIPTIONS_OFFSET",
+                "default": None,
+            },
+        ],
+    },
+    {
+        "name": "getsubscriptiondetailsbyidv1",
+        "method": "get",
+        "parameters": [
+            {
+                "name": "id",
+                "required": True,
+                "type": "str",
+                "env": "MCP_TEST_SUBSCRIPTIONS_ID",
                 "default": None,
             },
         ],

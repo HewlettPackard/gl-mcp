@@ -6,5 +6,5 @@ This package contains concrete tool implementations generated from OpenAPI endpo
 
 # Tool implementations are discovered dynamically by the registry
 # Generated tools:
-# - getsubscriptiondetailsbyidv1Tool (GET /subscriptions/v1/subscriptions/{id})
 # - getsubscriptionsv1Tool (GET /subscriptions/v1/subscriptions)
+# - getsubscriptiondetailsbyidv1Tool (GET /subscriptions/v1/subscriptions/{id})

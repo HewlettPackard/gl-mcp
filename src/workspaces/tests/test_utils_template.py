@@ -58,6 +58,20 @@ class TestWorkspacesHttpClient:
             mock_token_manager.get_auth_headers.assert_called()
 
     @pytest.mark.asyncio
+    async def test_get_auth_headers_includes_user_agent(self, http_client):
+        """Test that authentication headers include User-Agent."""
+        headers = await http_client._get_auth_headers()
+
+        # Verify all required headers are present
+        assert "Authorization" in headers
+        assert "Accept" in headers
+        assert "User-Agent" in headers
+
+        # Verify User-Agent format
+        assert headers["User-Agent"].startswith("HPE-GreenLake-MCP/")
+        assert headers["Accept"] == "application/json"
+
+    @pytest.mark.asyncio
     async def test_get_request_with_additional_headers(self, http_client):
         """Test GET request with additional headers."""
         additional_headers = {"X-Custom-Header": "custom-value"}
@@ -76,6 +90,7 @@ class TestWorkspacesHttpClient:
             headers = call_args.kwargs["headers"]
             assert headers["Authorization"] == "Bearer test-access-token"
             assert headers["X-Custom-Header"] == "custom-value"
+            assert headers["User-Agent"].startswith("HPE-GreenLake-MCP/")
 
     @pytest.mark.asyncio
     async def test_post_request_success(self, http_client, mock_token_manager):

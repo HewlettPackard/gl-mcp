@@ -38,6 +38,9 @@ class OAuth2Provider:
         client_secret: str,
         token_url: str,
         workspace_id: str | None = None,
+        max_retries: int = 5,
+        initial_backoff: float = 1.0,
+        max_backoff: float = 60.0,
     ):
         """Initialize the OAuth2 provider.
 
@@ -46,93 +49,129 @@ class OAuth2Provider:
             client_secret: OAuth2 client secret
             token_url: OAuth2 token endpoint URL
             workspace_id: Optional workspace ID for scoped access
+            max_retries: Maximum number of retry attempts for 429 errors (default: 5)
+            initial_backoff: Initial backoff delay in seconds (default: 1.0)
+            max_backoff: Maximum backoff delay in seconds (default: 60.0)
         """
         self.client_id = client_id
         self.client_secret = client_secret
         self.token_url = token_url
         self.workspace_id = workspace_id
+        self.max_retries = max_retries
+        self.initial_backoff = initial_backoff
+        self.max_backoff = max_backoff
 
         logger.info(
             "OAuth2 provider initialized",
             client_id=client_id,
             token_url=token_url,
             workspace_id=workspace_id,
+            max_retries=max_retries,
         )
 
+    def _make_token_request(self) -> dict:
+        """Make the actual HTTP request for token.
+
+        Returns:
+            Response JSON data
+
+        Raises:
+            httpx.HTTPStatusError: For all HTTP errors including 429
+        """
+        with httpx.Client(timeout=30.0) as client:
+            response = client.post(
+                self.token_url,
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+                data={
+                    "grant_type": "client_credentials",
+                    "client_id": self.client_id,
+                    "client_secret": self.client_secret,
+                },
+            )
+
+            # Raise exception for any non-2xx status code
+            response.raise_for_status()
+
+            return response.json()  # type: ignore[no-any-return]
+
     def get_token(self) -> OAuth2TokenResponse:
-        """Get an access token using client credentials flow.
+        """Get an access token using client credentials flow with exponential backoff for rate limits.
+
+        Implements exponential backoff retry logic for 429 (Too Many Requests) responses.
+        Other errors are raised immediately without retry.
 
         Returns:
             OAuth2 token response with access token and metadata
 
         Raises:
-            httpx.HTTPStatusError: If token request fails with HTTP error status
+            httpx.HTTPStatusError: If token request fails with HTTP error status (after retries for 429)
             httpx.RequestError: If network/connection error occurs
         """
-        try:
-            logger.info("Requesting access token", token_url=self.token_url)
+        for attempt in range(self.max_retries + 1):
+            try:
+                # Apply backoff delay before retry attempts
+                if attempt > 0:
+                    backoff_delay = min(self.initial_backoff * (2 ** (attempt - 1)), self.max_backoff)
+                    logger.warning(
+                        "Retrying token request after rate limit",
+                        attempt=attempt + 1,
+                        backoff_seconds=backoff_delay,
+                    )
+                    time.sleep(backoff_delay)
 
-            # Make token request using httpx instead of requests-oauthlib
-            # This avoids the issue with requests-oauthlib's OAuth2 implementation
-            with httpx.Client(timeout=30.0) as client:
-                response = client.post(
-                    self.token_url,
-                    headers={"Content-Type": "application/x-www-form-urlencoded"},
-                    data={
-                        "grant_type": "client_credentials",
-                        "client_id": self.client_id,
-                        "client_secret": self.client_secret,
-                    },
+                logger.info(
+                    "Requesting access token",
+                    attempt=attempt + 1,
+                    max_attempts=self.max_retries + 1,
                 )
 
-                # Check for exact 200 status - reject all other codes including other 2xx
-                if response.status_code != 200:
-                    error_msg = f"HTTP {response.status_code}: {response.text}"
-                    logger.error(
-                        "Token request failed",
-                        status_code=response.status_code,
-                        error=error_msg,
-                        expected_status=200,
+                # Make the token request
+                token_data = self._make_token_request()
+
+                # Parse and return successful response
+                scope = token_data.get("scope")
+                if isinstance(scope, list):
+                    scope = " ".join(scope) if scope else None
+
+                oauth_token = OAuth2TokenResponse(
+                    access_token=token_data["access_token"],
+                    token_type=token_data.get("token_type", "Bearer"),
+                    expires_in=token_data.get("expires_in"),
+                    scope=scope,
+                )
+
+                logger.info(
+                    "Access token acquired successfully",
+                    expires_in=oauth_token.expires_in,
+                    attempts=attempt + 1,
+                )
+
+                return oauth_token
+
+            except httpx.HTTPStatusError as e:
+                # Retry only on 429, raise immediately for other errors
+                if e.response.status_code == 429 and attempt < self.max_retries:
+                    logger.warning(
+                        "Rate limit hit, will retry",
+                        status_code=429,
+                        remaining_attempts=self.max_retries - attempt,
                     )
+                    continue
 
-                    # Raise for 4xx/5xx errors
-                    if response.status_code >= 400:
-                        response.raise_for_status()
-                    else:
-                        # Raise custom error for unexpected 2xx/3xx codes
-                        raise httpx.HTTPStatusError(
-                            f"Unexpected status code {response.status_code}, expected 200",
-                            request=response.request,
-                            response=response,
-                        )
+                # Last retry or non-429 error - raise it
+                logger.error(
+                    "Token request failed",
+                    status_code=e.response.status_code,
+                    attempts=attempt + 1,
+                )
+                raise
 
-                token_data = response.json()
-
-            # Create structured response
-            # Handle scope - convert list to string if needed
-            scope = token_data.get("scope")
-            if isinstance(scope, list):
-                scope = " ".join(scope) if scope else None
-
-            oauth_token = OAuth2TokenResponse(
-                access_token=token_data["access_token"],
-                token_type=token_data.get("token_type", "Bearer"),
-                expires_in=token_data.get("expires_in"),
-                scope=scope,
-            )
-
-            logger.info(
-                "Access token acquired successfully",
-                token_type=oauth_token.token_type,
-                expires_in=oauth_token.expires_in,
-                scope=oauth_token.scope,
-            )
-
-            return oauth_token
-
-        except Exception as e:
-            logger.error("Failed to acquire access token", error=str(e), token_url=self.token_url)
-            raise
+        # This line should never be reached, but satisfy type checker
+        raise httpx.HTTPStatusError(
+            "Failed to acquire token after exhausting all retries",
+            request=None,  # type: ignore
+            response=None,  # type: ignore
+        )
 
     def validate_token(self, token: str) -> bool:
         """Validate an access token.

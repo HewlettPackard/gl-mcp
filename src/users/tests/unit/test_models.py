@@ -10,133 +10,31 @@ from pydantic import ValidationError as PydanticValidationError
 
 from models import (
     BaseModel,
-    Message,
-    NBUser,
-    NBUserPaginate,
     NBUserPreferences,
     StandardErrorResponse,
     UserLanguages,
     UserStatus,
     Body_invite_user_to_account_identity_v1_users_post,
+    Message,
+    NBUser,
+    NBUserPaginate,
 )
 
 MODEL_TEST_MATRIX = [
-    {
-        "model": Message,
-        "name": "Message",
-        "fields": [
-            {
-                "name": "message",
-                "sanitized": "message",
-                "type": r"str",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": NBUser,
-        "name": "NBUser",
-        "fields": [
-            {
-                "name": "username",
-                "sanitized": "username",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "lastLogin",
-                "sanitized": "lastLogin",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "updatedAt",
-                "sanitized": "updatedAt",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "userStatus",
-                "sanitized": "userStatus",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "generation",
-                "sanitized": "generation",
-                "type": r"int",
-                "required": False,
-            },
-            {
-                "name": "resourceUri",
-                "sanitized": "resourceUri",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "id",
-                "sanitized": "id",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "createdAt",
-                "sanitized": "createdAt",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"str",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": NBUserPaginate,
-        "name": "NBUserPaginate",
-        "fields": [
-            {
-                "name": "items",
-                "sanitized": "items",
-                "type": r"List[Dict[str, Any]]",
-                "required": True,
-            },
-            {
-                "name": "offset",
-                "sanitized": "offset",
-                "type": r"int",
-                "required": True,
-            },
-            {
-                "name": "total",
-                "sanitized": "total",
-                "type": r"int",
-                "required": True,
-            },
-            {
-                "name": "count",
-                "sanitized": "count",
-                "type": r"int",
-                "required": True,
-            },
-        ],
-    },
     {
         "model": NBUserPreferences,
         "name": "NBUserPreferences",
         "fields": [
             {
-                "name": "idleTimeout",
-                "sanitized": "idleTimeout",
-                "type": r"int",
-                "required": False,
-            },
-            {
                 "name": "language",
                 "sanitized": "language",
                 "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "idleTimeout",
+                "sanitized": "idleTimeout",
+                "type": r"int",
                 "required": False,
             },
         ],
@@ -146,18 +44,6 @@ MODEL_TEST_MATRIX = [
         "name": "StandardErrorResponse",
         "fields": [
             {
-                "name": "debugId",
-                "sanitized": "debugId",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "errorCode",
-                "sanitized": "errorCode",
-                "type": r"str",
-                "required": True,
-            },
-            {
                 "name": "httpStatusCode",
                 "sanitized": "httpStatusCode",
                 "type": r"int",
@@ -166,6 +52,18 @@ MODEL_TEST_MATRIX = [
             {
                 "name": "message",
                 "sanitized": "message",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "debugId",
+                "sanitized": "debugId",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "errorCode",
+                "sanitized": "errorCode",
                 "type": r"str",
                 "required": True,
             },
@@ -196,6 +94,108 @@ MODEL_TEST_MATRIX = [
                 "sanitized": "sendWelcomeEmail",
                 "type": r"bool",
                 "required": False,
+            },
+        ],
+    },
+    {
+        "model": Message,
+        "name": "Message",
+        "fields": [
+            {
+                "name": "message",
+                "sanitized": "message",
+                "type": r"str",
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": NBUser,
+        "name": "NBUser",
+        "fields": [
+            {
+                "name": "updatedAt",
+                "sanitized": "updatedAt",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "username",
+                "sanitized": "username",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "resourceUri",
+                "sanitized": "resourceUri",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "userStatus",
+                "sanitized": "userStatus",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "lastLogin",
+                "sanitized": "lastLogin",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "createdAt",
+                "sanitized": "createdAt",
+                "type": r"str",
+                "required": False,
+            },
+            {
+                "name": "generation",
+                "sanitized": "generation",
+                "type": r"int",
+                "required": False,
+            },
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r"str",
+                "required": True,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"str",
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": NBUserPaginate,
+        "name": "NBUserPaginate",
+        "fields": [
+            {
+                "name": "count",
+                "sanitized": "count",
+                "type": r"int",
+                "required": True,
+            },
+            {
+                "name": "items",
+                "sanitized": "items",
+                "type": r"List[Dict[str, Any]]",
+                "required": True,
+            },
+            {
+                "name": "offset",
+                "sanitized": "offset",
+                "type": r"int",
+                "required": True,
+            },
+            {
+                "name": "total",
+                "sanitized": "total",
+                "type": r"int",
+                "required": True,
             },
         ],
     },
@@ -231,6 +231,19 @@ def _value_for_type(type_name: str) -> Any:
     # Handle List[Dict[...]] specifically
     if "list[dict" in normalized or "list[mapping" in normalized:
         return [{"key": "value"}]
+    # Handle List[int] and List[integer]
+    if "list[int" in normalized:
+        return [1]
+    # Handle List[float] and List[number]
+    if "list[float" in normalized or "list[number" in normalized:
+        return [1.0]
+    # Handle List[bool] or List[boolean]
+    if "list[bool" in normalized:
+        return [True]
+    # Handle List[str] or List[string]
+    if "list[str" in normalized:
+        return ["example"]
+    # Generic list handler (fallback)
     if "list" in normalized or "sequence" in normalized:
         return ["example"]
     if "dict" in normalized or "mapping" in normalized:

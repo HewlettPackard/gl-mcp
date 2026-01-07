@@ -86,15 +86,6 @@ class InvokeDynamicTool(BaseTool):
 
             # Get endpoint schema for validation
             endpoint_schemas: Dict[str, Any] = {
-                "GET:/subscriptions/v1/subscriptions/{id}": {
-                    "path": "/subscriptions/v1/subscriptions/{id}",
-                    "method": "GET",
-                    "summary": "getsubscriptiondetailsbyidv1",
-                    "description": "getsubscriptiondetailsbyidv1",
-                    "parameters": [
-                        {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
-                    ],
-                },
                 "GET:/subscriptions/v1/subscriptions": {
                     "path": "/subscriptions/v1/subscriptions",
                     "method": "GET",
@@ -138,6 +129,15 @@ class InvokeDynamicTool(BaseTool):
                             "required": False,
                             "location": "query",
                         },
+                    ],
+                },
+                "GET:/subscriptions/v1/subscriptions/{id}": {
+                    "path": "/subscriptions/v1/subscriptions/{id}",
+                    "method": "GET",
+                    "summary": "getsubscriptiondetailsbyidv1",
+                    "description": "getsubscriptiondetailsbyidv1",
+                    "parameters": [
+                        {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
                     ],
                 },
             }

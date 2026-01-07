@@ -44,6 +44,19 @@ pytestmark = pytest.mark.skipif(
 )
 TOOL_CASES = [
     {
+        "name": "getauditlogdetails",
+        "method": "get",
+        "parameters": [
+            {
+                "name": "id",
+                "required": True,
+                "type": "str",
+                "env": "MCP_TEST_AUDIT_LOGS_ID",
+                "default": None,
+            },
+        ],
+    },
+    {
         "name": "getauditlogs",
         "method": "get",
         "parameters": [
@@ -80,19 +93,6 @@ TOOL_CASES = [
                 "required": False,
                 "type": "int",
                 "env": "MCP_TEST_AUDIT_LOGS_OFFSET",
-                "default": None,
-            },
-        ],
-    },
-    {
-        "name": "getauditlogdetails",
-        "method": "get",
-        "parameters": [
-            {
-                "name": "id",
-                "required": True,
-                "type": "str",
-                "env": "MCP_TEST_AUDIT_LOGS_ID",
                 "default": None,
             },
         ],

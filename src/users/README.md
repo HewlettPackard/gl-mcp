@@ -244,8 +244,6 @@ userStatus can be one of the following:
 **Note**: The userStatus filter is case-sensitive.
 
 Examples:
-  - updatedAt gt '2020-09-21T14:19:09.769747'
-    Returns users updated after 2020-09-21T14:19:09.769747
   - userStatus ne 'UNVERIFIED'
     Returns users that are not unverified.
   - username eq 'user@example.com'
@@ -258,6 +256,8 @@ Examples:
     Returns the user with a specific ID.
   - lastLogin lt '2020-09-21T14:19:09.769747'
     Returns users that logged in before 2020-09-21T14:19:09.769747
+  - updatedAt gt '2020-09-21T14:19:09.769747'
+    Returns users updated after 2020-09-21T14:19:09.769747
 
 **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`.
 
@@ -301,9 +301,6 @@ This MCP server implements read-only access to the following users API endpoints
 Rate limit: 300 requests per minute per workspace, resulting in a `429` error if exceeded.
 
 - `GET /identity/v1/users/{id}` - Retrieve a single user based on a given user ID.
-
-
-API Version: 1.0.0
 
 
 ## Development
@@ -440,9 +437,3 @@ The generated suite provides:
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](../../LICENSE) file for details.
-
----
-
-**Service**: users  
-**API Version**: 1.0.0  
-**MCP Server Version**: 0.1.0

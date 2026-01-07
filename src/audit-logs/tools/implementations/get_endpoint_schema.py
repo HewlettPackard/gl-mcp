@@ -33,8 +33,8 @@ class GetEndpointSchemaTool(BaseTool):
                     "type": "string",
                     "description": "The API endpoint identifier in METHOD:PATH format (e.g., 'GET:/api/v1/users/{id}')",
                     "examples": [
-                        "GET:/audit-log/v1/logs",
                         "GET:/audit-log/v1/logs/{id}/detail",
+                        "GET:/audit-log/v1/logs",
                     ],
                 },
                 "include_examples": {
@@ -70,6 +70,30 @@ class GetEndpointSchemaTool(BaseTool):
 
             # Create endpoint schema map for fast lookup
             endpoint_schemas: Dict[str, Any] = {
+                "GET:/audit-log/v1/logs/{id}/detail": {
+                    "path": "/audit-log/v1/logs/{id}/detail",
+                    "method": "GET",
+                    "summary": "getauditlogdetails",
+                    "description": "getauditlogdetails",
+                    "operationId": "getauditlogdetails",
+                    "tags": [],
+                    "deprecated": False,
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "type": "str",
+                            "description": "Provide the ID of the audit log record that has the `hasDetails` value set to `true` to fetch the additional details.",
+                            "required": True,
+                            "location": "query",
+                            "schema": {
+                                "type": "string",
+                                "description": "Provide the ID of the audit log record that has the `hasDetails` value set to `true` to fetch the additional details.",
+                            },
+                        },
+                    ],
+                    "security": [],
+                    "responses": {"200": {"description": "Successful response", "content_type": "application/json"}},
+                },
                 "GET:/audit-log/v1/logs": {
                     "path": "/audit-log/v1/logs",
                     "method": "GET",
@@ -134,30 +158,6 @@ class GetEndpointSchemaTool(BaseTool):
                             "schema": {
                                 "type": "integer",
                                 "description": "Specifies the zero-based resource offset to start the response from.",
-                            },
-                        },
-                    ],
-                    "security": [],
-                    "responses": {"200": {"description": "Successful response", "content_type": "application/json"}},
-                },
-                "GET:/audit-log/v1/logs/{id}/detail": {
-                    "path": "/audit-log/v1/logs/{id}/detail",
-                    "method": "GET",
-                    "summary": "getauditlogdetails",
-                    "description": "getauditlogdetails",
-                    "operationId": "getauditlogdetails",
-                    "tags": [],
-                    "deprecated": False,
-                    "parameters": [
-                        {
-                            "name": "id",
-                            "type": "str",
-                            "description": "Provide the ID of the audit log record that has the `hasDetails` value set to `true` to fetch the additional details.",
-                            "required": True,
-                            "location": "query",
-                            "schema": {
-                                "type": "string",
-                                "description": "Provide the ID of the audit log record that has the `hasDetails` value set to `true` to fetch the additional details.",
                             },
                         },
                     ],

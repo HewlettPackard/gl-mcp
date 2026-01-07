@@ -205,53 +205,54 @@ export MCP_TOOL_MODE=dynamic
 ### High-Level Architecture
 
 ```mermaid
-graph TB
-    subgraph "MCP Clients"
-        A[Claude Desktop]
-        B[VS Code]
-        C[Other MCP Clients]
+flowchart TB
+    subgraph clients["<b> MCP Clients </b>"]
+        direction TB
+        claude["Claude Desktop"]
+        vscode["VS Code"]
+        other["..."]
     end
 
-    subgraph "MCP Servers (This Repository)"
-        D[Audit Logs Server]
-        E[Devices Server]
-        F[Users Server]
-        G[Workspaces Server]
-        H[Subscriptions Server]
+    subgraph servers["<b> MCP Servers </b>"]
+        direction TB
+        audit["Audit Logs"]
+        devices["Devices"]
+        users["Users"]
+        workspaces["Workspaces"]
+        subscriptions["Subscriptions"]
+        serviceX["..."]
+        
+        subgraph shared["<i> Shared Components </i>"]
+            direction LR
+            oauth["OAuth2 Token Manager<br/>(with caching)"]
+        end
     end
 
-    subgraph "Authentication Layer"
-        I[OAuth2 Token Manager]
-        J[Credential Storage]
+    subgraph platform["<b>&nbsp; HPE GreenLake Platform &nbsp;</b>"]
+        direction TB
+        api["APIs"]
     end
 
-    subgraph "HPE GreenLake Platform"
-        K[Audit Logs API]
-        L[Devices API]
-        M[Users API]
-        N[Workspaces API]
-        O[Subscriptions API]
-    end
+    clients ==>|JSON-RPC/stdio| servers
+    servers ==>|HTTPS/REST + OAuth2| platform
 
-    A & B & C -->|JSON-RPC over stdio| D & E & F & G & H
-    D & E & F & G & H -->|OAuth2| I
-    I <-->|Token Refresh| J
-    I -->|Authenticated Requests| K & L & M & N & O
-
-    style A fill:#e1f5ff
-    style B fill:#e1f5ff
-    style C fill:#e1f5ff
-    style D fill:#c8e6c9
-    style E fill:#c8e6c9
-    style F fill:#c8e6c9
-    style G fill:#c8e6c9
-    style H fill:#c8e6c9
-    style I fill:#fff3cd
-    style K fill:#f0e6ff
-    style L fill:#f0e6ff
-    style M fill:#f0e6ff
-    style N fill:#f0e6ff
-    style O fill:#f0e6ff
+    classDef clientStyle fill:#2196F3,stroke:none,color:#fff,rx:10,ry:10
+    classDef serverStyle fill:#4CAF50,stroke:none,color:#fff,rx:10,ry:10
+    classDef authStyle fill:#FF9800,stroke:none,color:#fff,rx:10,ry:10
+    classDef platformStyle fill:#01a982,stroke:none,color:#fff,rx:10,ry:10
+    classDef clientContainerStyle fill:none,stroke:#2196F3,stroke-width:3px,rx:15,ry:15
+    classDef serverContainerStyle fill:none,stroke:#4CAF50,stroke-width:3px,rx:15,ry:15
+    classDef authContainerStyle fill:none,stroke:#FF9800,stroke-width:2px,stroke-dasharray:5 5,rx:10,ry:10
+    classDef platformContainerStyle fill:none,stroke:#01a982,stroke-width:3px,rx:15,ry:15
+    
+    class claude,vscode,other clientStyle
+    class audit,devices,users,workspaces,subscriptions,serviceX serverStyle
+    class oauth authStyle
+    class api platformStyle
+    class clients clientContainerStyle
+    class servers serverContainerStyle
+    class shared authContainerStyle
+    class platform platformContainerStyle
 ```
 
 ### Request Flow
@@ -341,7 +342,7 @@ Log files are written to: `~/.hpe/mcp-logs/{service-name}/`
 
 ### GitHub Issues
 
-The primary support channel for this project is [GitHub Issues](https://github.com/HewlettPackard/gl-mcp/issues). When reporting an issue, please include:
+The primary support channel for this project is [GitHub Issues](https://github.com/glcp/gl-mcp/issues). When reporting an issue, please include:
 
 - **Environment details**: OS, Python version, `uv` version
 - **Server name**: Which MCP server you're using (audit-logs, devices, etc.)
@@ -351,7 +352,7 @@ The primary support channel for this project is [GitHub Issues](https://github.c
 
 ### Before Opening an Issue
 
-1. **Check existing issues**: Search [open](https://github.com/HewlettPackard/gl-mcp/issues) and [closed](https://github.com/HewlettPackard/gl-mcp/issues?q=is%3Aissue+is%3Aclosed) issues
+1. **Check existing issues**: Search [open](https://github.com/glcp/gl-mcp/issues) and [closed](https://github.com/glcp/gl-mcp/issues?q=is%3Aissue+is%3Aclosed) issues
 2. **Review troubleshooting**: Check the [Troubleshooting](#troubleshooting) section above
 3. **Enable debug logging**: Run with `GREENLAKE_LOG_LEVEL=DEBUG` and `GREENLAKE_FILE_LOGGING=true` to gather detailed logs
 4. **Test authentication**: Verify your credentials work with the GreenLake APIs directly

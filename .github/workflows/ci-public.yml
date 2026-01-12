@@ -98,6 +98,12 @@ jobs:
                 -H "Accept: application/vnd.github+json" \
                 "https://api.github.com/orgs/$ORG/teams/$team_trimmed/memberships/$AUTHOR" || echo "000")
               
+              echo "Team membership API response code: $team_membership"
+              if [ -f /tmp/team_response.json ]; then
+                echo "API response body:"
+                cat /tmp/team_response.json
+              fi
+              
               if [ "$team_membership" = "200" ]; then
                 # Check if the user is actually active in the team
                 if grep -q '"state": "active"' /tmp/team_response.json 2>/dev/null; then
@@ -154,6 +160,7 @@ jobs:
         with:
           files: |
             .github/workflows/ci-public.yml
+
             
       - name: Check for changes in src directory
         id: check-src
@@ -164,6 +171,7 @@ jobs:
 
       - name: Determine test strategy based on file changes
         id: determine-strategy
+
         run: |
           workflow_changed="${{ steps.check-workflow.outputs.any_changed }}"
           src_changed="${{ steps.check-src.outputs.any_changed }}"
@@ -207,9 +215,6 @@ jobs:
           if [[ ${#final_servers[@]} -gt 0 ]]; then
             # Use printf and jq for safer JSON generation
             servers_json=$(printf '%s\n' "${final_servers[@]}" | jq -R . | jq -s -c .)
-            echo "🐛 DEBUG: servers_json = $servers_json"
-            echo "🐛 DEBUG: Array length = ${#final_servers[@]}"
-            echo "🐛 DEBUG: Array contents = ${final_servers[@]}"
             echo "should_run=true" >> "$GITHUB_OUTPUT"
             echo "servers=$servers_json" >> "$GITHUB_OUTPUT"
             echo "Final server list: $servers_json"
@@ -264,17 +269,20 @@ jobs:
 
     steps:
 
-      - name: 🐛 Debug Matrix Values
+      - name: 🔍 Debug Matrix Configuration
+        working-directory: ${{ github.workspace }}
         run: |
           echo "=== Matrix Debug ==="
-          echo "Server: '${{ matrix.servers }}'"
-          echo "Python Version: '${{ matrix.python-version }}'"
-          echo "Servers JSON from needs: '${{ needs.check-changes.outputs.servers }}'"
-          echo "Should Run: '${{ needs.check-changes.outputs.should-run }}'"
+          echo "Server: ${{ matrix.servers }}"  
+          echo "Python Version: ${{ matrix.python-version }}"
+          echo "Expected matrix combinations should be:"
+          echo "Servers: ${{ needs.check-changes.outputs.servers }}"
+          echo "Python Versions: 3.10, 3.11, 3.12"
+          echo "Working Directory will be: ${{ github.workspace }}/${{ env.WORKING_DIR }}/${{ matrix.servers }}"
           echo "==================="
 
-      - name: 🧪 CI for ${{ matrix.servers }}
-        working-directory: . 
+      - name: 🧪 CI for ${{ matrix.servers }} (Python ${{ matrix.python-version }})
+        working-directory: ${{ github.workspace }}
         run: |
             echo "::group::Starting CI for ${{ matrix.servers }} on Python ${{ matrix.python-version }}"
             echo "🔧 Server: ${{ matrix.servers }}"

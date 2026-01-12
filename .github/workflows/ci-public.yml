@@ -207,6 +207,9 @@ jobs:
           if [[ ${#final_servers[@]} -gt 0 ]]; then
             # Use printf and jq for safer JSON generation
             servers_json=$(printf '%s\n' "${final_servers[@]}" | jq -R . | jq -s -c .)
+            echo "🐛 DEBUG: servers_json = $servers_json"
+            echo "🐛 DEBUG: Array length = ${#final_servers[@]}"
+            echo "🐛 DEBUG: Array contents = ${final_servers[@]}"
             echo "should_run=true" >> "$GITHUB_OUTPUT"
             echo "servers=$servers_json" >> "$GITHUB_OUTPUT"
             echo "Final server list: $servers_json"
@@ -260,6 +263,15 @@ jobs:
         working-directory: ${{ github.workspace }}/${{ env.WORKING_DIR }}/${{ matrix.servers }}
 
     steps:
+
+      - name: 🐛 Debug Matrix Values
+        run: |
+          echo "=== Matrix Debug ==="
+          echo "Server: '${{ matrix.servers }}'"
+          echo "Python Version: '${{ matrix.python-version }}'"
+          echo "Servers JSON from needs: '${{ needs.check-changes.outputs.servers }}'"
+          echo "Should Run: '${{ needs.check-changes.outputs.should-run }}'"
+          echo "==================="
 
       - name: 🧪 CI for ${{ matrix.servers }}
         working-directory: . 

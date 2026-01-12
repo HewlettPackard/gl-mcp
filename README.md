@@ -1,8 +1,10 @@
 # HPE GreenLake MCP Servers
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
-[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
+[![Python Versions](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/downloads/)
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![CI Status](https://github.com/HewlettPackard/gl-mcp/actions/workflows/ci-public.yml/badge.svg)](https://github.com/HewlettPackard/gl-mcp/actions/workflows/ci-public.yml)
+
 
 A collection of [Model Context Protocol (MCP)](https://modelcontextprotocol.io) servers that enable AI assistants to interact with HPE GreenLake platform services.
 
@@ -199,6 +201,14 @@ export MCP_TOOL_MODE=static
 ```bash
 export MCP_TOOL_MODE=dynamic
 ```
+
+### Compatibility Matrix
+
+| Python Version | Status | Notes |
+|----------------|--------|-------|
+| 3.12           | ✅ Supported | Recommended |
+| 3.11           | ✅ Supported | Recommended |
+| 3.10           | ✅ Supported | Minimum version |
 
 ## Architecture Overview
 

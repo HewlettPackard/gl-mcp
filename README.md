@@ -362,7 +362,7 @@ The primary support channel for this project is [GitHub Issues](https://github.c
 
 ### Before Opening an Issue
 
-1. **Check existing issues**: Search [open](https://github.com/glcp/gl-mcp/issues) and [closed](https://github.com/glcp/gl-mcp/issues?q=is%3Aissue+is%3Aclosed) issues
+1. **Check existing issues**: Search [open](https://github.com/HewlettPackard/gl-mcp/issues) and [closed](https://github.com/HewlettPackard/gl-mcp/issues?q=is%3Aissue+is%3Aclosed) issues
 2. **Review troubleshooting**: Check the [Troubleshooting](#troubleshooting) section above
 3. **Enable debug logging**: Run with `GREENLAKE_LOG_LEVEL=DEBUG` and `GREENLAKE_FILE_LOGGING=true` to gather detailed logs
 4. **Test authentication**: Verify your credentials work with the GreenLake APIs directly

@@ -3,6 +3,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
 [![Python Versions](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/downloads/)
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Security Policy](https://img.shields.io/badge/Security-Policy-green.svg)](./.github/SECURITY.md)
 [![CI Status](https://github.com/HewlettPackard/gl-mcp/actions/workflows/ci-public.yml/badge.svg)](https://github.com/HewlettPackard/gl-mcp/actions/workflows/ci-public.yml)
 
 

@@ -1,0 +1,135 @@
+name: 🐛 Bug Report
+description: Report a bug or unexpected behavior (not security-related)
+labels: ['bug', 'triage']
+assignees: []
+body:
+  - type: checkboxes
+    id: security-confirmation
+    attributes:
+      label: "Security Confirmation"
+      description: "Confirm this is not a security vulnerability"
+      options:
+        - label: "This is NOT a security vulnerability"
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "🐛 Bug Description"
+      description: "A clear and concise description of what the bug is"
+      placeholder: "Describe what happened and what you expected to happen..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: "🔄 Steps to Reproduce"
+      description: "Steps to reproduce the behavior"
+      placeholder: |
+        1. Configure MCP server with '...'
+        2. Run command '...'
+        3. Call tool '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "✅ Expected Behavior"
+      description: "What should have happened?"
+      placeholder: "Describe what you expected to happen..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: "❌ Actual Behavior"
+      description: "What actually happened?"
+      placeholder: "Describe what actually happened, including error messages..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: server
+    attributes:
+      label: "🖥️ MCP Server"
+      description: "Which GL-MCP server is affected?"
+      options:
+        - audit-logs
+        - devices
+        - subscriptions
+        - users
+        - workspaces
+        - multiple servers
+        - not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: "🌍 Environment"
+      description: "Your environment details"
+      placeholder: |
+        - Python version: 
+        - Operating System: 
+        - GL-MCP version: 
+        - MCP Client: (VS Code, Claude Desktop, etc.)
+        - HPE GreenLake region: 
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "📋 Logs and Error Messages"
+      description: "Include relevant log output or error messages"
+      placeholder: "Paste logs here (remove sensitive information like API keys)..."
+      render: shell
+
+  - type: textarea
+    id: configuration
+    attributes:
+      label: "⚙️ Configuration"
+      description: "MCP client configuration (remove sensitive data!)"
+      placeholder: |
+        ```json
+        {
+          "servers": {
+            "audit-logs": {
+              "type": "stdio",
+              "command": "uv",
+              "args": ["run", "python", "__main__.py"],
+              "env": {
+                "MCP_TOOL_MODE": "static",
+                "GREENLAKE_LOG_LEVEL": "INFO"
+              }
+            }
+          }
+        }
+        ```
+      render: json
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: "📝 Additional Context"
+      description: "Any other context about the problem"
+      placeholder: "Screenshots, workarounds, related issues, etc."
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "✅ Pre-submission Checklist"
+      description: "Please verify you have completed these steps"
+      options:
+        - label: "I have searched existing issues to avoid duplicates"
+          required: true
+        - label: "I have removed sensitive information (API keys, credentials, etc.)"
+          required: true
+        - label: "I have provided enough information to reproduce the issue"
+          required: true

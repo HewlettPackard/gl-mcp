@@ -1,0 +1,70 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement for GL-MCP
+labels: ['enhancement', 'triage']
+assignees: []
+body:
+  - type: checkboxes
+    id: security-confirmation
+    attributes:
+      label: "Security Confirmation" 
+      options:
+        - label: "This is NOT a security vulnerability"
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "🎯 Problem Statement"
+      description: "What problem does this feature solve?"
+      placeholder: "I'm trying to do X but currently have to..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: "💡 Proposed Solution"
+      description: "What would you like to see implemented?"
+      placeholder: "I would like GL-MCP to support..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: server
+    attributes:
+      label: "🖥️ Affected MCP Server"
+      description: "Which server(s) would this feature affect?"
+      options:
+        - audit-logs
+        - devices  
+        - subscriptions
+        - users
+        - workspaces
+        - multiple servers
+        - new server
+        - core framework
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: "🔄 Use Case"
+      description: "Describe how you would use this feature"
+      placeholder: "As a developer, I want to... so that I can..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "🔀 Alternatives Considered"
+      description: "What alternatives have you considered?"
+      placeholder: "I considered using X but..."
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: "📝 Additional Context"
+      description: "Screenshots, examples, or other context"
+      placeholder: "Examples, mockups, related issues, etc."

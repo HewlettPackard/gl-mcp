@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📖 Documentation and Examples
+    url: https://developer.greenlake.hpe.com/docs/greenlake/mcp-server/public
+    about: Check our documentation, guides, and examples for common use cases.
+  - name: 🏢 HPE GreenLake Support
+    url: https://support.hpe.com/connect/s/?language=en_US
+    about: For issues with HPE GreenLake platform itself (not GL-MCP servers).

@@ -1,0 +1,498 @@
+name: Auto Release on PR Merge
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  auto-release:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    
+    # Global environment variables
+    env:
+      ALL_SERVICES: "audit-logs devices users workspaces subscriptions"
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Upgrade pip for security
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Install dependencies
+        run: |
+          pip install toml
+
+      - name: Detect changed services and extract versions
+        id: detect-changes
+        run: |
+          # Get changed files in the merged PR
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
+          
+          echo "📁 Changed files:"
+          echo "$CHANGED_FILES"
+          echo ""
+          
+          # Use global ALL_SERVICES variable and calculate count dynamically
+          ALL_SERVICES="${{ env.ALL_SERVICES }}"
+          ALL_SERVICES_COUNT=$(echo $ALL_SERVICES | wc -w)
+          
+          echo "🔧 Configuration:"
+          echo "All services: $ALL_SERVICES"
+          echo "Total service count: $ALL_SERVICES_COUNT"
+          echo ""
+          
+          CHANGED_SERVICES=""
+          SERVICE_COUNT=0
+          CHANGED_SERVICES_WITH_VERSIONS=""
+          
+          # Check each service for changes
+          for service in $ALL_SERVICES; do
+            if echo "$CHANGED_FILES" | grep -q "^src/${service}/"; then
+              echo "✅ Service changed: $service"
+              
+              # Extract version from pyproject.toml
+              if [ -f "src/${service}/pyproject.toml" ]; then
+                VERSION=$(python3 -c "
+          import toml
+          try:
+              data = toml.load('src/${service}/pyproject.toml')
+              print(data['project']['version'])
+          except:
+              print('0.0.1')
+          ")
+                echo "  Version: $VERSION"
+                CHANGED_SERVICES="$CHANGED_SERVICES $service"
+                CHANGED_SERVICES_WITH_VERSIONS="$CHANGED_SERVICES_WITH_VERSIONS ${service}:${VERSION}"
+                SERVICE_COUNT=$((SERVICE_COUNT + 1))
+              else
+                echo "  ⚠️  No pyproject.toml found for $service"
+              fi
+            fi
+          done
+          
+          # Check if all services were changed (dynamic comparison)
+          if [ $SERVICE_COUNT -eq $ALL_SERVICES_COUNT ]; then
+            IS_ALL_SERVICES="true"
+          else
+            IS_ALL_SERVICES="false"
+          fi
+          
+          # Check for shared/cross-cutting changes
+          SHARED_CHANGED="false"
+          if echo "$CHANGED_FILES" | grep -qE "^(README\.md|\.github/|requirements\.txt|LICENSE|\.gitignore)"; then
+            SHARED_CHANGED="true"
+            echo "✅ Shared files changed"
+          fi
+          
+          echo ""
+          echo "📊 Summary:"
+          echo "Changed services: $CHANGED_SERVICES"
+          echo "Service count: $SERVICE_COUNT"
+          echo "Total services: $ALL_SERVICES_COUNT"
+          echo "All services changed: $IS_ALL_SERVICES"
+          echo "Shared files changed: $SHARED_CHANGED"
+          
+          # Set outputs
+          echo "changed_services=${CHANGED_SERVICES}" >> $GITHUB_OUTPUT
+          echo "changed_services_with_versions=${CHANGED_SERVICES_WITH_VERSIONS}" >> $GITHUB_OUTPUT
+          echo "service_count=${SERVICE_COUNT}" >> $GITHUB_OUTPUT
+          echo "all_services_count=${ALL_SERVICES_COUNT}" >> $GITHUB_OUTPUT
+          echo "is_all_services=${IS_ALL_SERVICES}" >> $GITHUB_OUTPUT
+          echo "shared_changed=${SHARED_CHANGED}" >> $GITHUB_OUTPUT
+
+      - name: Create service tags
+        if: steps.detect-changes.outputs.service_count > 0
+        id: create-tags
+        run: |
+          CHANGED_SERVICES_WITH_VERSIONS="${{ steps.detect-changes.outputs.changed_services_with_versions }}"
+          CREATED_TAGS=""
+          SKIPPED_TAGS=""
+          
+          echo "🏷️  Creating service tags..."
+          
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Function to check if tag exists (local or remote)
+          tag_exists() {
+            local tag_name=$1
+            # Check local tags first
+            if git rev-parse "$tag_name" >/dev/null 2>&1; then
+              return 0
+            fi
+            # Check remote tags
+            if git ls-remote --tags origin | grep -q "refs/tags/${tag_name}$"; then
+              return 0
+            fi
+            return 1
+          }
+          
+          for service_version in $CHANGED_SERVICES_WITH_VERSIONS; do
+            service=$(echo $service_version | cut -d: -f1)
+            version=$(echo $service_version | cut -d: -f2)
+            
+            TAG_NAME="${service}/v${version}"
+            
+            # Check if tag already exists
+            if tag_exists "$TAG_NAME"; then
+              echo "⚠️  Tag $TAG_NAME already exists - skipping"
+              SKIPPED_TAGS="$SKIPPED_TAGS $TAG_NAME"
+              continue
+            fi
+            
+            echo "✅ Creating tag: $TAG_NAME"
+            
+            # Create tag with PR information
+            git tag -a "$TAG_NAME" -m "${service} v${version}
+
+          Auto-generated from merged PR #${{ github.event.pull_request.number }}
+          PR Title: ${{ github.event.pull_request.title }}
+          Merged by: ${{ github.event.pull_request.merged_by.login }}
+          Commit: ${{ github.sha }}"
+            
+            # Push tag with error handling
+            if git push origin "$TAG_NAME"; then
+              echo "  ✅ Successfully pushed: $TAG_NAME"
+              CREATED_TAGS="$CREATED_TAGS $TAG_NAME"
+            else
+              echo "  ❌ Failed to push: $TAG_NAME"
+              SKIPPED_TAGS="$SKIPPED_TAGS $TAG_NAME"
+            fi
+          done
+          
+          # Set outputs
+          echo "created_tags=${CREATED_TAGS}" >> $GITHUB_OUTPUT
+          echo "skipped_tags=${SKIPPED_TAGS}" >> $GITHUB_OUTPUT
+          
+          # Summary
+          echo ""
+          echo "📊 Tag Summary:"
+          if [ -n "$CREATED_TAGS" ]; then
+            echo "✅ Created: $CREATED_TAGS"
+          fi
+          if [ -n "$SKIPPED_TAGS" ]; then
+            echo "⚠️  Skipped (already exist): $SKIPPED_TAGS"
+          fi
+
+      - name: Create individual service releases
+        if: steps.detect-changes.outputs.service_count > 0 && steps.detect-changes.outputs.is_all_services == 'false'
+        run: |
+          CREATED_TAGS="${{ steps.create-tags.outputs.created_tags }}"
+          
+          if [ -z "$CREATED_TAGS" ]; then
+            echo "⚠️  No new tags created - skipping individual releases"
+            exit 0
+          fi
+          
+          echo "🚀 Creating individual service releases..."
+          
+          # Only create releases for services that got new tags
+          for tag in $CREATED_TAGS; do
+            # Extract service and version from tag (format: service/vX.X.X)
+            service=$(echo $tag | cut -d'/' -f1)
+            version=$(echo $tag | cut -d'/' -f2 | sed 's/^v//')
+            
+            TAG_NAME="$tag"
+            
+            # Get service display name
+            case $service in
+              "audit-logs") DISPLAY_NAME="Audit Logs" ;;
+              "devices") DISPLAY_NAME="Devices" ;;
+              "users") DISPLAY_NAME="Users" ;;
+              "workspaces") DISPLAY_NAME="Workspaces" ;;
+              "subscriptions") DISPLAY_NAME="Subscriptions" ;;
+              *) DISPLAY_NAME="$service" ;;
+            esac
+            
+            # Create release notes
+            RELEASE_NOTES="## 🚀 $DISPLAY_NAME MCP Server v$version
+
+          ### 📋 What's Changed
+          This release was automatically generated from merged PR #${{ github.event.pull_request.number }}.
+
+          **PR Title**: ${{ github.event.pull_request.title }}
+          **Merged by**: @${{ github.event.pull_request.merged_by.login }}
+
+          ### 📦 Installation
+          \`\`\`bash
+          # Clone the repository
+          git clone https://github.com/${{ github.repository }}.git
+          cd gl-mcp/src/${service}
+          
+          # Install dependencies
+          pip install -e .
+          \`\`\`
+
+          ### 🔗 Documentation
+          - [Service README](./src/${service}/README.md)
+          - [Service CHANGELOG](./src/${service}/CHANGELOG.md)
+          - [HPE GreenLake API Docs](https://developer.greenlake.hpe.com/docs/greenlake/services)
+          - [MCP Specification](https://spec.modelcontextprotocol.io/)
+
+          ### 🏷️ Tag Information
+          - **Tag**: \`$TAG_NAME\`
+          - **Commit**: \`${{ github.sha }}\`
+          - **Service Path**: \`src/${service}/\`"
+
+          # Extract only the current version's changelog entry
+          if [ -f "src/${service}/CHANGELOG.md" ]; then
+            # Find the section for the current version using sed and awk
+            CURRENT_VERSION_CHANGELOG=$(sed -n "/^## \[${version}\]/,/^## \[/p" "src/${service}/CHANGELOG.md" | sed '$d' | head -20)
+            
+            if [ -n "$CURRENT_VERSION_CHANGELOG" ]; then
+              RELEASE_NOTES="$RELEASE_NOTES
+
+          ### 📝 Version $version Changelog
+          \`\`\`markdown
+          $CURRENT_VERSION_CHANGELOG
+          \`\`\`"
+            else
+              RELEASE_NOTES="$RELEASE_NOTES
+
+          ### 📝 Version $version Changelog
+          \`\`\`markdown
+          ## [$version]
+          Changelog entry not found for this version.
+          \`\`\`"
+            fi
+          fi
+          
+          echo "$RELEASE_NOTES" > /tmp/release_notes_${service}.md
+          
+          # Create the release
+          gh release create "$TAG_NAME" \
+            --title "$DISPLAY_NAME v$version" \
+            --notes-file "/tmp/release_notes_${service}.md"
+
+          echo "✅ Created release for $service v$version"
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create all-services release
+        if: steps.detect-changes.outputs.is_all_services == 'true'
+        run: |
+          CHANGED_SERVICES_WITH_VERSIONS="${{ steps.detect-changes.outputs.changed_services_with_versions }}"
+          CREATED_TAGS="${{ steps.create-tags.outputs.created_tags }}"
+          SKIPPED_TAGS="${{ steps.create-tags.outputs.skipped_tags }}"
+          
+          echo "🌐 Creating all-services release..."
+          
+          # Extract version from first service
+          FIRST_SERVICE_VERSION=$(echo $CHANGED_SERVICES_WITH_VERSIONS | awk '{print $1}' | cut -d: -f2)
+          UMBRELLA_TAG="v${FIRST_SERVICE_VERSION}"
+          
+          # Check if umbrella tag already exists
+          if git rev-parse "$UMBRELLA_TAG" >/dev/null 2>&1 || \
+             git ls-remote --tags origin | grep -q "refs/tags/${UMBRELLA_TAG}$"; then
+            echo "⚠️  Umbrella tag $UMBRELLA_TAG already exists - skipping umbrella creation"
+          else
+            echo "✅ Creating umbrella tag: $UMBRELLA_TAG"
+            
+            # Create umbrella tag
+            git tag -a "$UMBRELLA_TAG" -m "HPE GreenLake MCP v${FIRST_SERVICE_VERSION} - All Services Release
+
+          Auto-generated from merged PR #${{ github.event.pull_request.number }}
+          PR Title: ${{ github.event.pull_request.title }}
+          Merged by: ${{ github.event.pull_request.merged_by.login }}
+          
+          Services with new tags:
+          $(for tag in $CREATED_TAGS; do echo "- $tag"; done)
+          
+          $(if [ -n "$SKIPPED_TAGS" ]; then
+            echo "Services with existing tags (skipped):"
+            for tag in $SKIPPED_TAGS; do echo "- $tag"; done
+          fi)
+          
+          Commit: ${{ github.sha }}"
+            
+            git push origin "$UMBRELLA_TAG"
+          fi
+          
+          # Only create release if we have some new tags
+          if [ -n "$CREATED_TAGS" ]; then
+            # Create release notes for all services
+            ALL_SERVICES_NOTES="## 🚀 HPE GreenLake MCP v${FIRST_SERVICE_VERSION} - All Services Release
+
+          ### 📋 What's Changed
+          This is a comprehensive release updating HPE GreenLake MCP servers.
+          
+          **PR Title**: ${{ github.event.pull_request.title }}
+          **Merged by**: @${{ github.event.pull_request.merged_by.login }}
+          **PR Number**: #${{ github.event.pull_request.number }}
+
+          ### 🏷️ New Service Tags
+          $(for tag in $CREATED_TAGS; do echo "- ✅ \`$tag\`"; done)
+          
+          $(if [ -n "$SKIPPED_TAGS" ]; then
+            echo "### ⚠️ Existing Tags (Skipped)"
+            for tag in $SKIPPED_TAGS; do echo "- ⏭️ \`$tag\` (already exists)"; done
+          fi)
+
+          ### 📦 Installation
+          \`\`\`bash
+          # Clone the repository
+          git clone https://github.com/${{ github.repository }}.git
+          cd gl-mcp
+          
+          # Install specific service
+          cd src/[service-name]
+          pip install -e .
+          \`\`\`
+
+          ### 🔗 Documentation
+          - [Repository README](./README.md)
+          - [Service Documentation](./src/)
+          - [HPE GreenLake API Docs](https://developer.greenlake.hpe.com/docs/greenlake/services)
+          - [MCP Specification](https://spec.modelcontextprotocol.io/)
+
+          ### 🏷️ Tag Information
+          - **Umbrella Tag**: \`$UMBRELLA_TAG\`
+          - **Commit**: \`${{ github.sha }}\`
+          - **Release Type**: All Services
+
+          ### 📦 Services Included
+          - **🔍 Audit Logs** - Audit log management with comprehensive filtering
+          - **💻 Devices** - Device management and inventory tracking
+          - **👥 Users** - User management and lookup functionality
+          - **🏢 Workspaces** - Workspace information retrieval
+          - **📋 Subscriptions** - Subscription management and monitoring
+
+          ### ✨ Common Features
+          All services include:
+          - 🔐 OAuth2 authentication with automatic token management
+          - 🔧 Dynamic tools with runtime parameter validation
+          - 📡 Model Context Protocol v1.0 implementation
+          - 🐍 Python 3.10+ support
+          - ⚙️ Environment-based configuration
+          - 🔍 Comprehensive filtering and pagination support
+
+          ### 📝 Service Changelogs
+          
+          $(for service_version in $CHANGED_SERVICES_WITH_VERSIONS; do
+            service=$(echo $service_version | cut -d: -f1)
+            version=$(echo $service_version | cut -d: -f2)
+            
+            # Get service display name
+            case $service in
+              "audit-logs") DISPLAY_NAME="🔍 Audit Logs" ;;
+              "devices") DISPLAY_NAME="💻 Devices" ;;
+              "users") DISPLAY_NAME="👥 Users" ;;
+              "workspaces") DISPLAY_NAME="🏢 Workspaces" ;;
+              "subscriptions") DISPLAY_NAME="📋 Subscriptions" ;;
+              *) DISPLAY_NAME="$service" ;;
+            esac
+            
+            echo "#### $DISPLAY_NAME v$version"
+            echo ""
+            
+            # Extract current version changelog if file exists
+            if [ -f "src/${service}/CHANGELOG.md" ]; then
+              CURRENT_VERSION_CHANGELOG=$(sed -n "/^## \[${version}\]/,/^## \[/p" "src/${service}/CHANGELOG.md" | sed '$d' | head -15)
+              
+              if [ -n "$CURRENT_VERSION_CHANGELOG" ]; then
+                echo "\`\`\`markdown"
+                echo "$CURRENT_VERSION_CHANGELOG"
+                echo "\`\`\`"
+              else
+                echo "- No changelog entry found for v$version"
+              fi
+            else
+              echo "- No CHANGELOG.md file found"
+            fi
+            
+            echo ""
+            echo "📄 [Full ${service} CHANGELOG](./src/${service}/CHANGELOG.md)"
+            echo ""
+          done)
+          
+          ### 🔗 Additional Resources
+          View complete service documentation:
+          $(for service in ${{ env.ALL_SERVICES }}; do echo "- [${service} README](./src/${service}/README.md)"; done)"
+
+            echo "$ALL_SERVICES_NOTES" > /tmp/all_services_release_notes.md
+
+            # Create the all-services release (only if umbrella tag exists and was created)
+            if git rev-parse "$UMBRELLA_TAG" >/dev/null 2>&1 && [ -n "$CREATED_TAGS" ]; then
+              gh release create "$UMBRELLA_TAG" \
+                --title "All Services Release v${FIRST_SERVICE_VERSION}" \
+                --notes-file "/tmp/all_services_release_notes.md"
+              echo "✅ Created all-services release v${FIRST_SERVICE_VERSION}"
+            else
+              echo "⚠️  Skipped all-services release (no umbrella tag or no new service tags)"
+            fi
+          else
+            echo "⚠️  No new tags created - skipping all-services release"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create workflow summary
+        if: always()
+        run: |
+          echo "## 🎉 Auto Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**PR**: #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Merged by**: @${{ github.event.pull_request.merged_by.login }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          CREATED_TAGS="${{ steps.create-tags.outputs.created_tags }}"
+          SKIPPED_TAGS="${{ steps.create-tags.outputs.skipped_tags }}"
+          SERVICE_COUNT="${{ steps.detect-changes.outputs.service_count }}"
+          IS_ALL_SERVICES="${{ steps.detect-changes.outputs.is_all_services }}"
+          
+          if [ "$SERVICE_COUNT" -gt 0 ]; then
+            # Show created tags
+            if [ -n "$CREATED_TAGS" ] && [ "$CREATED_TAGS" != "" ]; then
+              echo "### ✅ Tags Created" >> $GITHUB_STEP_SUMMARY
+              for tag in $CREATED_TAGS; do
+                echo "- \`$tag\`" >> $GITHUB_STEP_SUMMARY
+              done
+              echo "" >> $GITHUB_STEP_SUMMARY
+            fi
+            
+            # Show skipped tags
+            if [ -n "$SKIPPED_TAGS" ] && [ "$SKIPPED_TAGS" != "" ]; then
+              echo "### ⚠️ Tags Skipped (Already Exist)" >> $GITHUB_STEP_SUMMARY
+              for tag in $SKIPPED_TAGS; do
+                echo "- \`$tag\`" >> $GITHUB_STEP_SUMMARY
+              done
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "💡 **Note**: These services already have releases with these versions. Consider updating the version in \`pyproject.toml\` and \`CHANGELOG.md\` for new releases." >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+            fi
+            
+            # Release type summary
+            if [ "$IS_ALL_SERVICES" = "true" ]; then
+              echo "### 🌐 Release Type: All Services" >> $GITHUB_STEP_SUMMARY
+              if [ -n "$CREATED_TAGS" ] && [ "$CREATED_TAGS" != "" ]; then
+                echo "Created umbrella release with new service tags." >> $GITHUB_STEP_SUMMARY
+              else
+                echo "No new releases created (all versions already exist)." >> $GITHUB_STEP_SUMMARY
+              fi
+            else
+              echo "### 🎯 Release Type: Individual Services" >> $GITHUB_STEP_SUMMARY
+              if [ -n "$CREATED_TAGS" ] && [ "$CREATED_TAGS" != "" ]; then
+                echo "Created releases for services with new versions only." >> $GITHUB_STEP_SUMMARY
+              else
+                echo "No releases created (all versions already exist)." >> $GITHUB_STEP_SUMMARY
+              fi
+            fi
+          else
+            echo "### ℹ️ No Services Changed" >> $GITHUB_STEP_SUMMARY
+            echo "No service directories were modified in this PR." >> $GITHUB_STEP_SUMMARY
+          fi

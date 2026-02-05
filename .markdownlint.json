@@ -11,6 +11,9 @@
     "tables": false,
     "headings": false
   },
+  "MD024": {
+    "siblings_only": true
+  },
   "MD032": false,
   "MD033": true,
   "MD034": false

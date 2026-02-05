@@ -337,6 +337,13 @@ jobs:
       # SECURITY & LICENSE COMPLIANCE CHECKS
       # (Only run once per server - on default Python version)
       # ==========================================
+      - name: Upgrade pip for security
+        if: always() && matrix.python-version == env.DEFAULT_PYTHON_VERSION
+        run: |
+          echo "::group::Upgrading pip for security"
+          python -m pip install --upgrade pip
+          echo "✅ pip upgraded to latest version"
+          echo "::endgroup::"      
       
       - name: Secrets detection (detect-secrets)
         if: always() && matrix.python-version == env.DEFAULT_PYTHON_VERSION

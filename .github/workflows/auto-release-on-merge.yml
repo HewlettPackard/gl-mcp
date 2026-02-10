@@ -34,6 +34,29 @@ jobs:
         run: |
           pip install toml
 
+      - name: Validate and sanitize user inputs
+        id: sanitize
+        run: |
+          # Sanitize PR title - remove dangerous characters, limit length
+          SAFE_PR_TITLE=$(printf '%s' '${{ github.event.pull_request.title }}' | \
+            sed 's/[`$();|&<>]//g' | \
+            sed 's/[[:cntrl:]]//g' | \
+            cut -c1-100)
+          
+          # Validate PR title is not empty after sanitization
+          if [ -z "$SAFE_PR_TITLE" ]; then
+            SAFE_PR_TITLE="Untitled PR"
+          fi
+          
+          # Log sanitization results
+          echo "🔒 Input validation results:"
+          echo "Original PR title: ${{ github.event.pull_request.title }}"
+          echo "Sanitized PR title: $SAFE_PR_TITLE"
+          echo ""
+          
+          # Set outputs
+          echo "pr_title=$SAFE_PR_TITLE" >> $GITHUB_OUTPUT
+
       - name: Detect changed services and extract versions
         id: detect-changes
         run: |
@@ -155,13 +178,17 @@ jobs:
             
             echo "✅ Creating tag: $TAG_NAME"
             
-            # Create tag with PR information
+            # Create tag with sanitized PR information
+            PR_TITLE="${{ steps.sanitize.outputs.pr_title }}"
+            MERGED_BY="${{ github.event.pull_request.merged_by.login }}"
+            
+            # Create tag message with sanitized inputs
             git tag -a "$TAG_NAME" -m "${service} v${version}
 
-          Auto-generated from merged PR #${{ github.event.pull_request.number }}
-          PR Title: ${{ github.event.pull_request.title }}
-          Merged by: ${{ github.event.pull_request.merged_by.login }}
-          Commit: ${{ github.sha }}"
+            Auto-generated from merged PR #${{ github.event.pull_request.number }}
+            PR Title: ${PR_TITLE}
+            Merged by: ${MERGED_BY}
+            Commit: ${{ github.sha }}"
             
             # Push tag with error handling
             if git push origin "$TAG_NAME"; then
@@ -217,14 +244,17 @@ jobs:
               *) DISPLAY_NAME="$service" ;;
             esac
             
-            # Create release notes
+            # Create release notes with sanitized inputs
+            PR_TITLE="${{ steps.sanitize.outputs.pr_title }}"
+            MERGED_BY="${{ github.event.pull_request.merged_by.login }}"
+            
             RELEASE_NOTES="## 🚀 $DISPLAY_NAME MCP Server v$version
 
           ### 📋 What's Changed
           This release was automatically generated from merged PR #${{ github.event.pull_request.number }}.
 
-          **PR Title**: ${{ github.event.pull_request.title }}
-          **Merged by**: @${{ github.event.pull_request.merged_by.login }}
+          **PR Title**: ${PR_TITLE}
+          **Merged by**: @${MERGED_BY}
 
           ### 📦 Installation
           \`\`\`bash
@@ -302,36 +332,42 @@ jobs:
           else
             echo "✅ Creating umbrella tag: $UMBRELLA_TAG"
             
-            # Create umbrella tag
+            # Create umbrella tag with sanitized inputs
+            PR_TITLE="${{ steps.sanitize.outputs.pr_title }}"
+            MERGED_BY="${{ github.event.pull_request.merged_by.login }}"
+            
             git tag -a "$UMBRELLA_TAG" -m "HPE GreenLake MCP v${FIRST_SERVICE_VERSION} - All Services Release
 
-          Auto-generated from merged PR #${{ github.event.pull_request.number }}
-          PR Title: ${{ github.event.pull_request.title }}
-          Merged by: ${{ github.event.pull_request.merged_by.login }}
-          
-          Services with new tags:
-          $(for tag in $CREATED_TAGS; do echo "- $tag"; done)
-          
-          $(if [ -n "$SKIPPED_TAGS" ]; then
-            echo "Services with existing tags (skipped):"
-            for tag in $SKIPPED_TAGS; do echo "- $tag"; done
-          fi)
-          
-          Commit: ${{ github.sha }}"
+            Auto-generated from merged PR #${{ github.event.pull_request.number }}
+            PR Title: ${PR_TITLE}
+            Merged by: ${MERGED_BY}
+            
+            Services with new tags:
+            $(for tag in $CREATED_TAGS; do echo "- $tag"; done)
+            
+            $(if [ -n "$SKIPPED_TAGS" ]; then
+              echo "Services with existing tags (skipped):"
+              for tag in $SKIPPED_TAGS; do echo "- $tag"; done
+            fi)
+            
+            Commit: ${{ github.sha }}"
             
             git push origin "$UMBRELLA_TAG"
           fi
           
           # Only create release if we have some new tags
           if [ -n "$CREATED_TAGS" ]; then
-            # Create release notes for all services
+            # Create release notes for all services with sanitized inputs
+            PR_TITLE="${{ steps.sanitize.outputs.pr_title }}"
+            MERGED_BY="${{ github.event.pull_request.merged_by.login }}"
+            
             ALL_SERVICES_NOTES="## 🚀 HPE GreenLake MCP v${FIRST_SERVICE_VERSION} - All Services Release
 
           ### 📋 What's Changed
           This is a comprehensive release updating HPE GreenLake MCP servers.
           
-          **PR Title**: ${{ github.event.pull_request.title }}
-          **Merged by**: @${{ github.event.pull_request.merged_by.login }}
+          **PR Title**: ${PR_TITLE}
+          **Merged by**: @${MERGED_BY}
           **PR Number**: #${{ github.event.pull_request.number }}
 
           ### 🏷️ New Service Tags
@@ -443,9 +479,11 @@ jobs:
       - name: Create workflow summary
         if: always()
         run: |
+          PR_TITLE="${{ steps.sanitize.outputs.pr_title }}"
+          
           echo "## 🎉 Auto Release Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**PR**: #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}" >> $GITHUB_STEP_SUMMARY
+          echo "**PR**: #${{ github.event.pull_request.number }} - ${PR_TITLE}" >> $GITHUB_STEP_SUMMARY
           echo "**Merged by**: @${{ github.event.pull_request.merged_by.login }}" >> $GITHUB_STEP_SUMMARY
           echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY

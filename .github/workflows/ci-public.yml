@@ -31,7 +31,7 @@ jobs:
         env:
           AUTH_TOKEN: ${{ secrets.AUTH_TOKEN || '' }}
           ORG: ${{ github.repository_owner }}
-          TRUSTED_USERS: "lchinglen,vandewillysilva,chamur,alexandrealvino,sunkarar"
+          TRUSTED_USERS: "lchinglen,vandewillysilva,chamur,alexandrealvino,HemrajChandan,r-nishanth-sai"
           TRUSTED_TEAMS: "gl-mcp"
         run: |
           # Push events are always authorized
@@ -343,7 +343,7 @@ jobs:
           echo "::group::Upgrading pip for security"
           python -m pip install --upgrade pip
           echo "✅ pip upgraded to latest version"
-          echo "::endgroup::"      
+          echo "::endgroup::"
       
       - name: Secrets detection (detect-secrets)
         if: always() && matrix.python-version == env.DEFAULT_PYTHON_VERSION

@@ -379,7 +379,7 @@ The primary support channel for this project is [GitHub Issues](https://github.c
 
 - [Model Context Protocol Documentation](https://modelcontextprotocol.io)
 - [HPE GreenLake API Documentation](https://developer.greenlake.hpe.com/docs/greenlake/services)
-- [MCP Specification](https://spec.modelcontextprotocol.io/)
+- [MCP Specification](https://modelcontextprotocol.io/specification/latest)
 
 ## License
 

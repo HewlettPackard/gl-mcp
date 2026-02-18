@@ -147,6 +147,7 @@ jobs:
     outputs:
       should-run: ${{ steps.determine-strategy.outputs.should_run }}
       servers: ${{ steps.determine-strategy.outputs.servers }}
+      should-lint-markdown: ${{ steps.determine-strategy.outputs.should_lint_markdown }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4.2.2
@@ -169,15 +170,24 @@ jobs:
           files: |
             src/**
 
+      - name: Check for changes in markdown files
+        id: check-markdown
+        uses: tj-actions/changed-files@v46.0.0
+        with:
+          files: |
+            **/*.md
+
       - name: Determine test strategy based on file changes
         id: determine-strategy
 
         run: |
           workflow_changed="${{ steps.check-workflow.outputs.any_changed }}"
           src_changed="${{ steps.check-src.outputs.any_changed }}"
+          markdown_changed="${{ steps.check-markdown.outputs.any_changed }}"
 
           echo "Workflow changed: $workflow_changed"
           echo "Src changed: $src_changed"
+          echo "Markdown changed: $markdown_changed"
 
           # Initialize final server list
           declare -a final_servers=()
@@ -224,12 +234,21 @@ jobs:
             echo "No tests needed (no relevant changes)"
           fi
 
+          # Set markdown lint flag independently
+          if [[ "$markdown_changed" == "true" || "$workflow_changed" == "true" || "$src_changed" == "true" ]]; then
+            echo "should_lint_markdown=true" >> "$GITHUB_OUTPUT"
+            echo "✅ Markdown linting will run"
+          else
+            echo "should_lint_markdown=false" >> "$GITHUB_OUTPUT"
+            echo "⏭️ No markdown changes detected"
+          fi
+
   lint-markdown:
     runs-on: ubuntu-latest
     name: Lint Markdown
     needs: [check-authorization, check-changes]
     if: |
-      needs.check-changes.outputs.should-run == 'true' &&
+      needs.check-changes.outputs.should-lint-markdown == 'true' &&
       ((github.event_name == 'push') ||
        (github.event_name == 'pull_request_target' && needs.check-authorization.outputs.authorized == 'true'))
     steps:
@@ -742,7 +761,11 @@ jobs:
           if [[ "${{ needs.lint-markdown.result }}" == "success" ]]; then
             echo "✅ Markdown linting passed"
           elif [[ "${{ needs.lint-markdown.result }}" == "skipped" ]]; then
-            echo "⏭️ Markdown linting skipped"
+            if [[ "${{ needs.check-changes.outputs.should-lint-markdown }}" == "true" ]]; then
+              echo "❌ Markdown linting was expected but skipped"
+              exit 1
+            fi
+            echo "⏭️ Markdown linting skipped (no markdown changes)"
           else
             echo "❌ Markdown linting failed"
             exit 1
@@ -772,7 +795,8 @@ jobs:
           
           if [[ "${{ needs.check-changes.outputs.should-run }}" == "true" ]]; then
             echo "Tested servers: ${{ needs.check-changes.outputs.servers }}"
-            echo "✅ All quality checks passed!"
-          else
-            echo "⏭️ No relevant changes - CI skipped"
           fi
+          if [[ "${{ needs.check-changes.outputs.should-lint-markdown }}" == "true" ]]; then
+            echo "Markdown linting: enabled"
+          fi
+          echo "✅ All quality checks passed!"

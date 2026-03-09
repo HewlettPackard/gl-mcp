@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
 Test for get_user_detailed_identity_v1_users_id_get tool in users MCP server.
 

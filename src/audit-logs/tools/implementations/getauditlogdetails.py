@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
 getauditlogdetails tool implementation for audit-logs MCP server.
 
@@ -6,6 +6,7 @@ This tool Get additional detail of an audit log..
 """
 
 from typing import Any, Dict, List
+from urllib.parse import quote
 from tools.base import BaseTool
 
 
@@ -82,8 +83,8 @@ class getauditlogdetailsTool(BaseTool):
 
             # Build URL with path parameters
             url = "/audit-log/v1/logs/{id}/detail"
-            # Replace path parameter: id
-            url = url.replace("{" + "id" + "}", str(arguments["id"]))
+            # Replace path parameter: id (URL-encoded to prevent path traversal)
+            url = url.replace("{" + "id" + "}", quote(str(arguments["id"]), safe=""))
 
             # Prepare query/body parameters
             params: Dict[str, Any] = {}

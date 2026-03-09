@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """Token management for workspaces API authentication."""
 
 import time

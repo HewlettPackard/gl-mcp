@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """OAuth2 client credentials provider for devices API authentication."""
 
 import time
@@ -92,7 +92,7 @@ class OAuth2Provider:
             # Raise exception for any non-2xx status code
             response.raise_for_status()
 
-            return response.json()  # type: ignore[no-any-return]
+            return response.json()
 
     def get_token(self) -> OAuth2TokenResponse:
         """Get an access token using client credentials flow with exponential backoff for rate limits.

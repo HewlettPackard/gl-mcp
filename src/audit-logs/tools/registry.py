@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
 Tool registry for audit-logs MCP server.
 
@@ -38,13 +38,13 @@ def get_tools(mode: Optional[str] = None) -> List[Type[BaseTool]]:
             logger.info("Using dynamic mode with 3 meta-tools")
         else:
             # Static mode: Import one tool per endpoint (default)
-            from tools.implementations.getauditlogdetails import getauditlogdetailsTool
             from tools.implementations.getauditlogs import getauditlogsTool
+            from tools.implementations.getauditlogdetails import getauditlogdetailsTool
 
             tools.extend(
                 [
-                    getauditlogdetailsTool,
                     getauditlogsTool,
+                    getauditlogdetailsTool,
                 ]
             )
             logger.info(f"Using static mode with {len(tools)} endpoint-specific tools")

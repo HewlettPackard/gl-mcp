@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """Unit tests for generated tools."""
 
 from __future__ import annotations
@@ -6,27 +6,12 @@ from __future__ import annotations
 from typing import Any, Dict, List, cast
 
 import pytest
-from tools.implementations.getauditlogdetails import getauditlogdetailsTool
 from tools.implementations.getauditlogs import getauditlogsTool
+from tools.implementations.getauditlogdetails import getauditlogdetailsTool
 
 # Build test matrix - de-duplicate by (name, path) to handle cases where
 # multiple endpoints map to the same tool name
 _TOOL_TEST_MATRIX_RAW = [
-    {
-        "class": getauditlogdetailsTool,
-        "name": "getauditlogdetails",
-        "method": "get",
-        "path": "/audit-log/v1/logs/{id}/detail",
-        "parameters": [
-            {
-                "name": "id",
-                "in": "path",
-                "required": True,
-                "type": "str",
-                "default": None,
-            },
-        ],
-    },
     {
         "class": getauditlogsTool,
         "name": "getauditlogs",
@@ -66,6 +51,21 @@ _TOOL_TEST_MATRIX_RAW = [
                 "in": "query",
                 "required": False,
                 "type": "int",
+                "default": None,
+            },
+        ],
+    },
+    {
+        "class": getauditlogdetailsTool,
+        "name": "getauditlogdetails",
+        "method": "get",
+        "path": "/audit-log/v1/logs/{id}/detail",
+        "parameters": [
+            {
+                "name": "id",
+                "in": "path",
+                "required": True,
+                "type": "str",
                 "default": None,
             },
         ],

@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """Live smoke tests for users MCP tools.
 
 Configure real GreenLake credentials and tool-specific arguments to run these tests.

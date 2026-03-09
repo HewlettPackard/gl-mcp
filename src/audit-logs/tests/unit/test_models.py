@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """Unit tests for generated Pydantic models."""
 
 from __future__ import annotations
@@ -10,146 +10,110 @@ from pydantic import ValidationError as PydanticValidationError
 
 from models import (
     BaseModel,
-    ErrorNotFoundDetails,
     AuditLog,
-    AuditLogs,
-    ErrorRetryDetails,
-    AuditLogDetails,
     ErrorGeneralDetails,
+    ErrorRetryDetails,
     PaginatedApiResponse,
-    Error,
     ErrorBadRequestDetails,
+    AuditLogDetails,
+    AuditLogs,
+    Error,
+    ErrorNotFoundDetails,
 )
 
 MODEL_TEST_MATRIX = [
-    {
-        "model": ErrorNotFoundDetails,
-        "name": "ErrorNotFoundDetails",
-        "fields": [
-            {
-                "name": "errorDetails",
-                "sanitized": "errorDetails",
-                "type": r"List[str]",
-                "required": False,
-            },
-        ],
-    },
     {
         "model": AuditLog,
         "name": "AuditLog",
         "fields": [
             {
-                "name": "createdAt",
-                "sanitized": "createdAt",
-                "type": r"str",
+                "name": "workspace",
+                "sanitized": "workspace",
+                "type": r"object",
                 "required": False,
             },
             {
-                "name": "description",
-                "sanitized": "description",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "category",
-                "sanitized": "category",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "updatedAt",
-                "sanitized": "updatedAt",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "application",
-                "sanitized": "application",
-                "type": r"Dict[str, Any]",
+                "name": "hasDetails",
+                "sanitized": "hasDetails",
+                "type": r"boolean",
                 "required": False,
             },
             {
                 "name": "id",
                 "sanitized": "id",
-                "type": r"str",
+                "type": r"string",
                 "required": True,
-            },
-            {
-                "name": "user",
-                "sanitized": "user",
-                "type": r"Dict[str, Any]",
-                "required": False,
-            },
-            {
-                "name": "workspace",
-                "sanitized": "workspace",
-                "type": r"Dict[str, Any]",
-                "required": False,
-            },
-            {
-                "name": "generation",
-                "sanitized": "generation",
-                "type": r"int",
-                "required": False,
-            },
-            {
-                "name": "region",
-                "sanitized": "region",
-                "type": r"str",
-                "required": False,
             },
             {
                 "name": "type",
                 "sanitized": "type",
-                "type": r"str",
+                "type": r"string",
                 "required": True,
             },
             {
-                "name": "hasDetails",
-                "sanitized": "hasDetails",
-                "type": r"bool",
+                "name": "updatedAt",
+                "sanitized": "updatedAt",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "category",
+                "sanitized": "category",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "createdAt",
+                "sanitized": "createdAt",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "description",
+                "sanitized": "description",
+                "type": r"string",
                 "required": False,
             },
             {
                 "name": "additionalInfo",
                 "sanitized": "additionalInfo",
-                "type": r"Dict[str, Any]",
+                "type": r"object",
+                "required": False,
+            },
+            {
+                "name": "generation",
+                "sanitized": "generation",
+                "type": r"integer",
+                "required": False,
+            },
+            {
+                "name": "region",
+                "sanitized": "region",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "application",
+                "sanitized": "application",
+                "type": r"object",
+                "required": False,
+            },
+            {
+                "name": "user",
+                "sanitized": "user",
+                "type": r"object",
                 "required": False,
             },
         ],
     },
     {
-        "model": AuditLogs,
-        "name": "AuditLogs",
+        "model": ErrorGeneralDetails,
+        "name": "ErrorGeneralDetails",
         "fields": [
             {
-                "name": "remainingRecords",
-                "sanitized": "remainingRecords",
-                "type": r"bool",
-                "required": False,
-            },
-            {
-                "name": "total",
-                "sanitized": "total",
-                "type": r"int",
-                "required": True,
-            },
-            {
-                "name": "items",
-                "sanitized": "items",
-                "type": r"List[Dict[str, Any]]",
-                "required": True,
-            },
-            {
-                "name": "count",
-                "sanitized": "count",
-                "type": r"int",
-                "required": True,
-            },
-            {
-                "name": "offset",
-                "sanitized": "offset",
-                "type": r"int",
+                "name": "errorDetails",
+                "sanitized": "errorDetails",
+                "type": r"array",
                 "required": False,
             },
         ],
@@ -161,49 +125,7 @@ MODEL_TEST_MATRIX = [
             {
                 "name": "errorDetails",
                 "sanitized": "errorDetails",
-                "type": r"List[str]",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": AuditLogDetails,
-        "name": "AuditLogDetails",
-        "fields": [
-            {
-                "name": "body",
-                "sanitized": "body",
-                "type": r"List[str]",
-                "required": True,
-            },
-            {
-                "name": "header",
-                "sanitized": "header",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "id",
-                "sanitized": "id",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"str",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": ErrorGeneralDetails,
-        "name": "ErrorGeneralDetails",
-        "fields": [
-            {
-                "name": "errorDetails",
-                "sanitized": "errorDetails",
-                "type": r"List[str]",
+                "type": r"array",
                 "required": False,
             },
         ],
@@ -213,27 +135,105 @@ MODEL_TEST_MATRIX = [
         "name": "PaginatedApiResponse",
         "fields": [
             {
-                "name": "offset",
-                "sanitized": "offset",
-                "type": r"int",
-                "required": False,
-            },
-            {
-                "name": "remainingRecords",
-                "sanitized": "remainingRecords",
-                "type": r"bool",
-                "required": False,
-            },
-            {
                 "name": "total",
                 "sanitized": "total",
-                "type": r"int",
+                "type": r"integer",
                 "required": True,
             },
             {
                 "name": "count",
                 "sanitized": "count",
-                "type": r"int",
+                "type": r"integer",
+                "required": True,
+            },
+            {
+                "name": "offset",
+                "sanitized": "offset",
+                "type": r"integer",
+                "required": False,
+            },
+            {
+                "name": "remainingRecords",
+                "sanitized": "remainingRecords",
+                "type": r"boolean",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": ErrorBadRequestDetails,
+        "name": "ErrorBadRequestDetails",
+        "fields": [
+            {
+                "name": "errorDetails",
+                "sanitized": "errorDetails",
+                "type": r"array",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": AuditLogDetails,
+        "name": "AuditLogDetails",
+        "fields": [
+            {
+                "name": "header",
+                "sanitized": "header",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "body",
+                "sanitized": "body",
+                "type": r"array",
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": AuditLogs,
+        "name": "AuditLogs",
+        "fields": [
+            {
+                "name": "offset",
+                "sanitized": "offset",
+                "type": r"integer",
+                "required": False,
+            },
+            {
+                "name": "remainingRecords",
+                "sanitized": "remainingRecords",
+                "type": r"boolean",
+                "required": False,
+            },
+            {
+                "name": "total",
+                "sanitized": "total",
+                "type": r"integer",
+                "required": True,
+            },
+            {
+                "name": "items",
+                "sanitized": "items",
+                "type": r"array",
+                "required": True,
+            },
+            {
+                "name": "count",
+                "sanitized": "count",
+                "type": r"integer",
                 "required": True,
             },
         ],
@@ -245,37 +245,37 @@ MODEL_TEST_MATRIX = [
             {
                 "name": "httpStatusCode",
                 "sanitized": "httpStatusCode",
-                "type": r"int",
+                "type": r"integer",
                 "required": True,
             },
             {
                 "name": "message",
                 "sanitized": "message",
-                "type": r"str",
+                "type": r"string",
                 "required": True,
             },
             {
                 "name": "debugId",
                 "sanitized": "debugId",
-                "type": r"str",
+                "type": r"string",
                 "required": True,
             },
             {
                 "name": "errorCode",
                 "sanitized": "errorCode",
-                "type": r"str",
+                "type": r"string",
                 "required": True,
             },
         ],
     },
     {
-        "model": ErrorBadRequestDetails,
-        "name": "ErrorBadRequestDetails",
+        "model": ErrorNotFoundDetails,
+        "name": "ErrorNotFoundDetails",
         "fields": [
             {
                 "name": "errorDetails",
                 "sanitized": "errorDetails",
-                "type": r"List[str]",
+                "type": r"array",
                 "required": False,
             },
         ],
@@ -324,10 +324,10 @@ def _value_for_type(type_name: str) -> Any:
     # Handle List[str] or List[string]
     if "list[str" in normalized:
         return ["example"]
-    # Generic list handler (fallback)
-    if "list" in normalized or "sequence" in normalized:
+    # Generic list/array handler (fallback) - handles both OpenAPI "array" and Python "list"
+    if "list" in normalized or "sequence" in normalized or "array" in normalized:
         return ["example"]
-    if "dict" in normalized or "mapping" in normalized:
+    if "dict" in normalized or "mapping" in normalized or "object" in normalized:
         return {"key": "value"}
     if "int" in normalized or "integer" in normalized:
         return 1

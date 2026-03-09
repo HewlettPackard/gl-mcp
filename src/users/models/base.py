@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
 Base models for users MCP server.
 
@@ -104,16 +104,6 @@ class ResourceMetadata(BaseModel):
 # SERVICE-SPECIFIC MODELS GENERATED FROM OPENAPI SCHEMAS
 
 
-class NBUserPreferences(BaseModel):
-    """NBUserPreferences model"""
-
-    language: Optional[str] = Field(default=None, alias="language", description="The preferred language of the user.")
-
-    idleTimeout: Optional[int] = Field(
-        default=None, alias="idleTimeout", description="The user's session idle timeout in seconds."
-    )
-
-
 class StandardErrorResponse(BaseModel):
     """Standard GreenLake error response model"""
 
@@ -155,27 +145,27 @@ class Message(BaseModel):
 class NBUser(BaseModel):
     """User's information for north bound apis."""
 
-    updatedAt: Optional[str] = Field(
-        default=None, alias="updatedAt", description="The time the resource was last updated."
+    createdAt: Optional[str] = Field(default=None, alias="createdAt", description="The time the resource was created.")
+
+    id: str = Field(alias="id", description="Resource unique identification")
+
+    lastLogin: Optional[str] = Field(
+        default=None, alias="lastLogin", description="Time when this user had last logged in."
     )
 
     username: str = Field(alias="username", description="User's Email Address")
 
     resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
 
+    type: str = Field(alias="type", description="Type of data")
+
     userStatus: Optional[str] = Field(default=None, alias="userStatus", description="On-Boarding Status of a user")
-
-    lastLogin: Optional[str] = Field(
-        default=None, alias="lastLogin", description="Time when this user had last logged in."
-    )
-
-    createdAt: Optional[str] = Field(default=None, alias="createdAt", description="The time the resource was created.")
 
     generation: Optional[int] = Field(default=None, alias="generation", description="Resource history of updates")
 
-    id: str = Field(alias="id", description="Resource unique identification")
-
-    type: str = Field(alias="type", description="Type of data")
+    updatedAt: Optional[str] = Field(
+        default=None, alias="updatedAt", description="The time the resource was last updated."
+    )
 
 
 class NBUserPaginate(BaseModel):
@@ -183,8 +173,18 @@ class NBUserPaginate(BaseModel):
 
     count: int = Field(alias="count", description="The number of returned items")
 
-    items: List[Dict[str, Any]] = Field(alias="items", description="List of users")
+    items: List[Any] = Field(alias="items", description="List of users")
 
     offset: int = Field(alias="offset", description="Specifies the offset of the returned page")
 
     total: int = Field(alias="total", description="The total number of items in the result set")
+
+
+class NBUserPreferences(BaseModel):
+    """NBUserPreferences model"""
+
+    idleTimeout: Optional[int] = Field(
+        default=None, alias="idleTimeout", description="The user's session idle timeout in seconds."
+    )
+
+    language: Optional[str] = Field(default=None, alias="language", description="The preferred language of the user.")

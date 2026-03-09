@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
 getsubscriptiondetailsbyidv1 tool implementation for subscriptions MCP server.
 
@@ -6,6 +6,7 @@ This tool Get detailed information for a single subscription by `id`. <br><br>**
 """
 
 from typing import Any, Dict, List
+from urllib.parse import quote
 from tools.base import BaseTool
 
 
@@ -79,8 +80,8 @@ class getsubscriptiondetailsbyidv1Tool(BaseTool):
 
             # Build URL with path parameters
             url = "/subscriptions/v1/subscriptions/{id}"
-            # Replace path parameter: id
-            url = url.replace("{" + "id" + "}", str(arguments["id"]))
+            # Replace path parameter: id (URL-encoded to prevent path traversal)
+            url = url.replace("{" + "id" + "}", quote(str(arguments["id"]), safe=""))
 
             # Prepare query/body parameters
             params: Dict[str, Any] = {}

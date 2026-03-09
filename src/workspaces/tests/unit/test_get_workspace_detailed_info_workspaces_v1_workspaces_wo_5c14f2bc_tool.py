@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
 Test for get_workspace_detailed_info_workspaces_v1_workspaces_wo_5c14f2bc tool in workspaces MCP server.
 

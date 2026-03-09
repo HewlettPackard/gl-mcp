@@ -6,7 +6,6 @@ from .base import (
     BaseModel,
     BaseRequest,
     BaseResponse,
-    NBUserPreferences,
     StandardErrorResponse,
     UserLanguages,
     UserStatus,
@@ -14,13 +13,13 @@ from .base import (
     Message,
     NBUser,
     NBUserPaginate,
+    NBUserPreferences,
 )
 
 __all__ = [
     "BaseModel",
     "BaseRequest",
     "BaseResponse",
-    "NBUserPreferences",
     "StandardErrorResponse",
     "UserLanguages",
     "UserStatus",
@@ -28,4 +27,5 @@ __all__ = [
     "Message",
     "NBUser",
     "NBUserPaginate",
+    "NBUserPreferences",
 ]

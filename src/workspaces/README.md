@@ -215,10 +215,10 @@ This server provides the following MCP tools:
 - **Method**: GET /workspaces/v1/workspaces/{workspaceId}
 - **Parameters**:
 
-- `workspaceId` (str, required): The unique identifier of the workspace.
+  - `workspaceId` (str, required):  
+    The unique identifier of the workspace.
 
 Example: 7600415a-8876-5722-9f3c-b0fd11112283
-
 
 ### get_workspace_detailed_info_workspaces_v1_workspaces_wo_5c14f2bc
 
@@ -226,12 +226,10 @@ Example: 7600415a-8876-5722-9f3c-b0fd11112283
 - **Method**: GET /workspaces/v1/workspaces/{workspaceId}/contact
 - **Parameters**:
 
-- `workspaceId` (str, required): The unique identifier of the workspace.
+  - `workspaceId` (str, required):  
+    The unique identifier of the workspace.
 
 Example: 7600415a-8876-5722-9f3c-b0fd11112283
-
-
-
 
 ## Typical Use Cases
 
@@ -250,7 +248,6 @@ This MCP server implements read-only access to the following workspaces API endp
 
 - `GET /workspaces/v1/workspaces/{workspaceId}` - Retrieve basic workspace information for a provided workspace identifier.
 - `GET /workspaces/v1/workspaces/{workspaceId}/contact` - Retrieve detailed workspace information.
-
 
 ## Development
 

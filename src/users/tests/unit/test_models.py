@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """Unit tests for generated Pydantic models."""
 
 from __future__ import annotations
@@ -10,7 +10,6 @@ from pydantic import ValidationError as PydanticValidationError
 
 from models import (
     BaseModel,
-    NBUserPreferences,
     StandardErrorResponse,
     UserLanguages,
     UserStatus,
@@ -18,27 +17,10 @@ from models import (
     Message,
     NBUser,
     NBUserPaginate,
+    NBUserPreferences,
 )
 
 MODEL_TEST_MATRIX = [
-    {
-        "model": NBUserPreferences,
-        "name": "NBUserPreferences",
-        "fields": [
-            {
-                "name": "language",
-                "sanitized": "language",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "idleTimeout",
-                "sanitized": "idleTimeout",
-                "type": r"int",
-                "required": False,
-            },
-        ],
-    },
     {
         "model": StandardErrorResponse,
         "name": "StandardErrorResponse",
@@ -46,25 +28,25 @@ MODEL_TEST_MATRIX = [
             {
                 "name": "httpStatusCode",
                 "sanitized": "httpStatusCode",
-                "type": r"int",
+                "type": r"integer",
                 "required": True,
             },
             {
                 "name": "message",
                 "sanitized": "message",
-                "type": r"str",
+                "type": r"string",
                 "required": True,
             },
             {
                 "name": "debugId",
                 "sanitized": "debugId",
-                "type": r"str",
+                "type": r"string",
                 "required": True,
             },
             {
                 "name": "errorCode",
                 "sanitized": "errorCode",
-                "type": r"str",
+                "type": r"string",
                 "required": True,
             },
         ],
@@ -86,13 +68,13 @@ MODEL_TEST_MATRIX = [
             {
                 "name": "email",
                 "sanitized": "email",
-                "type": r"str",
+                "type": r"string",
                 "required": False,
             },
             {
                 "name": "sendWelcomeEmail",
                 "sanitized": "sendWelcomeEmail",
-                "type": r"bool",
+                "type": r"boolean",
                 "required": False,
             },
         ],
@@ -104,7 +86,7 @@ MODEL_TEST_MATRIX = [
             {
                 "name": "message",
                 "sanitized": "message",
-                "type": r"str",
+                "type": r"string",
                 "required": True,
             },
         ],
@@ -114,58 +96,58 @@ MODEL_TEST_MATRIX = [
         "name": "NBUser",
         "fields": [
             {
-                "name": "updatedAt",
-                "sanitized": "updatedAt",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "username",
-                "sanitized": "username",
-                "type": r"str",
-                "required": True,
-            },
-            {
-                "name": "resourceUri",
-                "sanitized": "resourceUri",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "userStatus",
-                "sanitized": "userStatus",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "lastLogin",
-                "sanitized": "lastLogin",
-                "type": r"str",
-                "required": False,
-            },
-            {
                 "name": "createdAt",
                 "sanitized": "createdAt",
-                "type": r"str",
-                "required": False,
-            },
-            {
-                "name": "generation",
-                "sanitized": "generation",
-                "type": r"int",
+                "type": r"string",
                 "required": False,
             },
             {
                 "name": "id",
                 "sanitized": "id",
-                "type": r"str",
+                "type": r"string",
                 "required": True,
+            },
+            {
+                "name": "lastLogin",
+                "sanitized": "lastLogin",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "username",
+                "sanitized": "username",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "resourceUri",
+                "sanitized": "resourceUri",
+                "type": r"string",
+                "required": False,
             },
             {
                 "name": "type",
                 "sanitized": "type",
-                "type": r"str",
+                "type": r"string",
                 "required": True,
+            },
+            {
+                "name": "userStatus",
+                "sanitized": "userStatus",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "generation",
+                "sanitized": "generation",
+                "type": r"integer",
+                "required": False,
+            },
+            {
+                "name": "updatedAt",
+                "sanitized": "updatedAt",
+                "type": r"string",
+                "required": False,
             },
         ],
     },
@@ -176,26 +158,44 @@ MODEL_TEST_MATRIX = [
             {
                 "name": "count",
                 "sanitized": "count",
-                "type": r"int",
+                "type": r"integer",
                 "required": True,
             },
             {
                 "name": "items",
                 "sanitized": "items",
-                "type": r"List[Dict[str, Any]]",
+                "type": r"array",
                 "required": True,
             },
             {
                 "name": "offset",
                 "sanitized": "offset",
-                "type": r"int",
+                "type": r"integer",
                 "required": True,
             },
             {
                 "name": "total",
                 "sanitized": "total",
-                "type": r"int",
+                "type": r"integer",
                 "required": True,
+            },
+        ],
+    },
+    {
+        "model": NBUserPreferences,
+        "name": "NBUserPreferences",
+        "fields": [
+            {
+                "name": "idleTimeout",
+                "sanitized": "idleTimeout",
+                "type": r"integer",
+                "required": False,
+            },
+            {
+                "name": "language",
+                "sanitized": "language",
+                "type": r"string",
+                "required": False,
             },
         ],
     },
@@ -243,10 +243,10 @@ def _value_for_type(type_name: str) -> Any:
     # Handle List[str] or List[string]
     if "list[str" in normalized:
         return ["example"]
-    # Generic list handler (fallback)
-    if "list" in normalized or "sequence" in normalized:
+    # Generic list/array handler (fallback) - handles both OpenAPI "array" and Python "list"
+    if "list" in normalized or "sequence" in normalized or "array" in normalized:
         return ["example"]
-    if "dict" in normalized or "mapping" in normalized:
+    if "dict" in normalized or "mapping" in normalized or "object" in normalized:
         return {"key": "value"}
     if "int" in normalized or "integer" in normalized:
         return 1

@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """Unit tests for generated tools."""
 
 from __future__ import annotations
@@ -6,12 +6,27 @@ from __future__ import annotations
 from typing import Any, Dict, List, cast
 
 import pytest
-from tools.implementations.getsubscriptionsv1 import getsubscriptionsv1Tool
 from tools.implementations.getsubscriptiondetailsbyidv1 import getsubscriptiondetailsbyidv1Tool
+from tools.implementations.getsubscriptionsv1 import getsubscriptionsv1Tool
 
 # Build test matrix - de-duplicate by (name, path) to handle cases where
 # multiple endpoints map to the same tool name
 _TOOL_TEST_MATRIX_RAW = [
+    {
+        "class": getsubscriptiondetailsbyidv1Tool,
+        "name": "getsubscriptiondetailsbyidv1",
+        "method": "get",
+        "path": "/subscriptions/v1/subscriptions/{id}",
+        "parameters": [
+            {
+                "name": "id",
+                "in": "path",
+                "required": True,
+                "type": "str",
+                "default": None,
+            },
+        ],
+    },
     {
         "class": getsubscriptionsv1Tool,
         "name": "getsubscriptionsv1",
@@ -58,21 +73,6 @@ _TOOL_TEST_MATRIX_RAW = [
                 "in": "query",
                 "required": False,
                 "type": "int",
-                "default": None,
-            },
-        ],
-    },
-    {
-        "class": getsubscriptiondetailsbyidv1Tool,
-        "name": "getsubscriptiondetailsbyidv1",
-        "method": "get",
-        "path": "/subscriptions/v1/subscriptions/{id}",
-        "parameters": [
-            {
-                "name": "id",
-                "in": "path",
-                "required": True,
-                "type": "str",
                 "default": None,
             },
         ],

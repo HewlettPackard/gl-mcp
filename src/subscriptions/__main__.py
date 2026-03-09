@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
+
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
 subscriptions MCP Server
 
 This module serves as the entry point for the subscriptions MCP server.
-It initializes and runs the MCP server for With the HPE GreenLake APIs for Subscription Management you can add subscriptions, get subscription information, and update auto-subscription settings for your HPE GreenLake workspace..
+It initializes and runs the MCP server for With the HPE GreenLake APIs for Subscription Management you can add subscriptions, unclaim subscriptions, get subscription information, and update auto-subscription settings for your HPE GreenLake workspace..
 """
 
 import asyncio

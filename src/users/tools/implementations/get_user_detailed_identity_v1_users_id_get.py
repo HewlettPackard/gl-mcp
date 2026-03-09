@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
 get_user_detailed_identity_v1_users_id_get tool implementation for users MCP server.
 
@@ -6,6 +6,7 @@ This tool Retrieve a single user based on a given user ID..
 """
 
 from typing import Any, Dict, List
+from urllib.parse import quote
 from tools.base import BaseTool
 
 
@@ -82,8 +83,8 @@ class get_user_detailed_identity_v1_users_id_getTool(BaseTool):
 
             # Build URL with path parameters
             url = "/identity/v1/users/{id}"
-            # Replace path parameter: id
-            url = url.replace("{" + "id" + "}", str(arguments["id"]))
+            # Replace path parameter: id (URL-encoded to prevent path traversal)
+            url = url.replace("{" + "id" + "}", quote(str(arguments["id"]), safe=""))
 
             # Prepare query/body parameters
             params: Dict[str, Any] = {}

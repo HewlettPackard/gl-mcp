@@ -215,82 +215,31 @@ This server provides the following MCP tools:
 - **Method**: GET /devices/v1/devices
 - **Parameters**:
 
-- `filter` (str, optional): Filter expressions consisting of simple comparison operations joined
-by logical operators.\<br\>
-| CLASS               |   EXAMPLES                                         |
-|---------------------|----------------------------------------------------|
-| Types               | integer, decimal, timestamp, string, boolean, null |
-| Comparison          | eq, ne, gt, ge, lt, le, in                         |
-| Logical Expressions | and, or, not                                       |
-
-The following examples are not an exhaustive list of all possible filtering options.
-
-
-Examples:
-  - deviceType eq 'STORAGE' and partNumber eq 'RTICXL6413'
-    Return devices that exactly satisfy multiple filter queries.
-Example syntax, \<property\> eq \<value\> and \<property\> eq \<value\>.
-  - serialNumber eq 'STIAPL6404' or partNumber eq 'RTICXL6413'
-    Return devices that exactly satisfy one of multiple filter queries.
-Example syntax, \<property\> eq \<value\> or \<property\> eq \<value\>.
-  - serialNumber eq 'STIAPL6404'
-    Return devices where a property equals a value.
-Example syntax, \<property\> eq \<value\>.
-  - createdAt ge ''2024-01-18T19:53:51.480Z''
-    Return devices where a property is greater or equal to a value.
-Example syntax, \<property\> ge \<value\>.
-  - updatedAt le '2024-02-18T19:53:51.480Z'
-    Return devices where a property is lesser or equal to a value.
-Example syntax, \<property\> ge \<value\>.
-  - not serialNumber eq 'STIAPL6404'
-    Return devices where a property does not equal a value.
-Example syntax, not \<property\> eq \<value\>.
-  - deviceType in 'COMPUTE', 'STORAGE'
-    Return devices where a property is one of multiple values.
-Example syntax, \<property\> in \<value\>,\<value\>.
-
-**Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`.
-
-Filterable properties: application, archived, assignedState, createdAt, deviceType, id, location, macAddress, model, partNumber, region, serialNumber, subscription, tags, tenantWorkspaceId, type, updatedAt, warranty
-- `filter-tags` (str, optional): Filter expressions consisting of simple comparison operations joined
-by logical operators to be applied on the assigned tags or their
-values.\<br\>
-| CLASS               |   EXAMPLES      |
-|---------------------|-----------------|
-| Types               | string          |
-| Comparison          | eq, ne, in      |
-| Logical Expressions | and, or, not    |
-
-
-Examples:
-  - 'city' eq 'London'
-    Return devices where a tag key is equal to a tag value.
-Example syntax, \<tagKey\> eq \<tagValue\>.
-  - not 'city' eq 'Tokyo'
-    Return devices where a tag key does not equal a tag value.
-Example syntax, not \<property\> eq \<value\>.
-  - 'street' in 'Regent Street', 'Oxford Street', 'Piccadilly'
-    Return devices containing the tag key and at least one of the specified values.
-Example syntax, \<property\> in \<value\>,\<value\>.
-  - 'city' eq 'London' and 'street' eq 'Piccadilly'
-    Return devices that exactly satisfy multiple filter queries applied to tag keys.
-Example syntax, \<property\> eq \<value\> and \<property\> eq \<value\>.
-  - 'street' eq 'Oxford Street' or 'street' eq 'Piccadilly'
-    Return devices that satisfy any of multiple filter queries applied to tag keys.
-Example syntax, \<property\> eq \<value\> or \<property\> eq \<value\>.
-
-**Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`.
-
-Filterable properties: application, archived, assignedState, createdAt, deviceType, id, location, macAddress, model, partNumber, region, serialNumber, subscription, tags, tenantWorkspaceId, type, updatedAt, warranty
-- `sort` (str, optional): A comma separated list of sort expressions. A sort expression is a property name optionally followed by a direction indicator `asc` or `desc`. The default is ascending order.
+  - `filter` (str, optional):  
+    Filter expressions consisting of simple comparison operations joined by logical operators.\<br\> | CLASS | EXAMPLES | |---------------------|----------------------------------------------------| | Types | integer, decimal, timestamp, string, boolean, null | | Comparison | eq, ne, gt, ge, lt, le, in | | Logical Expressions | and, or, not | The following examples are not an exhaustive list of all possible filtering options. Examples: - not serialNumber eq 'STIAPL6404' Return
+    devices where a property does not equal a value. Example syntax, not \\<property\> eq \\<value\>. - deviceType in 'COMPUTE', 'STORAGE' Return devices where a property is one of multiple values. Example syntax, \\<property\> in \\<value\>,\\<value\>. - deviceType eq 'STORAGE' and partNumber eq 'RTICXL6413' Return devices that exactly satisfy multiple filter queries. Example syntax, \\<property\> eq \\<value\> and \\<property\> eq \\<value\>. - serialNumber eq 'STIAPL6404' or
+    partNumber eq 'RTICXL6413' Return devices that exactly satisfy one of multiple filter queries. Example syntax, \\<property\> eq \\<value\> or \\<property\> eq \\<value\>. - serialNumber eq 'STIAPL6404' Return devices where a property equals a value. Example syntax, \\<property\> eq \\<value\>. - createdAt ge ''2024-01-18T19:53:51.480Z'' Return devices where a property is greater or equal to a value. Example syntax, \\<property\> ge \\<value\>. - updatedAt le
+    '2024-02-18T19:53:51.480Z' Return devices where a property is lesser or equal to a value. Example syntax, \\<property\> ge \\<value\>. **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: application, archived, assignedState, createdAt, dedicatedPlatformWorkspace, deviceName, deviceType, id, location, macAddress, model, partNumber,
+    region, secondaryName, serialNumber, subscription, tags, tenantWorkspaceId, type, updatedAt, warranty
+  - `filter-tags` (str, optional):  
+    Filter expressions consisting of simple comparison operations joined by logical operators to be applied on the assigned tags or their values.\<br\> | CLASS | EXAMPLES | |---------------------|-----------------| | Types | string | | Comparison | eq, ne, in | | Logical Expressions | and, or, not | Examples: - 'street' in 'Regent Street', 'Oxford Street', 'Piccadilly' Return devices containing the tag key and at least one of the specified values. Example syntax, \\<property\> in
+    \\<value\>,\\<value\>. - 'city' eq 'London' and 'street' eq 'Piccadilly' Return devices that exactly satisfy multiple filter queries applied to tag keys. Example syntax, \\<property\> eq \\<value\> and \\<property\> eq \\<value\>. - 'street' eq 'Oxford Street' or 'street' eq 'Piccadilly' Return devices that satisfy any of multiple filter queries applied to tag keys. Example syntax, \\<property\> eq \\<value\> or \\<property\> eq \\<value\>. - 'city' eq 'London' Return devices
+    where a tag key is equal to a tag value. Example syntax, \\<tagKey\> eq \\<tagValue\>. - not 'city' eq 'Tokyo' Return devices where a tag key does not equal a tag value. Example syntax, not \\<property\> eq \\<value\>. **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: application, archived, assignedState, createdAt,
+    dedicatedPlatformWorkspace, deviceName, deviceType, id, location, macAddress, model, partNumber, region, secondaryName, serialNumber, subscription, tags, tenantWorkspaceId, type, updatedAt, warranty
+  - `sort` (str, optional):  
+    A comma separated list of sort expressions. A sort expression is a property name optionally followed by a direction indicator `asc` or `desc`. The default is ascending order.
 
 Example: serialNumber,macAddress desc
-- `select` (List[str], optional): A comma separated list of select properties to display in the response. The default is that all properties are returned.
+
+- `select` (List[str], optional):  
+    A comma separated list of select properties to display in the response. The default is that all properties are returned.
 
 Example: serialNumber,macAddress
-- `limit` (int, optional): Specifies the number of results to be returned. The default value is 2000.
-- `offset` (int, optional): Specifies the zero-based resource offset to start the response from. The default value is 0.
 
+- `limit` (int, optional):  
+    Specifies the number of results to be returned. The default value is 2000.
+- `offset` (int, optional):  
+    Specifies the zero-based resource offset to start the response from. The default value is 0.
 
 ### getdevicebyidv1
 
@@ -298,10 +247,7 @@ Example: serialNumber,macAddress
 - **Method**: GET /devices/v1/devices/{id}
 - **Parameters**:
 
-- `id` (str, required): id parameter
-
-
-
+  - `id` (str, required)
 
 ## Typical Use Cases
 
@@ -322,7 +268,6 @@ This MCP server implements read-only access to the following devices API endpoin
 
 - `GET /devices/v1/devices` - With this API, you can: \<ul\>\<li\>Retrieve a list of devices managed in a workspace.\</li\> \<li\>Filter  devices based on conditional expressions.\</li\>\</ul\>\<p\>\<b\>NOTE\</b\>: You need view  permissions for Devices and Subscription service to invoke this API.\</p\>  Rate limits are enforced on this API. 160 requests per minute is supported per workspace. The API returns `429` if this threshold is breached.
 - `GET /devices/v1/devices/{id}` - Get details on a specific device by passing its resourceId. \<p\>\<b\>NOTE\</b\>: You need  view permissions for device management to invoke this API.\</p\> Rate limits are enforced on this API. 40 requests per minute is supported per workspace. The API returns `429` if this threshold is breached.
-
 
 ## Development
 

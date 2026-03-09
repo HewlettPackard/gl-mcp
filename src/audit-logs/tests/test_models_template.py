@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
 Test template for models package.
 Tests all generated data models from OpenAPI schemas.
@@ -9,146 +9,45 @@ from typing import Any, Dict
 from pydantic import ValidationError as PydanticValidationError
 
 
-from models.base import ErrorNotFoundDetails
-
 from models.base import AuditLog
-
-from models.base import AuditLogs
-
-from models.base import ErrorRetryDetails
-
-from models.base import AuditLogDetails
 
 from models.base import ErrorGeneralDetails
 
+from models.base import ErrorRetryDetails
+
 from models.base import PaginatedApiResponse
+
+from models.base import ErrorBadRequestDetails
+
+from models.base import AuditLogDetails
+
+from models.base import AuditLogs
 
 from models.base import Error
 
-from models.base import ErrorBadRequestDetails
+from models.base import ErrorNotFoundDetails
 
 
 class TestModels:
     """Test suite for all generated data models."""
 
-    def test_errornotfounddetails_model_creation(self):
-        """Test ErrorNotFoundDetails model creation with valid data."""
-        # Valid test data for ErrorNotFoundDetails
-        valid_data = {
-            "errorDetails": [],
-        }
-
-        # Create model instance
-        model = ErrorNotFoundDetails(**valid_data)
-
-        # Verify model creation
-        assert isinstance(model, ErrorNotFoundDetails)
-        assert model.errorDetails == valid_data["errorDetails"]
-
-    def test_errornotfounddetails_model_validation(self):
-        """Test ErrorNotFoundDetails model field validation."""
-        # Test with minimal required data
-        minimal_data = {}
-
-        model = ErrorNotFoundDetails(**minimal_data)
-        assert isinstance(model, ErrorNotFoundDetails)
-
-    def test_errornotfounddetails_model_required_fields(self):
-        """Test ErrorNotFoundDetails model required field validation."""
-        # Check if this model has any required fields
-        required_fields = []
-
-        if required_fields:
-            # Test missing required fields
-            with pytest.raises(PydanticValidationError) as exc_info:
-                ErrorNotFoundDetails()
-
-            # Verify validation error contains required field information
-            error_details = exc_info.value.errors()
-            required_fields_set = {}
-
-            # Check that at least one required field is mentioned in the error
-            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
-            assert len(error_fields.intersection(required_fields_set)) > 0
-        else:
-            # Model has no required fields - should create successfully with no arguments
-            model = ErrorNotFoundDetails()
-            assert isinstance(model, ErrorNotFoundDetails)
-
-    def test_errornotfounddetails_model_optional_fields(self):
-        """Test ErrorNotFoundDetails model optional field handling."""
-        # Create with minimal required data
-        minimal_data = {}
-
-        model = ErrorNotFoundDetails(**minimal_data)
-
-        # Verify model created with minimal required fields
-        assert model is not None
-        # Verify optional fields have default values
-        assert hasattr(model, "errorDetails")
-        # Optional field errorDetails should be None or have a default value
-        assert model.errorDetails is None or model.errorDetails is not None
-
-    def test_errornotfounddetails_model_serialization(self):
-        """Test ErrorNotFoundDetails model serialization to dict."""
-        test_data = {
-            "errorDetails": [],
-        }
-
-        model = ErrorNotFoundDetails(**test_data)
-        serialized = model.model_dump(by_alias=True)
-
-        # Verify serialization
-        assert isinstance(serialized, dict)
-        assert "errorDetails" in serialized
-
-        # Verify values are preserved
-        assert serialized["errorDetails"] == test_data["errorDetails"]
-
-    def test_errornotfounddetails_model_json_schema(self):
-        """Test ErrorNotFoundDetails model JSON schema generation."""
-        schema = ErrorNotFoundDetails.model_json_schema()
-
-        # Verify schema structure
-        assert isinstance(schema, dict)
-        assert "type" in schema
-        assert schema["type"] == "object"
-        assert "properties" in schema
-
-        # Verify all properties are in schema
-        expected_properties = {
-            "errorDetails",
-        }
-
-        schema_properties = set(schema["properties"].keys())
-        expected_properties_set = set(expected_properties) if expected_properties else set()
-        assert expected_properties_set.issubset(schema_properties)
-
-        # Verify required fields in schema (if any)
-        required_fields = []
-        if required_fields:
-            assert "required" in schema
-            required_in_schema = set(schema["required"])
-            expected_required = set(required_fields)
-            assert expected_required.issubset(required_in_schema)
-
     def test_auditlog_model_creation(self):
         """Test AuditLog model creation with valid data."""
         # Valid test data for AuditLog
         valid_data = {
-            "createdAt": "test_value",
-            "description": "test_value",
-            "category": "test_value",
-            "updatedAt": "test_value",
-            "application": {},
-            "id": "test_value",
-            "user": {},
             "workspace": {},
-            "generation": 42,
-            "region": "test_value",
-            "type": "test_value",
             "hasDetails": True,
+            "id": "test_id",
+            "type": "test_type",
+            "updatedAt": "test_updatedAt",
+            "category": "test_category",
+            "createdAt": "test_createdAt",
+            "description": "test_description",
             "additionalInfo": {},
+            "generation": 42,
+            "region": "test_region",
+            "application": {},
+            "user": {},
         }
 
         # Create model instance
@@ -156,26 +55,26 @@ class TestModels:
 
         # Verify model creation
         assert isinstance(model, AuditLog)
+        assert model.workspace == valid_data["workspace"]
+        assert model.hasDetails == valid_data["hasDetails"]
+        assert model.id == valid_data["id"]
+        assert model.type == valid_data["type"]
+        assert model.updatedAt == valid_data["updatedAt"]
+        assert model.category == valid_data["category"]
         assert model.createdAt == valid_data["createdAt"]
         assert model.description == valid_data["description"]
-        assert model.category == valid_data["category"]
-        assert model.updatedAt == valid_data["updatedAt"]
-        assert model.application == valid_data["application"]
-        assert model.id == valid_data["id"]
-        assert model.user == valid_data["user"]
-        assert model.workspace == valid_data["workspace"]
+        assert model.additionalInfo == valid_data["additionalInfo"]
         assert model.generation == valid_data["generation"]
         assert model.region == valid_data["region"]
-        assert model.type == valid_data["type"]
-        assert model.hasDetails == valid_data["hasDetails"]
-        assert model.additionalInfo == valid_data["additionalInfo"]
+        assert model.application == valid_data["application"]
+        assert model.user == valid_data["user"]
 
     def test_auditlog_model_validation(self):
         """Test AuditLog model field validation."""
         # Test with minimal required data
         minimal_data = {
-            "id": "required_value",
-            "type": "required_value",
+            "id": "required_id",
+            "type": "required_type",
         }
 
         model = AuditLog(**minimal_data)
@@ -215,8 +114,8 @@ class TestModels:
         """Test AuditLog model optional field handling."""
         # Create with minimal required data
         minimal_data = {
-            "id": "required_value",
-            "type": "required_value",
+            "id": "required_id",
+            "type": "required_type",
         }
 
         model = AuditLog(**minimal_data)
@@ -224,56 +123,56 @@ class TestModels:
         # Verify model created with minimal required fields
         assert model is not None
         # Verify optional fields have default values
+        assert hasattr(model, "workspace")
+        # Optional field workspace should be None or have a default value
+        assert model.workspace is None or model.workspace is not None
+        assert hasattr(model, "hasDetails")
+        # Optional field hasDetails should be None or have a default value
+        assert model.hasDetails is None or model.hasDetails is not None
+        assert hasattr(model, "updatedAt")
+        # Optional field updatedAt should be None or have a default value
+        assert model.updatedAt is None or model.updatedAt is not None
+        assert hasattr(model, "category")
+        # Optional field category should be None or have a default value
+        assert model.category is None or model.category is not None
         assert hasattr(model, "createdAt")
         # Optional field createdAt should be None or have a default value
         assert model.createdAt is None or model.createdAt is not None
         assert hasattr(model, "description")
         # Optional field description should be None or have a default value
         assert model.description is None or model.description is not None
-        assert hasattr(model, "category")
-        # Optional field category should be None or have a default value
-        assert model.category is None or model.category is not None
-        assert hasattr(model, "updatedAt")
-        # Optional field updatedAt should be None or have a default value
-        assert model.updatedAt is None or model.updatedAt is not None
-        assert hasattr(model, "application")
-        # Optional field application should be None or have a default value
-        assert model.application is None or model.application is not None
-        assert hasattr(model, "user")
-        # Optional field user should be None or have a default value
-        assert model.user is None or model.user is not None
-        assert hasattr(model, "workspace")
-        # Optional field workspace should be None or have a default value
-        assert model.workspace is None or model.workspace is not None
+        assert hasattr(model, "additionalInfo")
+        # Optional field additionalInfo should be None or have a default value
+        assert model.additionalInfo is None or model.additionalInfo is not None
         assert hasattr(model, "generation")
         # Optional field generation should be None or have a default value
         assert model.generation is None or model.generation is not None
         assert hasattr(model, "region")
         # Optional field region should be None or have a default value
         assert model.region is None or model.region is not None
-        assert hasattr(model, "hasDetails")
-        # Optional field hasDetails should be None or have a default value
-        assert model.hasDetails is None or model.hasDetails is not None
-        assert hasattr(model, "additionalInfo")
-        # Optional field additionalInfo should be None or have a default value
-        assert model.additionalInfo is None or model.additionalInfo is not None
+        assert hasattr(model, "application")
+        # Optional field application should be None or have a default value
+        assert model.application is None or model.application is not None
+        assert hasattr(model, "user")
+        # Optional field user should be None or have a default value
+        assert model.user is None or model.user is not None
 
     def test_auditlog_model_serialization(self):
         """Test AuditLog model serialization to dict."""
         test_data = {
+            "workspace": {"key": "value"},
+            "hasDetails": False,
+            "id": "serialize_value",
+            "type": "serialize_value",
+            "updatedAt": "serialize_value",
+            "category": "serialize_value",
             "createdAt": "serialize_value",
             "description": "serialize_value",
-            "category": "serialize_value",
-            "updatedAt": "serialize_value",
-            "application": {"key": "value"},
-            "id": "serialize_value",
-            "user": {"key": "value"},
-            "workspace": {"key": "value"},
+            "additionalInfo": {"key": "value"},
             "generation": 99,
             "region": "serialize_value",
-            "type": "serialize_value",
-            "hasDetails": False,
-            "additionalInfo": {"key": "value"},
+            "application": {"key": "value"},
+            "user": {"key": "value"},
         }
 
         model = AuditLog(**test_data)
@@ -281,34 +180,34 @@ class TestModels:
 
         # Verify serialization
         assert isinstance(serialized, dict)
+        assert "workspace" in serialized
+        assert "hasDetails" in serialized
+        assert "id" in serialized
+        assert "type" in serialized
+        assert "updatedAt" in serialized
+        assert "category" in serialized
         assert "createdAt" in serialized
         assert "description" in serialized
-        assert "category" in serialized
-        assert "updatedAt" in serialized
-        assert "application" in serialized
-        assert "id" in serialized
-        assert "user" in serialized
-        assert "workspace" in serialized
+        assert "additionalInfo" in serialized
         assert "generation" in serialized
         assert "region" in serialized
-        assert "type" in serialized
-        assert "hasDetails" in serialized
-        assert "additionalInfo" in serialized
+        assert "application" in serialized
+        assert "user" in serialized
 
         # Verify values are preserved
+        assert serialized["workspace"] == test_data["workspace"]
+        assert serialized["hasDetails"] == test_data["hasDetails"]
+        assert serialized["id"] == test_data["id"]
+        assert serialized["type"] == test_data["type"]
+        assert serialized["updatedAt"] == test_data["updatedAt"]
+        assert serialized["category"] == test_data["category"]
         assert serialized["createdAt"] == test_data["createdAt"]
         assert serialized["description"] == test_data["description"]
-        assert serialized["category"] == test_data["category"]
-        assert serialized["updatedAt"] == test_data["updatedAt"]
-        assert serialized["application"] == test_data["application"]
-        assert serialized["id"] == test_data["id"]
-        assert serialized["user"] == test_data["user"]
-        assert serialized["workspace"] == test_data["workspace"]
+        assert serialized["additionalInfo"] == test_data["additionalInfo"]
         assert serialized["generation"] == test_data["generation"]
         assert serialized["region"] == test_data["region"]
-        assert serialized["type"] == test_data["type"]
-        assert serialized["hasDetails"] == test_data["hasDetails"]
-        assert serialized["additionalInfo"] == test_data["additionalInfo"]
+        assert serialized["application"] == test_data["application"]
+        assert serialized["user"] == test_data["user"]
 
     def test_auditlog_model_json_schema(self):
         """Test AuditLog model JSON schema generation."""
@@ -322,19 +221,19 @@ class TestModels:
 
         # Verify all properties are in schema
         expected_properties = {
+            "workspace",
+            "hasDetails",
+            "id",
+            "type",
+            "updatedAt",
+            "category",
             "createdAt",
             "description",
-            "category",
-            "updatedAt",
-            "application",
-            "id",
-            "user",
-            "workspace",
+            "additionalInfo",
             "generation",
             "region",
-            "type",
-            "hasDetails",
-            "additionalInfo",
+            "application",
+            "user",
         }
 
         schema_properties = set(schema["properties"].keys())
@@ -343,403 +242,6 @@ class TestModels:
 
         # Verify required fields in schema (if any)
         required_fields = [
-            "id",
-            "type",
-        ]
-        if required_fields:
-            assert "required" in schema
-            required_in_schema = set(schema["required"])
-            expected_required = set(required_fields)
-            assert expected_required.issubset(required_in_schema)
-
-    def test_auditlogs_model_creation(self):
-        """Test AuditLogs model creation with valid data."""
-        # Valid test data for AuditLogs
-        valid_data = {
-            "remainingRecords": True,
-            "total": 42,
-            "items": [{"key": "value"}, {"key": "value"}],
-            "count": 42,
-            "offset": 42,
-        }
-
-        # Create model instance
-        model = AuditLogs(**valid_data)
-
-        # Verify model creation
-        assert isinstance(model, AuditLogs)
-        assert model.remainingRecords == valid_data["remainingRecords"]
-        assert model.total == valid_data["total"]
-        assert model.items == valid_data["items"]
-        assert model.count == valid_data["count"]
-        assert model.offset == valid_data["offset"]
-
-    def test_auditlogs_model_validation(self):
-        """Test AuditLogs model field validation."""
-        # Test with minimal required data
-        minimal_data = {
-            "total": 1,
-            "items": [{"key": "value"}, {"key": "value"}],
-            "count": 1,
-        }
-
-        model = AuditLogs(**minimal_data)
-        assert isinstance(model, AuditLogs)
-        assert model.total == minimal_data["total"]
-        assert model.items == minimal_data["items"]
-        assert model.count == minimal_data["count"]
-
-    def test_auditlogs_model_required_fields(self):
-        """Test AuditLogs model required field validation."""
-        # Check if this model has any required fields
-        required_fields = [
-            "total",
-            "items",
-            "count",
-        ]
-
-        if required_fields:
-            # Test missing required fields
-            with pytest.raises(PydanticValidationError) as exc_info:
-                AuditLogs()
-
-            # Verify validation error contains required field information
-            error_details = exc_info.value.errors()
-            required_fields_set = {
-                "total",
-                "items",
-                "count",
-            }
-
-            # Check that at least one required field is mentioned in the error
-            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
-            assert len(error_fields.intersection(required_fields_set)) > 0
-        else:
-            # Model has no required fields - should create successfully with no arguments
-            model = AuditLogs()
-            assert isinstance(model, AuditLogs)
-
-    def test_auditlogs_model_optional_fields(self):
-        """Test AuditLogs model optional field handling."""
-        # Create with minimal required data
-        minimal_data = {
-            "total": 1,
-            "items": [{"key": "value"}, {"key": "value"}],
-            "count": 1,
-        }
-
-        model = AuditLogs(**minimal_data)
-
-        # Verify model created with minimal required fields
-        assert model is not None
-        # Verify optional fields have default values
-        assert hasattr(model, "remainingRecords")
-        # Optional field remainingRecords should be None or have a default value
-        assert model.remainingRecords is None or model.remainingRecords is not None
-        assert hasattr(model, "offset")
-        # Optional field offset should be None or have a default value
-        assert model.offset is None or model.offset is not None
-
-    def test_auditlogs_model_serialization(self):
-        """Test AuditLogs model serialization to dict."""
-        test_data = {
-            "remainingRecords": False,
-            "total": 99,
-            "items": [{"key": "value"}, {"key": "value"}],
-            "count": 99,
-            "offset": 99,
-        }
-
-        model = AuditLogs(**test_data)
-        serialized = model.model_dump(by_alias=True)
-
-        # Verify serialization
-        assert isinstance(serialized, dict)
-        assert "remainingRecords" in serialized
-        assert "total" in serialized
-        assert "items" in serialized
-        assert "count" in serialized
-        assert "offset" in serialized
-
-        # Verify values are preserved
-        assert serialized["remainingRecords"] == test_data["remainingRecords"]
-        assert serialized["total"] == test_data["total"]
-        assert serialized["items"] == test_data["items"]
-        assert serialized["count"] == test_data["count"]
-        assert serialized["offset"] == test_data["offset"]
-
-    def test_auditlogs_model_json_schema(self):
-        """Test AuditLogs model JSON schema generation."""
-        schema = AuditLogs.model_json_schema()
-
-        # Verify schema structure
-        assert isinstance(schema, dict)
-        assert "type" in schema
-        assert schema["type"] == "object"
-        assert "properties" in schema
-
-        # Verify all properties are in schema
-        expected_properties = {
-            "remainingRecords",
-            "total",
-            "items",
-            "count",
-            "offset",
-        }
-
-        schema_properties = set(schema["properties"].keys())
-        expected_properties_set = set(expected_properties) if expected_properties else set()
-        assert expected_properties_set.issubset(schema_properties)
-
-        # Verify required fields in schema (if any)
-        required_fields = [
-            "total",
-            "items",
-            "count",
-        ]
-        if required_fields:
-            assert "required" in schema
-            required_in_schema = set(schema["required"])
-            expected_required = set(required_fields)
-            assert expected_required.issubset(required_in_schema)
-
-    def test_errorretrydetails_model_creation(self):
-        """Test ErrorRetryDetails model creation with valid data."""
-        # Valid test data for ErrorRetryDetails
-        valid_data = {
-            "errorDetails": [],
-        }
-
-        # Create model instance
-        model = ErrorRetryDetails(**valid_data)
-
-        # Verify model creation
-        assert isinstance(model, ErrorRetryDetails)
-        assert model.errorDetails == valid_data["errorDetails"]
-
-    def test_errorretrydetails_model_validation(self):
-        """Test ErrorRetryDetails model field validation."""
-        # Test with minimal required data
-        minimal_data = {}
-
-        model = ErrorRetryDetails(**minimal_data)
-        assert isinstance(model, ErrorRetryDetails)
-
-    def test_errorretrydetails_model_required_fields(self):
-        """Test ErrorRetryDetails model required field validation."""
-        # Check if this model has any required fields
-        required_fields = []
-
-        if required_fields:
-            # Test missing required fields
-            with pytest.raises(PydanticValidationError) as exc_info:
-                ErrorRetryDetails()
-
-            # Verify validation error contains required field information
-            error_details = exc_info.value.errors()
-            required_fields_set = {}
-
-            # Check that at least one required field is mentioned in the error
-            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
-            assert len(error_fields.intersection(required_fields_set)) > 0
-        else:
-            # Model has no required fields - should create successfully with no arguments
-            model = ErrorRetryDetails()
-            assert isinstance(model, ErrorRetryDetails)
-
-    def test_errorretrydetails_model_optional_fields(self):
-        """Test ErrorRetryDetails model optional field handling."""
-        # Create with minimal required data
-        minimal_data = {}
-
-        model = ErrorRetryDetails(**minimal_data)
-
-        # Verify model created with minimal required fields
-        assert model is not None
-        # Verify optional fields have default values
-        assert hasattr(model, "errorDetails")
-        # Optional field errorDetails should be None or have a default value
-        assert model.errorDetails is None or model.errorDetails is not None
-
-    def test_errorretrydetails_model_serialization(self):
-        """Test ErrorRetryDetails model serialization to dict."""
-        test_data = {
-            "errorDetails": [],
-        }
-
-        model = ErrorRetryDetails(**test_data)
-        serialized = model.model_dump(by_alias=True)
-
-        # Verify serialization
-        assert isinstance(serialized, dict)
-        assert "errorDetails" in serialized
-
-        # Verify values are preserved
-        assert serialized["errorDetails"] == test_data["errorDetails"]
-
-    def test_errorretrydetails_model_json_schema(self):
-        """Test ErrorRetryDetails model JSON schema generation."""
-        schema = ErrorRetryDetails.model_json_schema()
-
-        # Verify schema structure
-        assert isinstance(schema, dict)
-        assert "type" in schema
-        assert schema["type"] == "object"
-        assert "properties" in schema
-
-        # Verify all properties are in schema
-        expected_properties = {
-            "errorDetails",
-        }
-
-        schema_properties = set(schema["properties"].keys())
-        expected_properties_set = set(expected_properties) if expected_properties else set()
-        assert expected_properties_set.issubset(schema_properties)
-
-        # Verify required fields in schema (if any)
-        required_fields = []
-        if required_fields:
-            assert "required" in schema
-            required_in_schema = set(schema["required"])
-            expected_required = set(required_fields)
-            assert expected_required.issubset(required_in_schema)
-
-    def test_auditlogdetails_model_creation(self):
-        """Test AuditLogDetails model creation with valid data."""
-        # Valid test data for AuditLogDetails
-        valid_data = {
-            "body": [],
-            "header": "test_value",
-            "id": "test_value",
-            "type": "test_value",
-        }
-
-        # Create model instance
-        model = AuditLogDetails(**valid_data)
-
-        # Verify model creation
-        assert isinstance(model, AuditLogDetails)
-        assert model.body == valid_data["body"]
-        assert model.header == valid_data["header"]
-        assert model.id == valid_data["id"]
-        assert model.type == valid_data["type"]
-
-    def test_auditlogdetails_model_validation(self):
-        """Test AuditLogDetails model field validation."""
-        # Test with minimal required data
-        minimal_data = {
-            "body": [],
-            "header": "required_value",
-            "id": "required_value",
-            "type": "required_value",
-        }
-
-        model = AuditLogDetails(**minimal_data)
-        assert isinstance(model, AuditLogDetails)
-        assert model.body == minimal_data["body"]
-        assert model.header == minimal_data["header"]
-        assert model.id == minimal_data["id"]
-        assert model.type == minimal_data["type"]
-
-    def test_auditlogdetails_model_required_fields(self):
-        """Test AuditLogDetails model required field validation."""
-        # Check if this model has any required fields
-        required_fields = [
-            "body",
-            "header",
-            "id",
-            "type",
-        ]
-
-        if required_fields:
-            # Test missing required fields
-            with pytest.raises(PydanticValidationError) as exc_info:
-                AuditLogDetails()
-
-            # Verify validation error contains required field information
-            error_details = exc_info.value.errors()
-            required_fields_set = {
-                "body",
-                "header",
-                "id",
-                "type",
-            }
-
-            # Check that at least one required field is mentioned in the error
-            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
-            assert len(error_fields.intersection(required_fields_set)) > 0
-        else:
-            # Model has no required fields - should create successfully with no arguments
-            model = AuditLogDetails()
-            assert isinstance(model, AuditLogDetails)
-
-    def test_auditlogdetails_model_optional_fields(self):
-        """Test AuditLogDetails model optional field handling."""
-        # Create with minimal required data
-        minimal_data = {
-            "body": [],
-            "header": "required_value",
-            "id": "required_value",
-            "type": "required_value",
-        }
-
-        model = AuditLogDetails(**minimal_data)
-
-        # Verify model created with minimal required fields
-        assert model is not None
-        # Verify optional fields have default values
-
-    def test_auditlogdetails_model_serialization(self):
-        """Test AuditLogDetails model serialization to dict."""
-        test_data = {
-            "body": [],
-            "header": "serialize_value",
-            "id": "serialize_value",
-            "type": "serialize_value",
-        }
-
-        model = AuditLogDetails(**test_data)
-        serialized = model.model_dump(by_alias=True)
-
-        # Verify serialization
-        assert isinstance(serialized, dict)
-        assert "body" in serialized
-        assert "header" in serialized
-        assert "id" in serialized
-        assert "type" in serialized
-
-        # Verify values are preserved
-        assert serialized["body"] == test_data["body"]
-        assert serialized["header"] == test_data["header"]
-        assert serialized["id"] == test_data["id"]
-        assert serialized["type"] == test_data["type"]
-
-    def test_auditlogdetails_model_json_schema(self):
-        """Test AuditLogDetails model JSON schema generation."""
-        schema = AuditLogDetails.model_json_schema()
-
-        # Verify schema structure
-        assert isinstance(schema, dict)
-        assert "type" in schema
-        assert schema["type"] == "object"
-        assert "properties" in schema
-
-        # Verify all properties are in schema
-        expected_properties = {
-            "body",
-            "header",
-            "id",
-            "type",
-        }
-
-        schema_properties = set(schema["properties"].keys())
-        expected_properties_set = set(expected_properties) if expected_properties else set()
-        assert expected_properties_set.issubset(schema_properties)
-
-        # Verify required fields in schema (if any)
-        required_fields = [
-            "body",
-            "header",
             "id",
             "type",
         ]
@@ -850,14 +352,115 @@ class TestModels:
             expected_required = set(required_fields)
             assert expected_required.issubset(required_in_schema)
 
+    def test_errorretrydetails_model_creation(self):
+        """Test ErrorRetryDetails model creation with valid data."""
+        # Valid test data for ErrorRetryDetails
+        valid_data = {
+            "errorDetails": [],
+        }
+
+        # Create model instance
+        model = ErrorRetryDetails(**valid_data)
+
+        # Verify model creation
+        assert isinstance(model, ErrorRetryDetails)
+        assert model.errorDetails == valid_data["errorDetails"]
+
+    def test_errorretrydetails_model_validation(self):
+        """Test ErrorRetryDetails model field validation."""
+        # Test with minimal required data
+        minimal_data = {}
+
+        model = ErrorRetryDetails(**minimal_data)
+        assert isinstance(model, ErrorRetryDetails)
+
+    def test_errorretrydetails_model_required_fields(self):
+        """Test ErrorRetryDetails model required field validation."""
+        # Check if this model has any required fields
+        required_fields = []
+
+        if required_fields:
+            # Test missing required fields
+            with pytest.raises(PydanticValidationError) as exc_info:
+                ErrorRetryDetails()
+
+            # Verify validation error contains required field information
+            error_details = exc_info.value.errors()
+            required_fields_set = {}
+
+            # Check that at least one required field is mentioned in the error
+            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
+            assert len(error_fields.intersection(required_fields_set)) > 0
+        else:
+            # Model has no required fields - should create successfully with no arguments
+            model = ErrorRetryDetails()
+            assert isinstance(model, ErrorRetryDetails)
+
+    def test_errorretrydetails_model_optional_fields(self):
+        """Test ErrorRetryDetails model optional field handling."""
+        # Create with minimal required data
+        minimal_data = {}
+
+        model = ErrorRetryDetails(**minimal_data)
+
+        # Verify model created with minimal required fields
+        assert model is not None
+        # Verify optional fields have default values
+        assert hasattr(model, "errorDetails")
+        # Optional field errorDetails should be None or have a default value
+        assert model.errorDetails is None or model.errorDetails is not None
+
+    def test_errorretrydetails_model_serialization(self):
+        """Test ErrorRetryDetails model serialization to dict."""
+        test_data = {
+            "errorDetails": [],
+        }
+
+        model = ErrorRetryDetails(**test_data)
+        serialized = model.model_dump(by_alias=True)
+
+        # Verify serialization
+        assert isinstance(serialized, dict)
+        assert "errorDetails" in serialized
+
+        # Verify values are preserved
+        assert serialized["errorDetails"] == test_data["errorDetails"]
+
+    def test_errorretrydetails_model_json_schema(self):
+        """Test ErrorRetryDetails model JSON schema generation."""
+        schema = ErrorRetryDetails.model_json_schema()
+
+        # Verify schema structure
+        assert isinstance(schema, dict)
+        assert "type" in schema
+        assert schema["type"] == "object"
+        assert "properties" in schema
+
+        # Verify all properties are in schema
+        expected_properties = {
+            "errorDetails",
+        }
+
+        schema_properties = set(schema["properties"].keys())
+        expected_properties_set = set(expected_properties) if expected_properties else set()
+        assert expected_properties_set.issubset(schema_properties)
+
+        # Verify required fields in schema (if any)
+        required_fields = []
+        if required_fields:
+            assert "required" in schema
+            required_in_schema = set(schema["required"])
+            expected_required = set(required_fields)
+            assert expected_required.issubset(required_in_schema)
+
     def test_paginatedapiresponse_model_creation(self):
         """Test PaginatedApiResponse model creation with valid data."""
         # Valid test data for PaginatedApiResponse
         valid_data = {
-            "offset": 42,
-            "remainingRecords": True,
             "total": 42,
             "count": 42,
+            "offset": 42,
+            "remainingRecords": True,
         }
 
         # Create model instance
@@ -865,10 +468,10 @@ class TestModels:
 
         # Verify model creation
         assert isinstance(model, PaginatedApiResponse)
-        assert model.offset == valid_data["offset"]
-        assert model.remainingRecords == valid_data["remainingRecords"]
         assert model.total == valid_data["total"]
         assert model.count == valid_data["count"]
+        assert model.offset == valid_data["offset"]
+        assert model.remainingRecords == valid_data["remainingRecords"]
 
     def test_paginatedapiresponse_model_validation(self):
         """Test PaginatedApiResponse model field validation."""
@@ -934,10 +537,10 @@ class TestModels:
     def test_paginatedapiresponse_model_serialization(self):
         """Test PaginatedApiResponse model serialization to dict."""
         test_data = {
-            "offset": 99,
-            "remainingRecords": False,
             "total": 99,
             "count": 99,
+            "offset": 99,
+            "remainingRecords": False,
         }
 
         model = PaginatedApiResponse(**test_data)
@@ -945,16 +548,16 @@ class TestModels:
 
         # Verify serialization
         assert isinstance(serialized, dict)
-        assert "offset" in serialized
-        assert "remainingRecords" in serialized
         assert "total" in serialized
         assert "count" in serialized
+        assert "offset" in serialized
+        assert "remainingRecords" in serialized
 
         # Verify values are preserved
-        assert serialized["offset"] == test_data["offset"]
-        assert serialized["remainingRecords"] == test_data["remainingRecords"]
         assert serialized["total"] == test_data["total"]
         assert serialized["count"] == test_data["count"]
+        assert serialized["offset"] == test_data["offset"]
+        assert serialized["remainingRecords"] == test_data["remainingRecords"]
 
     def test_paginatedapiresponse_model_json_schema(self):
         """Test PaginatedApiResponse model JSON schema generation."""
@@ -968,10 +571,10 @@ class TestModels:
 
         # Verify all properties are in schema
         expected_properties = {
+            "total",
+            "count",
             "offset",
             "remainingRecords",
-            "total",
-            "count",
         }
 
         schema_properties = set(schema["properties"].keys())
@@ -982,151 +585,6 @@ class TestModels:
         required_fields = [
             "total",
             "count",
-        ]
-        if required_fields:
-            assert "required" in schema
-            required_in_schema = set(schema["required"])
-            expected_required = set(required_fields)
-            assert expected_required.issubset(required_in_schema)
-
-    def test_error_model_creation(self):
-        """Test Error model creation with valid data."""
-        # Valid test data for Error
-        valid_data = {
-            "httpStatusCode": 42,
-            "message": "test_value",
-            "debugId": "test_value",
-            "errorCode": "test_value",
-        }
-
-        # Create model instance
-        model = Error(**valid_data)
-
-        # Verify model creation
-        assert isinstance(model, Error)
-        assert model.httpStatusCode == valid_data["httpStatusCode"]
-        assert model.message == valid_data["message"]
-        assert model.debugId == valid_data["debugId"]
-        assert model.errorCode == valid_data["errorCode"]
-
-    def test_error_model_validation(self):
-        """Test Error model field validation."""
-        # Test with minimal required data
-        minimal_data = {
-            "httpStatusCode": 1,
-            "message": "required_value",
-            "debugId": "required_value",
-            "errorCode": "required_value",
-        }
-
-        model = Error(**minimal_data)
-        assert isinstance(model, Error)
-        assert model.httpStatusCode == minimal_data["httpStatusCode"]
-        assert model.message == minimal_data["message"]
-        assert model.debugId == minimal_data["debugId"]
-        assert model.errorCode == minimal_data["errorCode"]
-
-    def test_error_model_required_fields(self):
-        """Test Error model required field validation."""
-        # Check if this model has any required fields
-        required_fields = [
-            "httpStatusCode",
-            "message",
-            "debugId",
-            "errorCode",
-        ]
-
-        if required_fields:
-            # Test missing required fields
-            with pytest.raises(PydanticValidationError) as exc_info:
-                Error()
-
-            # Verify validation error contains required field information
-            error_details = exc_info.value.errors()
-            required_fields_set = {
-                "httpStatusCode",
-                "message",
-                "debugId",
-                "errorCode",
-            }
-
-            # Check that at least one required field is mentioned in the error
-            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
-            assert len(error_fields.intersection(required_fields_set)) > 0
-        else:
-            # Model has no required fields - should create successfully with no arguments
-            model = Error()
-            assert isinstance(model, Error)
-
-    def test_error_model_optional_fields(self):
-        """Test Error model optional field handling."""
-        # Create with minimal required data
-        minimal_data = {
-            "httpStatusCode": 1,
-            "message": "required_value",
-            "debugId": "required_value",
-            "errorCode": "required_value",
-        }
-
-        model = Error(**minimal_data)
-
-        # Verify model created with minimal required fields
-        assert model is not None
-        # Verify optional fields have default values
-
-    def test_error_model_serialization(self):
-        """Test Error model serialization to dict."""
-        test_data = {
-            "httpStatusCode": 99,
-            "message": "serialize_value",
-            "debugId": "serialize_value",
-            "errorCode": "serialize_value",
-        }
-
-        model = Error(**test_data)
-        serialized = model.model_dump(by_alias=True)
-
-        # Verify serialization
-        assert isinstance(serialized, dict)
-        assert "httpStatusCode" in serialized
-        assert "message" in serialized
-        assert "debugId" in serialized
-        assert "errorCode" in serialized
-
-        # Verify values are preserved
-        assert serialized["httpStatusCode"] == test_data["httpStatusCode"]
-        assert serialized["message"] == test_data["message"]
-        assert serialized["debugId"] == test_data["debugId"]
-        assert serialized["errorCode"] == test_data["errorCode"]
-
-    def test_error_model_json_schema(self):
-        """Test Error model JSON schema generation."""
-        schema = Error.model_json_schema()
-
-        # Verify schema structure
-        assert isinstance(schema, dict)
-        assert "type" in schema
-        assert schema["type"] == "object"
-        assert "properties" in schema
-
-        # Verify all properties are in schema
-        expected_properties = {
-            "httpStatusCode",
-            "message",
-            "debugId",
-            "errorCode",
-        }
-
-        schema_properties = set(schema["properties"].keys())
-        expected_properties_set = set(expected_properties) if expected_properties else set()
-        assert expected_properties_set.issubset(schema_properties)
-
-        # Verify required fields in schema (if any)
-        required_fields = [
-            "httpStatusCode",
-            "message",
-            "debugId",
-            "errorCode",
         ]
         if required_fields:
             assert "required" in schema
@@ -1235,6 +693,548 @@ class TestModels:
             expected_required = set(required_fields)
             assert expected_required.issubset(required_in_schema)
 
+    def test_auditlogdetails_model_creation(self):
+        """Test AuditLogDetails model creation with valid data."""
+        # Valid test data for AuditLogDetails
+        valid_data = {
+            "header": "test_header",
+            "id": "test_id",
+            "type": "test_type",
+            "body": [],
+        }
+
+        # Create model instance
+        model = AuditLogDetails(**valid_data)
+
+        # Verify model creation
+        assert isinstance(model, AuditLogDetails)
+        assert model.header == valid_data["header"]
+        assert model.id == valid_data["id"]
+        assert model.type == valid_data["type"]
+        assert model.body == valid_data["body"]
+
+    def test_auditlogdetails_model_validation(self):
+        """Test AuditLogDetails model field validation."""
+        # Test with minimal required data
+        minimal_data = {
+            "header": "required_header",
+            "id": "required_id",
+            "type": "required_type",
+            "body": [],
+        }
+
+        model = AuditLogDetails(**minimal_data)
+        assert isinstance(model, AuditLogDetails)
+        assert model.header == minimal_data["header"]
+        assert model.id == minimal_data["id"]
+        assert model.type == minimal_data["type"]
+        assert model.body == minimal_data["body"]
+
+    def test_auditlogdetails_model_required_fields(self):
+        """Test AuditLogDetails model required field validation."""
+        # Check if this model has any required fields
+        required_fields = [
+            "header",
+            "id",
+            "type",
+            "body",
+        ]
+
+        if required_fields:
+            # Test missing required fields
+            with pytest.raises(PydanticValidationError) as exc_info:
+                AuditLogDetails()
+
+            # Verify validation error contains required field information
+            error_details = exc_info.value.errors()
+            required_fields_set = {
+                "header",
+                "id",
+                "type",
+                "body",
+            }
+
+            # Check that at least one required field is mentioned in the error
+            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
+            assert len(error_fields.intersection(required_fields_set)) > 0
+        else:
+            # Model has no required fields - should create successfully with no arguments
+            model = AuditLogDetails()
+            assert isinstance(model, AuditLogDetails)
+
+    def test_auditlogdetails_model_optional_fields(self):
+        """Test AuditLogDetails model optional field handling."""
+        # Create with minimal required data
+        minimal_data = {
+            "header": "required_header",
+            "id": "required_id",
+            "type": "required_type",
+            "body": [],
+        }
+
+        model = AuditLogDetails(**minimal_data)
+
+        # Verify model created with minimal required fields
+        assert model is not None
+        # Verify optional fields have default values
+
+    def test_auditlogdetails_model_serialization(self):
+        """Test AuditLogDetails model serialization to dict."""
+        test_data = {
+            "header": "serialize_value",
+            "id": "serialize_value",
+            "type": "serialize_value",
+            "body": [],
+        }
+
+        model = AuditLogDetails(**test_data)
+        serialized = model.model_dump(by_alias=True)
+
+        # Verify serialization
+        assert isinstance(serialized, dict)
+        assert "header" in serialized
+        assert "id" in serialized
+        assert "type" in serialized
+        assert "body" in serialized
+
+        # Verify values are preserved
+        assert serialized["header"] == test_data["header"]
+        assert serialized["id"] == test_data["id"]
+        assert serialized["type"] == test_data["type"]
+        assert serialized["body"] == test_data["body"]
+
+    def test_auditlogdetails_model_json_schema(self):
+        """Test AuditLogDetails model JSON schema generation."""
+        schema = AuditLogDetails.model_json_schema()
+
+        # Verify schema structure
+        assert isinstance(schema, dict)
+        assert "type" in schema
+        assert schema["type"] == "object"
+        assert "properties" in schema
+
+        # Verify all properties are in schema
+        expected_properties = {
+            "header",
+            "id",
+            "type",
+            "body",
+        }
+
+        schema_properties = set(schema["properties"].keys())
+        expected_properties_set = set(expected_properties) if expected_properties else set()
+        assert expected_properties_set.issubset(schema_properties)
+
+        # Verify required fields in schema (if any)
+        required_fields = [
+            "header",
+            "id",
+            "type",
+            "body",
+        ]
+        if required_fields:
+            assert "required" in schema
+            required_in_schema = set(schema["required"])
+            expected_required = set(required_fields)
+            assert expected_required.issubset(required_in_schema)
+
+    def test_auditlogs_model_creation(self):
+        """Test AuditLogs model creation with valid data."""
+        # Valid test data for AuditLogs
+        valid_data = {
+            "offset": 42,
+            "remainingRecords": True,
+            "total": 42,
+            "items": [],
+            "count": 42,
+        }
+
+        # Create model instance
+        model = AuditLogs(**valid_data)
+
+        # Verify model creation
+        assert isinstance(model, AuditLogs)
+        assert model.offset == valid_data["offset"]
+        assert model.remainingRecords == valid_data["remainingRecords"]
+        assert model.total == valid_data["total"]
+        assert model.items == valid_data["items"]
+        assert model.count == valid_data["count"]
+
+    def test_auditlogs_model_validation(self):
+        """Test AuditLogs model field validation."""
+        # Test with minimal required data
+        minimal_data = {
+            "total": 1,
+            "items": [],
+            "count": 1,
+        }
+
+        model = AuditLogs(**minimal_data)
+        assert isinstance(model, AuditLogs)
+        assert model.total == minimal_data["total"]
+        assert model.items == minimal_data["items"]
+        assert model.count == minimal_data["count"]
+
+    def test_auditlogs_model_required_fields(self):
+        """Test AuditLogs model required field validation."""
+        # Check if this model has any required fields
+        required_fields = [
+            "total",
+            "items",
+            "count",
+        ]
+
+        if required_fields:
+            # Test missing required fields
+            with pytest.raises(PydanticValidationError) as exc_info:
+                AuditLogs()
+
+            # Verify validation error contains required field information
+            error_details = exc_info.value.errors()
+            required_fields_set = {
+                "total",
+                "items",
+                "count",
+            }
+
+            # Check that at least one required field is mentioned in the error
+            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
+            assert len(error_fields.intersection(required_fields_set)) > 0
+        else:
+            # Model has no required fields - should create successfully with no arguments
+            model = AuditLogs()
+            assert isinstance(model, AuditLogs)
+
+    def test_auditlogs_model_optional_fields(self):
+        """Test AuditLogs model optional field handling."""
+        # Create with minimal required data
+        minimal_data = {
+            "total": 1,
+            "items": [],
+            "count": 1,
+        }
+
+        model = AuditLogs(**minimal_data)
+
+        # Verify model created with minimal required fields
+        assert model is not None
+        # Verify optional fields have default values
+        assert hasattr(model, "offset")
+        # Optional field offset should be None or have a default value
+        assert model.offset is None or model.offset is not None
+        assert hasattr(model, "remainingRecords")
+        # Optional field remainingRecords should be None or have a default value
+        assert model.remainingRecords is None or model.remainingRecords is not None
+
+    def test_auditlogs_model_serialization(self):
+        """Test AuditLogs model serialization to dict."""
+        test_data = {
+            "offset": 99,
+            "remainingRecords": False,
+            "total": 99,
+            "items": [],
+            "count": 99,
+        }
+
+        model = AuditLogs(**test_data)
+        serialized = model.model_dump(by_alias=True)
+
+        # Verify serialization
+        assert isinstance(serialized, dict)
+        assert "offset" in serialized
+        assert "remainingRecords" in serialized
+        assert "total" in serialized
+        assert "items" in serialized
+        assert "count" in serialized
+
+        # Verify values are preserved
+        assert serialized["offset"] == test_data["offset"]
+        assert serialized["remainingRecords"] == test_data["remainingRecords"]
+        assert serialized["total"] == test_data["total"]
+        assert serialized["items"] == test_data["items"]
+        assert serialized["count"] == test_data["count"]
+
+    def test_auditlogs_model_json_schema(self):
+        """Test AuditLogs model JSON schema generation."""
+        schema = AuditLogs.model_json_schema()
+
+        # Verify schema structure
+        assert isinstance(schema, dict)
+        assert "type" in schema
+        assert schema["type"] == "object"
+        assert "properties" in schema
+
+        # Verify all properties are in schema
+        expected_properties = {
+            "offset",
+            "remainingRecords",
+            "total",
+            "items",
+            "count",
+        }
+
+        schema_properties = set(schema["properties"].keys())
+        expected_properties_set = set(expected_properties) if expected_properties else set()
+        assert expected_properties_set.issubset(schema_properties)
+
+        # Verify required fields in schema (if any)
+        required_fields = [
+            "total",
+            "items",
+            "count",
+        ]
+        if required_fields:
+            assert "required" in schema
+            required_in_schema = set(schema["required"])
+            expected_required = set(required_fields)
+            assert expected_required.issubset(required_in_schema)
+
+    def test_error_model_creation(self):
+        """Test Error model creation with valid data."""
+        # Valid test data for Error
+        valid_data = {
+            "httpStatusCode": 42,
+            "message": "test_message",
+            "debugId": "test_debugId",
+            "errorCode": "test_errorCode",
+        }
+
+        # Create model instance
+        model = Error(**valid_data)
+
+        # Verify model creation
+        assert isinstance(model, Error)
+        assert model.httpStatusCode == valid_data["httpStatusCode"]
+        assert model.message == valid_data["message"]
+        assert model.debugId == valid_data["debugId"]
+        assert model.errorCode == valid_data["errorCode"]
+
+    def test_error_model_validation(self):
+        """Test Error model field validation."""
+        # Test with minimal required data
+        minimal_data = {
+            "httpStatusCode": 1,
+            "message": "required_message",
+            "debugId": "required_debugId",
+            "errorCode": "required_errorCode",
+        }
+
+        model = Error(**minimal_data)
+        assert isinstance(model, Error)
+        assert model.httpStatusCode == minimal_data["httpStatusCode"]
+        assert model.message == minimal_data["message"]
+        assert model.debugId == minimal_data["debugId"]
+        assert model.errorCode == minimal_data["errorCode"]
+
+    def test_error_model_required_fields(self):
+        """Test Error model required field validation."""
+        # Check if this model has any required fields
+        required_fields = [
+            "httpStatusCode",
+            "message",
+            "debugId",
+            "errorCode",
+        ]
+
+        if required_fields:
+            # Test missing required fields
+            with pytest.raises(PydanticValidationError) as exc_info:
+                Error()
+
+            # Verify validation error contains required field information
+            error_details = exc_info.value.errors()
+            required_fields_set = {
+                "httpStatusCode",
+                "message",
+                "debugId",
+                "errorCode",
+            }
+
+            # Check that at least one required field is mentioned in the error
+            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
+            assert len(error_fields.intersection(required_fields_set)) > 0
+        else:
+            # Model has no required fields - should create successfully with no arguments
+            model = Error()
+            assert isinstance(model, Error)
+
+    def test_error_model_optional_fields(self):
+        """Test Error model optional field handling."""
+        # Create with minimal required data
+        minimal_data = {
+            "httpStatusCode": 1,
+            "message": "required_message",
+            "debugId": "required_debugId",
+            "errorCode": "required_errorCode",
+        }
+
+        model = Error(**minimal_data)
+
+        # Verify model created with minimal required fields
+        assert model is not None
+        # Verify optional fields have default values
+
+    def test_error_model_serialization(self):
+        """Test Error model serialization to dict."""
+        test_data = {
+            "httpStatusCode": 99,
+            "message": "serialize_value",
+            "debugId": "serialize_value",
+            "errorCode": "serialize_value",
+        }
+
+        model = Error(**test_data)
+        serialized = model.model_dump(by_alias=True)
+
+        # Verify serialization
+        assert isinstance(serialized, dict)
+        assert "httpStatusCode" in serialized
+        assert "message" in serialized
+        assert "debugId" in serialized
+        assert "errorCode" in serialized
+
+        # Verify values are preserved
+        assert serialized["httpStatusCode"] == test_data["httpStatusCode"]
+        assert serialized["message"] == test_data["message"]
+        assert serialized["debugId"] == test_data["debugId"]
+        assert serialized["errorCode"] == test_data["errorCode"]
+
+    def test_error_model_json_schema(self):
+        """Test Error model JSON schema generation."""
+        schema = Error.model_json_schema()
+
+        # Verify schema structure
+        assert isinstance(schema, dict)
+        assert "type" in schema
+        assert schema["type"] == "object"
+        assert "properties" in schema
+
+        # Verify all properties are in schema
+        expected_properties = {
+            "httpStatusCode",
+            "message",
+            "debugId",
+            "errorCode",
+        }
+
+        schema_properties = set(schema["properties"].keys())
+        expected_properties_set = set(expected_properties) if expected_properties else set()
+        assert expected_properties_set.issubset(schema_properties)
+
+        # Verify required fields in schema (if any)
+        required_fields = [
+            "httpStatusCode",
+            "message",
+            "debugId",
+            "errorCode",
+        ]
+        if required_fields:
+            assert "required" in schema
+            required_in_schema = set(schema["required"])
+            expected_required = set(required_fields)
+            assert expected_required.issubset(required_in_schema)
+
+    def test_errornotfounddetails_model_creation(self):
+        """Test ErrorNotFoundDetails model creation with valid data."""
+        # Valid test data for ErrorNotFoundDetails
+        valid_data = {
+            "errorDetails": [],
+        }
+
+        # Create model instance
+        model = ErrorNotFoundDetails(**valid_data)
+
+        # Verify model creation
+        assert isinstance(model, ErrorNotFoundDetails)
+        assert model.errorDetails == valid_data["errorDetails"]
+
+    def test_errornotfounddetails_model_validation(self):
+        """Test ErrorNotFoundDetails model field validation."""
+        # Test with minimal required data
+        minimal_data = {}
+
+        model = ErrorNotFoundDetails(**minimal_data)
+        assert isinstance(model, ErrorNotFoundDetails)
+
+    def test_errornotfounddetails_model_required_fields(self):
+        """Test ErrorNotFoundDetails model required field validation."""
+        # Check if this model has any required fields
+        required_fields = []
+
+        if required_fields:
+            # Test missing required fields
+            with pytest.raises(PydanticValidationError) as exc_info:
+                ErrorNotFoundDetails()
+
+            # Verify validation error contains required field information
+            error_details = exc_info.value.errors()
+            required_fields_set = {}
+
+            # Check that at least one required field is mentioned in the error
+            error_fields = {error["loc"][0] for error in error_details if error["type"] == "missing"}
+            assert len(error_fields.intersection(required_fields_set)) > 0
+        else:
+            # Model has no required fields - should create successfully with no arguments
+            model = ErrorNotFoundDetails()
+            assert isinstance(model, ErrorNotFoundDetails)
+
+    def test_errornotfounddetails_model_optional_fields(self):
+        """Test ErrorNotFoundDetails model optional field handling."""
+        # Create with minimal required data
+        minimal_data = {}
+
+        model = ErrorNotFoundDetails(**minimal_data)
+
+        # Verify model created with minimal required fields
+        assert model is not None
+        # Verify optional fields have default values
+        assert hasattr(model, "errorDetails")
+        # Optional field errorDetails should be None or have a default value
+        assert model.errorDetails is None or model.errorDetails is not None
+
+    def test_errornotfounddetails_model_serialization(self):
+        """Test ErrorNotFoundDetails model serialization to dict."""
+        test_data = {
+            "errorDetails": [],
+        }
+
+        model = ErrorNotFoundDetails(**test_data)
+        serialized = model.model_dump(by_alias=True)
+
+        # Verify serialization
+        assert isinstance(serialized, dict)
+        assert "errorDetails" in serialized
+
+        # Verify values are preserved
+        assert serialized["errorDetails"] == test_data["errorDetails"]
+
+    def test_errornotfounddetails_model_json_schema(self):
+        """Test ErrorNotFoundDetails model JSON schema generation."""
+        schema = ErrorNotFoundDetails.model_json_schema()
+
+        # Verify schema structure
+        assert isinstance(schema, dict)
+        assert "type" in schema
+        assert schema["type"] == "object"
+        assert "properties" in schema
+
+        # Verify all properties are in schema
+        expected_properties = {
+            "errorDetails",
+        }
+
+        schema_properties = set(schema["properties"].keys())
+        expected_properties_set = set(expected_properties) if expected_properties else set()
+        assert expected_properties_set.issubset(schema_properties)
+
+        # Verify required fields in schema (if any)
+        required_fields = []
+        if required_fields:
+            assert "required" in schema
+            required_in_schema = set(schema["required"])
+            expected_required = set(required_fields)
+            assert expected_required.issubset(required_in_schema)
+
 
 class TestModelInteractions:
     """Test interactions between different models."""
@@ -1258,15 +1258,15 @@ class TestModelInteractions:
     def test_all_models_have_base_methods(self):
         """Test that all models inherit proper base functionality."""
         models_to_test = [
-            ErrorNotFoundDetails,
             AuditLog,
-            AuditLogs,
-            ErrorRetryDetails,
-            AuditLogDetails,
             ErrorGeneralDetails,
+            ErrorRetryDetails,
             PaginatedApiResponse,
-            Error,
             ErrorBadRequestDetails,
+            AuditLogDetails,
+            AuditLogs,
+            Error,
+            ErrorNotFoundDetails,
         ]
 
         for model_class in models_to_test:
@@ -1281,15 +1281,15 @@ class TestModelInteractions:
     def test_model_error_handling(self):
         """Test model error handling with invalid data."""
         models_to_test = [
-            ErrorNotFoundDetails,
             AuditLog,
-            AuditLogs,
-            ErrorRetryDetails,
-            AuditLogDetails,
             ErrorGeneralDetails,
+            ErrorRetryDetails,
             PaginatedApiResponse,
-            Error,
             ErrorBadRequestDetails,
+            AuditLogDetails,
+            AuditLogs,
+            Error,
+            ErrorNotFoundDetails,
         ]
 
         for model_class in models_to_test:
@@ -1333,15 +1333,15 @@ class TestModelValidationEdgeCases:
         """Test handling of models with no required fields."""
         # Find models that might accept empty initialization
         models_to_test = [
-            ErrorNotFoundDetails,
             AuditLog,
-            AuditLogs,
-            ErrorRetryDetails,
-            AuditLogDetails,
             ErrorGeneralDetails,
+            ErrorRetryDetails,
             PaginatedApiResponse,
-            Error,
             ErrorBadRequestDetails,
+            AuditLogDetails,
+            AuditLogs,
+            Error,
+            ErrorNotFoundDetails,
         ]
 
         for model_class in models_to_test:
@@ -1356,15 +1356,15 @@ class TestModelValidationEdgeCases:
     def test_model_field_types(self):
         """Test that model fields have correct types."""
         models_to_test = [
-            ErrorNotFoundDetails,
             AuditLog,
-            AuditLogs,
-            ErrorRetryDetails,
-            AuditLogDetails,
             ErrorGeneralDetails,
+            ErrorRetryDetails,
             PaginatedApiResponse,
-            Error,
             ErrorBadRequestDetails,
+            AuditLogDetails,
+            AuditLogs,
+            Error,
+            ErrorNotFoundDetails,
         ]
 
         for model_class in models_to_test:

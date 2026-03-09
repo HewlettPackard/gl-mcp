@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """End-to-End tests for subscriptions MCP Server.
 
 test_server_health: Verifies that the server initializes correctly and can establish a session
@@ -26,7 +26,7 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-class TestHpeGreenlakeApisForSubscriptionManagementMCPServerE2E:
+class TestSubscriptionsMCPServerE2E:
     """End-to-End tests for the subscriptions MCP server.
 
     These tests start the actual MCP server and connect to it using a real MCP client.
@@ -81,16 +81,17 @@ class TestHpeGreenlakeApisForSubscriptionManagementMCPServerE2E:
                 # Convert tools to a dictionary for easier checking
                 tools = {tool.name: tool for tool in tools_response.tools}
 
-                # Verify that at least some tools are available
+                # Print available tools for debugging
+                print(f"Available tools ({len(tools)} total): {list(tools.keys())}")
+
+                # Verify that tools are available
                 assert len(tools) > 0, "Server should provide at least one tool"
 
-                # Print available tools for debugging
-                print(f"Available tools: {list(tools.keys())}")
-
-                # For static mode, verify that we have at least some tools
-                # The actual tool names will depend on the OpenAPI spec
-                assert len(tools) >= 1, "Should have at least one tool in static mode"
-                # You can add specific tool assertions based on your OpenAPI spec if needed
+                # For static mode, verify each tool has required fields
+                for tool_name, tool in tools.items():
+                    assert tool.name, f"Tool {tool_name} should have a name"
+                    assert tool.description, f"Tool {tool_name} should have a description"
+                    assert tool.inputSchema, f"Tool {tool_name} should have an input schema"
 
             except asyncio.TimeoutError:
                 pytest.fail("Timed out waiting for list_tools response")

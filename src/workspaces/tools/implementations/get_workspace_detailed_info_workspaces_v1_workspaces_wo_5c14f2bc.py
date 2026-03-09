@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
 get_workspace_detailed_info_workspaces_v1_workspaces_wo_5c14f2bc tool implementation for workspaces MCP server.
 
@@ -6,6 +6,7 @@ This tool Retrieve detailed workspace information..
 """
 
 from typing import Any, Dict, List
+from urllib.parse import quote
 from tools.base import BaseTool
 
 
@@ -82,8 +83,8 @@ class get_workspace_detailed_info_workspaces_v1_workspaces_wo_5c14f2bcTool(BaseT
 
             # Build URL with path parameters
             url = "/workspaces/v1/workspaces/{workspaceId}/contact"
-            # Replace path parameter: workspaceId
-            url = url.replace("{" + "workspaceId" + "}", str(arguments["workspaceId"]))
+            # Replace path parameter: workspaceId (URL-encoded to prevent path traversal)
+            url = url.replace("{" + "workspaceId" + "}", quote(str(arguments["workspaceId"]), safe=""))
 
             # Prepare query/body parameters
             params: Dict[str, Any] = {}

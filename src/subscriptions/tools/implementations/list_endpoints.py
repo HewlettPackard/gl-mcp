@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
 list_endpoints tool implementation for subscriptions MCP server.
 
@@ -46,8 +46,8 @@ class ListEndpointsTool(BaseTool):
 
             # Define all available endpoints in METHOD:PATH format
             all_endpoints: List[str] = [
-                "GET:/subscriptions/v1/subscriptions",
                 "GET:/subscriptions/v1/subscriptions/{id}",
+                "GET:/subscriptions/v1/subscriptions",
             ]
 
             # Apply filter if provided

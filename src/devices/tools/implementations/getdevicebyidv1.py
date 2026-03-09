@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
 getdevicebyidv1 tool implementation for devices MCP server.
 
@@ -6,6 +6,7 @@ This tool Get details on a specific device by passing its resourceId. <p><b>NOTE
 """
 
 from typing import Any, Dict, List
+from urllib.parse import quote
 from tools.base import BaseTool
 
 
@@ -79,8 +80,8 @@ class getdevicebyidv1Tool(BaseTool):
 
             # Build URL with path parameters
             url = "/devices/v1/devices/{id}"
-            # Replace path parameter: id
-            url = url.replace("{" + "id" + "}", str(arguments["id"]))
+            # Replace path parameter: id (URL-encoded to prevent path traversal)
+            url = url.replace("{" + "id" + "}", quote(str(arguments["id"]), safe=""))
 
             # Prepare query/body parameters
             params: Dict[str, Any] = {}

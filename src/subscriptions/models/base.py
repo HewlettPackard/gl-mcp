@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
 Base models for subscriptions MCP server.
 
@@ -104,260 +104,12 @@ class ResourceMetadata(BaseModel):
 # SERVICE-SPECIFIC MODELS GENERATED FROM OPENAPI SCHEMAS
 
 
-class BadRequestErrorDetail(BaseModel):
-    """BadRequestErrorDetail model"""
-
-    type: str = Field(alias="type", description="The type of error details.")
-
-    issues: List[Dict[str, Any]] = Field(alias="issues", description="An array of bad request issues.")
-
-
-class AsyncOperationResource(BaseModel):
-    """AsyncOperationResource model"""
-
-    status: Optional[str] = Field(
-        default=None, alias="status", description="The current status of the asynchronous operation."
-    )
-
-    timeoutMinutes: Optional[int] = Field(
-        default=None, alias="timeoutMinutes", description="The number of minutes before the operation will time out."
-    )
-
-    result: Optional[Dict[str, Any]] = Field(
-        default=None,
-        alias="result",
-        description="An array that provides information on successful or unsuccessful operations.",
-    )
-
-    type: str = Field(alias="type", description="The type of the resource.")
-
-    id: str = Field(alias="id", description="The unique identifier of the asynchronous operation.")
-
-    progressPercent: Optional[int] = Field(
-        default=None, alias="progressPercent", description="Percentage completion of the asynchronous operation."
-    )
-
-    resultType: Optional[str] = Field(
-        default=None,
-        alias="resultType",
-        description="Relates individual subscriptions to a result category that indicates successfull or unsuccessful operations",
-    )
-
-    suggestedPollingIntervalSeconds: Optional[int] = Field(
-        default=None,
-        alias="suggestedPollingIntervalSeconds",
-        description="The suggested time to wait (in minutes) before calling the operation again.",
-    )
-
-    startedAt: Optional[str] = Field(
-        default=None, alias="startedAt", description="Time the asynchronous operation started."
-    )
-
-    endedAt: Optional[str] = Field(default=None, alias="endedAt", description="Time the asynchronous operation ended.")
-
-
 class AutoSubscriptionsPostRequest(BaseModel):
     """AutoSubscriptionsPostRequest model"""
 
-    autoSubscriptionSettings: Optional[List[Dict[str, Any]]] = Field(
+    autoSubscriptionSettings: Optional[List[Any]] = Field(
         default=None, alias="autoSubscriptionSettings", description="autoSubscriptionSettings field"
     )
-
-
-class V1Beta1SubscriptionsGetResponse(BaseModel):
-    """V1Beta1SubscriptionsGetResponse model"""
-
-    total: Optional[int] = Field(
-        default=None,
-        alias="total",
-        description="Total number of items in the collection that match the filter query, if one was provided in the request otherwise total number of items for a given resource.",
-    )
-
-    count: int = Field(alias="count", description="The number of items returned.")
-
-    items: List[Dict[str, Any]] = Field(alias="items", description="items field")
-
-    offset: Optional[int] = Field(default=None, alias="offset", description="Zero-based resource offset.")
-
-
-class AutoSubscriptionSettings(BaseModel):
-    """AutoSubscriptionSettings model"""
-
-    deviceType: str = Field(alias="deviceType", description="deviceType field")
-
-    tier: str = Field(alias="tier", description="tier field")
-
-
-class HpeGreenLakeGeneralError(BaseModel):
-    """HpeGreenLakeGeneralError model"""
-
-    message: str = Field(alias="message", description="A user-friendly error message.")
-
-    debugId: str = Field(alias="debugId", description="A unique identifier for the instance of this error.")
-
-    errorCode: str = Field(
-        alias="errorCode", description="A unique machine-friendly, but human-readable identifier for the error."
-    )
-
-    generalErrorDetails: Optional[List[Dict[str, Any]]] = Field(
-        default=None, alias="generalErrorDetails", description="generalErrorDetails field"
-    )
-
-    httpStatusCode: int = Field(alias="httpStatusCode", description="The HTTP equivalent status code.")
-
-
-class ErrorIssue(BaseModel):
-    """ErrorIssue model"""
-
-    subject: Optional[str] = Field(default=None, alias="subject", description="The specific issue key.")
-
-    description: Optional[str] = Field(
-        default=None, alias="description", description="A brief explanation of the error."
-    )
-
-    source: Optional[str] = Field(default=None, alias="source", description="The source of the error.")
-
-
-class GeneralErrorDetail(BaseModel):
-    """GeneralErrorDetail model"""
-
-    type: str = Field(alias="type", description="The type of error.")
-
-    metadata: Dict[str, Any] = Field(alias="metadata", description="Additional key pairs.")
-
-    source: str = Field(alias="source", description="The source of the error.")
-
-
-class HpeGreenLakeServerError(BaseModel):
-    """HpeGreenLakeServerError model"""
-
-    errorCode: str = Field(
-        alias="errorCode", description="A unique machine-friendly, but human-readable identifier for the error."
-    )
-
-    httpStatusCode: int = Field(alias="httpStatusCode", description="The HTTP equivalent status code.")
-
-    message: str = Field(alias="message", description="A user-friendly error message.")
-
-    serverErrorDetails: Optional[List[Dict[str, Any]]] = Field(
-        default=None, alias="serverErrorDetails", description="serverErrorDetails field"
-    )
-
-    debugId: str = Field(alias="debugId", description="A unique identifier for the instance of this error.")
-
-
-class SubscriptionsPostRequest(BaseModel):
-    """SubscriptionsPostRequest model"""
-
-    subscriptions: List[Dict[str, Any]] = Field(alias="subscriptions", description="An array of subscription keys.")
-
-
-class AsyncResponse(BaseModel):
-    """AsyncResponse model"""
-
-    status: str = Field(alias="status", description="Three digit HTTPS status code and message.")
-
-    transactionId: str = Field(alias="transactionId", description="transactionId field")
-
-    code: int = Field(alias="code", description="Three digit HTTP status code.")
-
-
-class V1Beta1SubscriptionDetail(BaseModel):
-    """V1Beta1SubscriptionDetail model"""
-
-    isEval: Optional[bool] = Field(
-        default=None,
-        alias="isEval",
-        description="A boolean that states if the subscription is an evaluation subscription or not.",
-    )
-
-    skuDescription: Optional[str] = Field(
-        default=None, alias="skuDescription", description="A description of the stock keeping unit."
-    )
-
-    quantity: Optional[str] = Field(default=None, alias="quantity", description="Total quantity of the subscription")
-
-    tags: Optional[Dict[str, Any]] = Field(default=None, alias="tags", description="tags field")
-
-    type: str = Field(alias="type", description="The type of the resource.")
-
-    availableQuantity: Optional[str] = Field(
-        default=None, alias="availableQuantity", description="Available quantity of the subscription."
-    )
-
-    createdAt: Optional[str] = Field(default=None, alias="createdAt", description="Time of subscription creation.")
-
-    updatedAt: Optional[str] = Field(
-        default=None, alias="updatedAt", description="Time when subscription was last updated."
-    )
-
-    endTime: Optional[str] = Field(default=None, alias="endTime", description="End time of the subscription.")
-
-    productType: Optional[str] = Field(
-        default=None, alias="productType", description="Product type of the subscription."
-    )
-
-    startTime: Optional[str] = Field(default=None, alias="startTime", description="Start time of the subscription.")
-
-    tier: Optional[str] = Field(default=None, alias="tier", description="Tier of the subscription.")
-
-    sku: Optional[str] = Field(default=None, alias="sku", description="The stock keeping unit (SKU).")
-
-    subscriptionStatus: Optional[str] = Field(
-        default=None,
-        alias="subscriptionStatus",
-        description="The status of the subscription. This property indicates if the subscription is started, ended, suspended, cancelled, or locked.",
-    )
-
-    contract: Optional[str] = Field(default=None, alias="contract", description="contract field")
-
-    subscriptionType: Optional[str] = Field(
-        default=None, alias="subscriptionType", description="Type of the subscription."
-    )
-
-    key: Optional[str] = Field(default=None, alias="key", description="The subscription key.")
-
-    id: str = Field(alias="id", description="The primary unique identifier of the subscription.")
-
-
-class HpeGreenLakeBadRequestError(BaseModel):
-    """HpeGreenLakeBadRequestError model"""
-
-    errorCode: str = Field(
-        alias="errorCode", description="A unique machine-friendly, but human-readable identifier for the error."
-    )
-
-    httpStatusCode: int = Field(alias="httpStatusCode", description="The HTTP equivalent status code.")
-
-    message: str = Field(alias="message", description="A user-friendly error message.")
-
-    badRequestErrorDetails: Optional[List[Dict[str, Any]]] = Field(
-        default=None, alias="badRequestErrorDetails", description="badRequestErrorDetails field"
-    )
-
-    debugId: str = Field(alias="debugId", description="A unique identifier for the instance of this error.")
-
-
-class AutoSubscriptionsResponseDto(BaseModel):
-    """AutoSubscriptionsResponseDto model"""
-
-    resourceUri: str = Field(alias="resourceUri", description="URI to the auto-subscription.")
-
-    type: str = Field(alias="type", description="The type of the resource.")
-
-    updatedAt: str = Field(alias="updatedAt", description="The time of last auto-subscription update.")
-
-    autoSubscriptionSettings: Optional[List[Dict[str, Any]]] = Field(
-        default=None, alias="autoSubscriptionSettings", description="autoSubscriptionSettings field"
-    )
-
-    createdAt: str = Field(alias="createdAt", description="The time of auto-subscription creation.")
-
-    generation: Optional[int] = Field(
-        default=None, alias="generation", description="Monotonically increasing update counter."
-    )
-
-    id: str = Field(alias="id", description="The unique identifier of the auto-subscription.")
 
 
 class AutoSubscriptionsResponseDtoWithTenant(BaseModel):
@@ -379,11 +131,89 @@ class AutoSubscriptionsResponseDtoWithTenant(BaseModel):
 
     updatedAt: str = Field(alias="updatedAt", description="Time of last auto-subscription update.")
 
-    autoSubscriptionSettings: Optional[List[Dict[str, Any]]] = Field(
+    autoSubscriptionSettings: Optional[List[Any]] = Field(
         default=None, alias="autoSubscriptionSettings", description="autoSubscriptionSettings field"
     )
 
     createdAt: str = Field(alias="createdAt", description="Time of auto-subscription creation.")
+
+
+class ErrorIssue(BaseModel):
+    """ErrorIssue model"""
+
+    subject: Optional[str] = Field(default=None, alias="subject", description="The specific issue key.")
+
+    description: Optional[str] = Field(
+        default=None, alias="description", description="A brief explanation of the error."
+    )
+
+    source: Optional[str] = Field(default=None, alias="source", description="The source of the error.")
+
+
+class RequestPostAutoSubscription(BaseModel):
+    """RequestPostAutoSubscription model"""
+
+    deviceType: str = Field(alias="deviceType", description="deviceType field")
+
+    tier: str = Field(alias="tier", description="tier field")
+
+
+class GeneralErrorDetail(BaseModel):
+    """GeneralErrorDetail model"""
+
+    metadata: Dict[str, Any] = Field(alias="metadata", description="Additional key pairs.")
+
+    source: str = Field(alias="source", description="The source of the error.")
+
+    type: str = Field(alias="type", description="The type of error.")
+
+
+class HpeGreenLakeBadRequestError(BaseModel):
+    """HpeGreenLakeBadRequestError model"""
+
+    errorCode: str = Field(
+        alias="errorCode", description="A unique machine-friendly, but human-readable identifier for the error."
+    )
+
+    errorDetails: Optional[List[Any]] = Field(default=None, alias="errorDetails", description="errorDetails field")
+
+    httpStatusCode: int = Field(alias="httpStatusCode", description="The HTTP equivalent status code.")
+
+    message: str = Field(alias="message", description="A user-friendly error message.")
+
+    debugId: str = Field(alias="debugId", description="A unique identifier for the instance of this error.")
+
+
+class AutoSubscriptionsResponsePaginatedDto(BaseModel):
+    """AutoSubscriptionsResponsePaginatedDto model"""
+
+    count: int = Field(alias="count", description="Number of items returned.")
+
+    items: List[Any] = Field(alias="items", description="items field")
+
+    offset: Optional[int] = Field(default=None, alias="offset", description="Zero-based resource offset.")
+
+    total: Optional[int] = Field(
+        default=None,
+        alias="total",
+        description="Total number of items in the collection that match the filter query, if one was provided in the request otherwise total number of items for a given resource.",
+    )
+
+
+class HpeGreenLakeGeneralError(BaseModel):
+    """HpeGreenLakeGeneralError model"""
+
+    message: str = Field(alias="message", description="A user-friendly error message.")
+
+    debugId: str = Field(alias="debugId", description="A unique identifier for the instance of this error.")
+
+    errorCode: str = Field(
+        alias="errorCode", description="A unique machine-friendly, but human-readable identifier for the error."
+    )
+
+    errorDetails: Optional[List[Any]] = Field(default=None, alias="errorDetails", description="errorDetails field")
+
+    httpStatusCode: int = Field(alias="httpStatusCode", description="The HTTP equivalent status code.")
 
 
 class ServerErrorDetail(BaseModel):
@@ -394,10 +224,124 @@ class ServerErrorDetail(BaseModel):
     type: str = Field(alias="type", description="type field")
 
 
-class SubscriptionsPatchRequest(BaseModel):
-    """SubscriptionsPatchRequest model"""
+class V1Beta1SubscriptionDetail(BaseModel):
+    """V1Beta1SubscriptionDetail model"""
 
-    tags: Dict[str, Any] = Field(alias="tags", description="tags field")
+    po: Optional[str] = Field(
+        default=None, alias="po", description="The purchase order (PO) that is associated with the subscription."
+    )
+
+    productType: Optional[str] = Field(
+        default=None, alias="productType", description="Product type of the subscription."
+    )
+
+    tierDescription: Optional[str] = Field(
+        default=None, alias="tierDescription", description="Description of the subscription tier."
+    )
+
+    endTime: Optional[str] = Field(default=None, alias="endTime", description="End time of the subscription.")
+
+    resellerPo: Optional[str] = Field(
+        default=None,
+        alias="resellerPo",
+        description="The reseller purchase order (PO) that is associated with the subscription. Used for indirect orders.",
+    )
+
+    startTime: Optional[str] = Field(default=None, alias="startTime", description="Start time of the subscription.")
+
+    availableQuantity: Optional[str] = Field(
+        default=None, alias="availableQuantity", description="Available quantity of the subscription."
+    )
+
+    quote: Optional[str] = Field(
+        default=None, alias="quote", description="The unique identifier for an order and all associated subscriptions."
+    )
+
+    key: Optional[str] = Field(default=None, alias="key", description="The subscription key.")
+
+    skuDescription: Optional[str] = Field(
+        default=None, alias="skuDescription", description="A description of the stock keeping unit."
+    )
+
+    tier: Optional[str] = Field(default=None, alias="tier", description="Tier of the subscription.")
+
+    subscriptionType: Optional[str] = Field(
+        default=None, alias="subscriptionType", description="Type of the subscription."
+    )
+
+    sku: Optional[str] = Field(default=None, alias="sku", description="The stock keeping unit (SKU).")
+
+    quantity: Optional[str] = Field(default=None, alias="quantity", description="Total quantity of the subscription")
+
+    createdAt: Optional[str] = Field(default=None, alias="createdAt", description="Time of subscription creation.")
+
+    type: str = Field(alias="type", description="The type of the resource.")
+
+    contract: Optional[str] = Field(default=None, alias="contract", description="contract field")
+
+    updatedAt: Optional[str] = Field(
+        default=None, alias="updatedAt", description="Time when subscription was last updated."
+    )
+
+    tags: Optional[Dict[str, Any]] = Field(default=None, alias="tags", description="tags field")
+
+    subscriptionStatus: Optional[str] = Field(
+        default=None,
+        alias="subscriptionStatus",
+        description="The status of the subscription. This property indicates if the subscription is started, ended, suspended, cancelled, or locked.",
+    )
+
+    isEval: Optional[bool] = Field(
+        default=None,
+        alias="isEval",
+        description="A boolean that states if the subscription is an evaluation subscription or not.",
+    )
+
+    id: str = Field(alias="id", description="The primary unique identifier of the subscription.")
+
+
+class AutoSubscriptionsResponseDto(BaseModel):
+    """AutoSubscriptionsResponseDto model"""
+
+    autoSubscriptionSettings: Optional[List[Any]] = Field(
+        default=None, alias="autoSubscriptionSettings", description="autoSubscriptionSettings field"
+    )
+
+    createdAt: str = Field(alias="createdAt", description="The time of auto-subscription creation.")
+
+    generation: Optional[int] = Field(
+        default=None, alias="generation", description="Monotonically increasing update counter."
+    )
+
+    id: str = Field(alias="id", description="The unique identifier of the auto-subscription.")
+
+    resourceUri: str = Field(alias="resourceUri", description="URI to the auto-subscription.")
+
+    type: str = Field(alias="type", description="The type of the resource.")
+
+    updatedAt: str = Field(alias="updatedAt", description="The time of last auto-subscription update.")
+
+
+class BulkUnclaimId(BaseModel):
+    """BulkUnclaimId model"""
+
+    id: str = Field(alias="id", description="Subscription ID.")
+
+
+class SubscriptionsGetResponse(BaseModel):
+    """SubscriptionsGetResponse model"""
+
+    items: List[Any] = Field(alias="items", description="items field")
+
+    offset: Optional[int] = Field(default=None, alias="offset", description="Zero-based resource offset.")
+
+    total: Optional[int] = Field(
+        default=None,
+        alias="total",
+        description="Total number of items in the collection that match the filter query, if one was provided in the request otherwise total number of items for a given resource.",
+    )
+
+    count: int = Field(alias="count", description="Number of items returned.")
 
 
 class RequestPostSubscription(BaseModel):
@@ -408,8 +352,148 @@ class RequestPostSubscription(BaseModel):
     key: str = Field(alias="key", description="A subscription key.")
 
 
+class SubscriptionDetail(BaseModel):
+    """SubscriptionDetail model"""
+
+    po: Optional[str] = Field(default=None, alias="po", description="The purchase order number.")
+
+    productSku: Optional[str] = Field(
+        default=None, alias="productSku", description="The product stock keeping unit (SKU)."
+    )
+
+    id: str = Field(alias="id", description="The unique identifier for the subscription.")
+
+    orderClass: Optional[str] = Field(default=None, alias="orderClass", description="The ordering system source.")
+
+    quantity: Optional[str] = Field(default=None, alias="quantity", description="Total quantity of the subscription.")
+
+    productDescription: Optional[str] = Field(
+        default=None, alias="productDescription", description="A description of the product stock keeping unit."
+    )
+
+    quote: Optional[str] = Field(
+        default=None,
+        alias="quote",
+        description="A unique number that identifies an order and all its attached subscriptions.",
+    )
+
+    aasType: Optional[str] = Field(
+        default=None,
+        alias="aasType",
+        description="Defines the as a service (aaS) type. For example, infrastructure as a service (IAAS).",
+    )
+
+    endUserName: Optional[str] = Field(
+        default=None, alias="endUserName", description="The customer name to which the subscription belongs."
+    )
+
+    evaluationType: Optional[str] = Field(default=None, alias="evaluationType", description="The type of license.")
+
+    key: Optional[str] = Field(default=None, alias="key", description="The subscription key.")
+
+    appointment: Optional[Dict[str, Any]] = Field(default=None, alias="appointment", description="appointment field")
+
+    contract: Optional[str] = Field(default=None, alias="contract", description="contract field")
+
+
+class SubscriptionsPostRequest(BaseModel):
+    """SubscriptionsPostRequest model"""
+
+    subscriptions: List[Any] = Field(alias="subscriptions", description="An array of subscription keys.")
+
+
+class SubscriptionsBulkUnclaimRequest(BaseModel):
+    """SubscriptionsBulkUnclaimRequest model"""
+
+    items: List[Any] = Field(alias="items", description="An array of subscription IDs.")
+
+
+class V1Beta1SubscriptionsGetResponse(BaseModel):
+    """V1Beta1SubscriptionsGetResponse model"""
+
+    items: List[Any] = Field(alias="items", description="items field")
+
+    offset: Optional[int] = Field(default=None, alias="offset", description="Zero-based resource offset.")
+
+    total: Optional[int] = Field(
+        default=None,
+        alias="total",
+        description="Total number of items in the collection that match the filter query, if one was provided in the request otherwise total number of items for a given resource.",
+    )
+
+    count: int = Field(alias="count", description="The number of items returned.")
+
+
+class AsyncOperationResource(BaseModel):
+    """AsyncOperationResource model"""
+
+    suggestedPollingIntervalSeconds: Optional[int] = Field(
+        default=None,
+        alias="suggestedPollingIntervalSeconds",
+        description="The suggested time to wait (in minutes) before calling the operation again.",
+    )
+
+    resultType: Optional[str] = Field(
+        default=None,
+        alias="resultType",
+        description="Relates individual subscriptions to a result category that indicates successfull or unsuccessful operations",
+    )
+
+    timeoutMinutes: Optional[int] = Field(
+        default=None, alias="timeoutMinutes", description="The number of minutes before the operation will time out."
+    )
+
+    startedAt: Optional[str] = Field(
+        default=None, alias="startedAt", description="Time the asynchronous operation started."
+    )
+
+    status: Optional[str] = Field(
+        default=None, alias="status", description="The current status of the asynchronous operation."
+    )
+
+    endedAt: Optional[str] = Field(default=None, alias="endedAt", description="Time the asynchronous operation ended.")
+
+    type: str = Field(alias="type", description="The type of the resource.")
+
+    id: str = Field(alias="id", description="The unique identifier of the asynchronous operation.")
+
+    progressPercent: Optional[int] = Field(
+        default=None, alias="progressPercent", description="Percentage completion of the asynchronous operation."
+    )
+
+    error: Optional[Dict[str, Any]] = Field(default=None, alias="error", description="error field")
+
+    result: Optional[Dict[str, Any]] = Field(
+        default=None,
+        alias="result",
+        description="An array that provides information on successful or unsuccessful operations.",
+    )
+
+
+class AsyncResponse(BaseModel):
+    """AsyncResponse model"""
+
+    transactionId: str = Field(alias="transactionId", description="transactionId field")
+
+    code: int = Field(alias="code", description="Three digit HTTP status code.")
+
+    status: str = Field(alias="status", description="Three digit HTTPS status code and message.")
+
+
+class AutoSubscriptionSettings(BaseModel):
+    """AutoSubscriptionSettings model"""
+
+    deviceType: str = Field(alias="deviceType", description="deviceType field")
+
+    tier: str = Field(alias="tier", description="tier field")
+
+
 class Appointment(BaseModel):
     """Appointment model"""
+
+    subscriptionEnd: Optional[str] = Field(
+        default=None, alias="subscriptionEnd", description="End date of the subscription."
+    )
 
     subscriptionStart: Optional[str] = Field(
         default=None, alias="subscriptionStart", description="Start date of the subscription."
@@ -419,90 +503,32 @@ class Appointment(BaseModel):
         default=None, alias="delayedActivation", description="Delayed activation date of the subscription."
     )
 
-    subscriptionEnd: Optional[str] = Field(
-        default=None, alias="subscriptionEnd", description="End date of the subscription."
+
+class HpeGreenLakeServerError(BaseModel):
+    """HpeGreenLakeServerError model"""
+
+    message: str = Field(alias="message", description="A user-friendly error message.")
+
+    debugId: str = Field(alias="debugId", description="A unique identifier for the instance of this error.")
+
+    errorCode: str = Field(
+        alias="errorCode", description="A unique machine-friendly, but human-readable identifier for the error."
     )
 
+    errorDetails: Optional[List[Any]] = Field(default=None, alias="errorDetails", description="errorDetails field")
 
-class AutoSubscriptionsResponsePaginatedDto(BaseModel):
-    """AutoSubscriptionsResponsePaginatedDto model"""
-
-    offset: Optional[int] = Field(default=None, alias="offset", description="Zero-based resource offset.")
-
-    total: Optional[int] = Field(
-        default=None,
-        alias="total",
-        description="Total number of items in the collection that match the filter query, if one was provided in the request otherwise total number of items for a given resource.",
-    )
-
-    count: int = Field(alias="count", description="Number of items returned.")
-
-    items: List[Dict[str, Any]] = Field(alias="items", description="items field")
+    httpStatusCode: int = Field(alias="httpStatusCode", description="The HTTP equivalent status code.")
 
 
-class RequestPostAutoSubscription(BaseModel):
-    """RequestPostAutoSubscription model"""
+class SubscriptionsPatchRequest(BaseModel):
+    """SubscriptionsPatchRequest model"""
 
-    tier: str = Field(alias="tier", description="tier field")
-
-    deviceType: str = Field(alias="deviceType", description="deviceType field")
+    tags: Dict[str, Any] = Field(alias="tags", description="tags field")
 
 
-class SubscriptionDetail(BaseModel):
-    """SubscriptionDetail model"""
+class BadRequestErrorDetail(BaseModel):
+    """BadRequestErrorDetail model"""
 
-    aasType: Optional[str] = Field(
-        default=None,
-        alias="aasType",
-        description="Defines the as a service (aaS) type. For example, infrastructure as a service (IAAS).",
-    )
+    issues: List[Any] = Field(alias="issues", description="An array of bad request issues.")
 
-    productSku: Optional[str] = Field(
-        default=None, alias="productSku", description="The product stock keeping unit (SKU)."
-    )
-
-    productDescription: Optional[str] = Field(
-        default=None, alias="productDescription", description="A description of the product stock keeping unit."
-    )
-
-    contract: Optional[str] = Field(default=None, alias="contract", description="contract field")
-
-    po: Optional[str] = Field(default=None, alias="po", description="The purchase order number.")
-
-    endUserName: Optional[str] = Field(
-        default=None, alias="endUserName", description="The customer name to which the subscription belongs."
-    )
-
-    key: Optional[str] = Field(default=None, alias="key", description="The subscription key.")
-
-    quantity: Optional[str] = Field(default=None, alias="quantity", description="Total quantity of the subscription.")
-
-    appointment: Optional[Dict[str, Any]] = Field(default=None, alias="appointment", description="appointment field")
-
-    orderClass: Optional[str] = Field(default=None, alias="orderClass", description="The ordering system source.")
-
-    evaluationType: Optional[str] = Field(default=None, alias="evaluationType", description="The type of license.")
-
-    id: str = Field(alias="id", description="The unique identifier for the subscription.")
-
-    quote: Optional[str] = Field(
-        default=None,
-        alias="quote",
-        description="A unique number that identifies an order and all its attached subscriptions.",
-    )
-
-
-class SubscriptionsGetResponse(BaseModel):
-    """SubscriptionsGetResponse model"""
-
-    offset: Optional[int] = Field(default=None, alias="offset", description="Zero-based resource offset.")
-
-    total: Optional[int] = Field(
-        default=None,
-        alias="total",
-        description="Total number of items in the collection that match the filter query, if one was provided in the request otherwise total number of items for a given resource.",
-    )
-
-    count: int = Field(alias="count", description="Number of items returned.")
-
-    items: List[Dict[str, Any]] = Field(alias="items", description="items field")
+    type: str = Field(alias="type", description="The type of error details.")

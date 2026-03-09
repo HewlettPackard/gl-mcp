@@ -1,4 +1,4 @@
-# (c) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
 invoke_dynamic_tool tool implementation for subscriptions MCP server.
 
@@ -7,7 +7,25 @@ Generated for dynamic mode when OpenAPI spec has 2 endpoints (>= 50 threshold).
 """
 
 from typing import Any, Dict, List, cast
+from urllib.parse import quote
 from tools.base import BaseTool
+
+# Headers that cannot be overridden by user input for security reasons
+FORBIDDEN_HEADERS = frozenset(
+    [
+        "authorization",
+        "host",
+        "cookie",
+        "set-cookie",
+        "x-forwarded-for",
+        "x-forwarded-host",
+        "x-forwarded-proto",
+        "x-real-ip",
+        "proxy-authorization",
+        "www-authenticate",
+        "proxy-authenticate",
+    ]
+)
 
 
 class InvokeDynamicTool(BaseTool):
@@ -59,8 +77,11 @@ class InvokeDynamicTool(BaseTool):
             # Extract arguments
             endpoint_identifier = arguments.get("endpoint_identifier", "").strip()
             parameters = cast(Dict[str, Any], arguments.get("parameters", {}))
-            headers = arguments.get("headers", {})
+            raw_headers = arguments.get("headers", {})
             validate_schema = arguments.get("validate_schema", True)
+
+            # Sanitize headers - strip security-sensitive headers to prevent injection
+            headers = self._sanitize_headers(raw_headers)
 
             if not endpoint_identifier:
                 return [
@@ -86,6 +107,15 @@ class InvokeDynamicTool(BaseTool):
 
             # Get endpoint schema for validation
             endpoint_schemas: Dict[str, Any] = {
+                "GET:/subscriptions/v1/subscriptions/{id}": {
+                    "path": "/subscriptions/v1/subscriptions/{id}",
+                    "method": "GET",
+                    "summary": "getsubscriptiondetailsbyidv1",
+                    "description": "getsubscriptiondetailsbyidv1",
+                    "parameters": [
+                        {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
+                    ],
+                },
                 "GET:/subscriptions/v1/subscriptions": {
                     "path": "/subscriptions/v1/subscriptions",
                     "method": "GET",
@@ -129,15 +159,6 @@ class InvokeDynamicTool(BaseTool):
                             "required": False,
                             "location": "query",
                         },
-                    ],
-                },
-                "GET:/subscriptions/v1/subscriptions/{id}": {
-                    "path": "/subscriptions/v1/subscriptions/{id}",
-                    "method": "GET",
-                    "summary": "getsubscriptiondetailsbyidv1",
-                    "description": "getsubscriptiondetailsbyidv1",
-                    "parameters": [
-                        {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
                     ],
                 },
             }
@@ -249,8 +270,8 @@ class InvokeDynamicTool(BaseTool):
             param_type = param_def.get("type", "string")
 
             if location == "path":
-                # Replace path parameter
-                url = url.replace("{" + param_name + "}", str(param_value))
+                # Replace path parameter (URL-encoded to prevent path traversal)
+                url = url.replace("{" + param_name + "}", quote(str(param_value), safe=""))
             else:
                 # Query parameter - apply type coercion for integers
                 if param_type == "integer":
@@ -262,3 +283,32 @@ class InvokeDynamicTool(BaseTool):
                 query_params[param_name] = param_value
 
         return url, query_params
+
+    def _sanitize_headers(self, headers: Dict[str, Any]) -> Dict[str, str]:
+        """
+        Sanitize user-provided headers by removing security-sensitive headers.
+
+        This prevents header injection attacks where a caller could override
+        Authorization, Host, Cookie, or other security-critical headers.
+        """
+        if not headers or not isinstance(headers, dict):
+            return {}
+
+        sanitized: Dict[str, str] = {}
+        for key, value in headers.items():
+            # Normalize header name for comparison
+            normalized_key = key.lower().strip()
+
+            # Skip forbidden headers
+            if normalized_key in FORBIDDEN_HEADERS:
+                self.logger.warning(f"Stripped forbidden header from request: {key}")
+                continue
+
+            # Skip headers starting with x-forwarded- pattern
+            if normalized_key.startswith("x-forwarded-"):
+                self.logger.warning(f"Stripped x-forwarded header from request: {key}")
+                continue
+
+            sanitized[key] = str(value)
+
+        return sanitized

@@ -209,29 +209,20 @@ Add to your `claude_desktop_config.json`:
 
 This server provides the following MCP tools:
 
-### getauditlogdetails
-
-- **Description**: Get additional detail of an audit log.
-- **Method**: GET /audit-log/v1/logs/{id}/detail
-- **Parameters**:
-
-- `id` (str, required): Provide the ID of the audit log record that has the `hasDetails` value set to `true` to fetch the additional details.
-
-
 ### getauditlogs
 
 - **Description**: The audit logs can be filtered using a variety of parameters. Queries should be separated by `and` and can utilize `eq`, `contains`, and `in` operators to construct the final query. Each query should follow the format:
-* key eq 'value' for equality operation.
-* contains(key, 'value') for contains operation.
-* key in ('value1', 'value2') for in operation.
+- key eq 'value' for equality operation.
+- contains(key, 'value') for contains operation.
+- key in ('value1', 'value2') for in operation.
 
 | Filter parameter         | Supported Operators | Type                    | Example                                                                                         |
 |--------------------------|---------------------|-------------------------|-------------------------------------------------------------------------------------------------|
 | createdAt                | lt, ge              | RFC timestamp in string | createdAt ge '2024-02-16T07:54:55.0Z'                                                           |
 | category                 | eq, in              | string                  | category eq 'User Management' category in ('Device Management', 'User Activity')                |
-| description              | eq, contains        | string                  | contains(description, 'Logged in') description eq 'User test@test.com logged in via ping mode.' |
+| description              | eq, contains        | string                  | contains(description, 'Logged in') description eq 'User <test@test.com> logged in via ping mode.' |
 | additionalInfo/ipAddress | eq, contains        | IP string               | additionalInfo/ipAddress eq '192.168.12.12' contains(additionalInfo/ipAddress, '192.168')       |
-| user/username            | eq, contains        | email in string         | user/username eq 'test@test.com' contains(user/username, '@gmail.com')                          |
+| user/username            | eq, contains        | email in string         | user/username eq '<test@test.com>' contains(user/username, '@gmail.com')                          |
 | workspace/workspaceName  | eq, contains        | string                  | workspace/workspaceName eq 'Example workspace' contains(workspace/workspaceName, 'Example')     |
 | application/id           | eq                  | UUID in string          | application/id eq '12312-123123-123123-123121'                                                  |
 | region                   | eq                  | region code in string   | region eq 'us-west'                                                                             |
@@ -240,31 +231,45 @@ This server provides the following MCP tools:
 - **Method**: GET /audit-log/v1/logs
 - **Parameters**:
 
-- `filter` (str, optional): Example: category eq 'User Management' and contains(description, 'logged out')
+  - `filter` (str, optional):  
+    Example: category eq 'User Management' and contains(description, 'logged out')
 
 **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`.
 
 Filterable properties: additionalInfo, application, category, createdAt, description, generation, hasDetails, id, region, type, updatedAt, user, workspace
-- `select` (str, optional): Use the `select` query parameter to restrict the number of properties included in the audit log response.
-The supported select parameters:
- * additionalInfo
- * createdAt
- * category
- * hasDetails
- * workspace/workspaceName
- * description
- * user/username
 
+- `select` (str, optional):  
+    Use the `select` query parameter to restrict the number of properties included in the audit log response.
+The supported select parameters:
+
+- additionalInfo
+- createdAt
+- category
+- hasDetails
+- workspace/workspaceName
+- description
+- user/username
 
 Example: createdAt, user/username, category
-- `all` (str, optional): Provide a free-text search to perform a comprehensive search across all properties for audit logs.
+
+- `all` (str, optional):  
+    Provide a free-text search to perform a comprehensive search across all properties for audit logs.
 
 Example: logged in user
-- `limit` (int, optional): How many items to return at one time (max 2000)
-- `offset` (int, optional): Specifies the zero-based resource offset to start the response from.
 
+- `limit` (int, optional):  
+    How many items to return at one time (max 2000)
+- `offset` (int, optional):  
+    Specifies the zero-based resource offset to start the response from.
 
+### getauditlogdetails
 
+- **Description**: Get additional detail of an audit log.
+- **Method**: GET /audit-log/v1/logs/{id}/detail
+- **Parameters**:
+
+  - `id` (str, required):  
+    Provide the ID of the audit log record that has the `hasDetails` value set to `true` to fetch the additional details.
 
 ## Typical Use Cases
 
@@ -284,25 +289,24 @@ These are just examples - you can ask questions in your own words, and the AI as
 
 This MCP server implements read-only access to the following audit-logs API endpoints:
 
-- `GET /audit-log/v1/logs/{id}/detail` - Get additional detail of an audit log.
 - `GET /audit-log/v1/logs` - The audit logs can be filtered using a variety of parameters. Queries should be separated by `and` and can utilize `eq`, `contains`, and `in` operators to construct the final query. Each query should follow the format:
-* key eq 'value' for equality operation.
-* contains(key, 'value') for contains operation.
-* key in ('value1', 'value2') for in operation.
+- key eq 'value' for equality operation.
+- contains(key, 'value') for contains operation.
+- key in ('value1', 'value2') for in operation.
 
 | Filter parameter         | Supported Operators | Type                    | Example                                                                                         |
 |--------------------------|---------------------|-------------------------|-------------------------------------------------------------------------------------------------|
 | createdAt                | lt, ge              | RFC timestamp in string | createdAt ge '2024-02-16T07:54:55.0Z'                                                           |
 | category                 | eq, in              | string                  | category eq 'User Management' category in ('Device Management', 'User Activity')                |
-| description              | eq, contains        | string                  | contains(description, 'Logged in') description eq 'User test@test.com logged in via ping mode.' |
+| description              | eq, contains        | string                  | contains(description, 'Logged in') description eq 'User <test@test.com> logged in via ping mode.' |
 | additionalInfo/ipAddress | eq, contains        | IP string               | additionalInfo/ipAddress eq '192.168.12.12' contains(additionalInfo/ipAddress, '192.168')       |
-| user/username            | eq, contains        | email in string         | user/username eq 'test@test.com' contains(user/username, '@gmail.com')                          |
+| user/username            | eq, contains        | email in string         | user/username eq '<test@test.com>' contains(user/username, '@gmail.com')                          |
 | workspace/workspaceName  | eq, contains        | string                  | workspace/workspaceName eq 'Example workspace' contains(workspace/workspaceName, 'Example')     |
 | application/id           | eq                  | UUID in string          | application/id eq '12312-123123-123123-123121'                                                  |
 | region                   | eq                  | region code in string   | region eq 'us-west'                                                                             |
 | hasDetails               | eq                  | boolean                 | hasDetails eq 'true'                                                                              |
 
-
+- `GET /audit-log/v1/logs/{id}/detail` - Get additional detail of an audit log.
 
 ## Development
 

@@ -211,60 +211,21 @@ This server provides the following MCP tools:
 
 ### get_users_identity_v1_users_get
 
-- **Description**: Retrieve list of users with filtering, and pagination options. All users are returned when no filters are provided. 
-**Note**: User view all permission is required to invoke this API. 
+- **Description**: Retrieve list of users with filtering, and pagination options. All users are returned when no filters are provided.
+**Note**: User view all permission is required to invoke this API.
 Rate limit: 300 requests per minute per workspace, resulting in a `429` error if exceeded.
 
 - **Method**: GET /identity/v1/users
 - **Parameters**:
 
-- `filter` (str, optional): Filter data using a subset of OData 4.0 and return only the subset of resources that match the filter.
-
-Supported classes and examples include:
-- **Types**: timestamp, string
-- **Comparison**: eq, ne, gt, ge, lt
-- **Logical Expressions**: and, or, not
-
-The Get users API can be filtered by:
-- id
-- username
-- userStatus
-- createdAt
-- updatedAt
-- lastLogin
-
-userStatus can be one of the following:
-- UNVERIFIED
-- VERIFIED
-- BLOCKED
-- DELETE_IN_PROGRESS
-- DELETED
-- SUSPENDED
-
-**Note**: The userStatus filter is case-sensitive.
-
-Examples:
-  - userStatus ne 'UNVERIFIED'
-    Returns users that are not unverified.
-  - username eq 'user@example.com'
-    Returns the user with a specific username.
-  - createdAt gt '2020-09-21T14:19:09.769747'
-    Returns users created after 2020-09-21T14:19:09.769747
-  - username eq 'user@example.com'
-    Returns the user with a specific email.
-  - id eq '7600415a-8876-5722-9f3c-b0fd11112283'
-    Returns the user with a specific ID.
-  - lastLogin lt '2020-09-21T14:19:09.769747'
-    Returns users that logged in before 2020-09-21T14:19:09.769747
-  - updatedAt gt '2020-09-21T14:19:09.769747'
-    Returns users updated after 2020-09-21T14:19:09.769747
-
-**Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`.
-
-Filterable properties: createdAt, generation, id, lastLogin, resourceUri, type, updatedAt, userStatus, username
-- `offset` (int, optional): Specify pagination offset. An offset argument defines how many pages to skip before returning results.
-- `limit` (int, optional): Specify the maximum number of entries per page. NOTE: The maximum value accepted is 600.
-
+  - `filter` (str, optional):  
+    Filter data using a subset of OData 4.0 and return only the subset of resources that match the filter. Supported classes and examples include: - **Types**: timestamp, string - **Comparison**: eq, ne, gt, ge, lt - **Logical Expressions**: and, or, not The Get users API can be filtered by: - id - username - userStatus - createdAt - updatedAt - lastLogin userStatus can be one of the following: - UNVERIFIED - VERIFIED - BLOCKED - DELETE_IN_PROGRESS - DELETED - SUSPENDED **Note**:
+    The userStatus filter is case-sensitive. Examples: - updatedAt gt '2020-09-21T14:19:09.769747' Returns users updated after 2020-09-21T14:19:09.769747 - userStatus ne 'UNVERIFIED' Returns users that are not unverified. - username eq '<user@example.com>' Returns the user with a specific username. - createdAt gt '2020-09-21T14:19:09.769747' Returns users created after 2020-09-21T14:19:09.769747 - username eq '<user@example.com>' Returns the user with a specific email. - id eq
+    '7600415a-8876-5722-9f3c-b0fd11112283' Returns the user with a specific ID. - lastLogin lt '2020-09-21T14:19:09.769747' Returns users that logged in before 2020-09-21T14:19:09.769747 **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: createdAt, generation, id, lastLogin, resourceUri, type, updatedAt, userStatus, username
+  - `offset` (int, optional):  
+    Specify pagination offset. An offset argument defines how many pages to skip before returning results.
+  - `limit` (int, optional):  
+    Specify the maximum number of entries per page. NOTE: The maximum value accepted is 600.
 
 ### get_user_detailed_identity_v1_users_id_get
 
@@ -272,12 +233,10 @@ Filterable properties: createdAt, generation, id, lastLogin, resourceUri, type, 
 - **Method**: GET /identity/v1/users/{id}
 - **Parameters**:
 
-- `id` (str, required): The unique identifier of the user.
+  - `id` (str, required):  
+    The unique identifier of the user.
 
 Example: 7600415a-8876-5722-9f3c-b0fd11112283
-
-
-
 
 ## Typical Use Cases
 
@@ -296,12 +255,11 @@ These are just examples - you can ask questions in your own words, and the AI as
 
 This MCP server implements read-only access to the following users API endpoints:
 
-- `GET /identity/v1/users` - Retrieve list of users with filtering, and pagination options. All users are returned when no filters are provided. 
-**Note**: User view all permission is required to invoke this API. 
+- `GET /identity/v1/users` - Retrieve list of users with filtering, and pagination options. All users are returned when no filters are provided.
+**Note**: User view all permission is required to invoke this API.
 Rate limit: 300 requests per minute per workspace, resulting in a `429` error if exceeded.
 
 - `GET /identity/v1/users/{id}` - Retrieve a single user based on a given user ID.
-
 
 ## Development
 

@@ -15,6 +15,7 @@ A collection of [Model Context Protocol (MCP)](https://modelcontextprotocol.io) 
 - [What's in this Repository?](#whats-in-this-repository)
 - [Available MCP Servers](#available-mcp-servers)
   - [Infrastructure & Platform Management](#infrastructure--platform-management)
+  - [Sustainability](#sustainability)
   - [Security & Compliance](#security--compliance)
   - [User & Access Management](#user--access-management)
 - [Quick Start](#quick-start)
@@ -78,6 +79,21 @@ Access subscription information and licensing details for your HPE GreenLake ser
 - View active subscriptions
 - Query subscription details and licensing
 - Monitor subscription status
+
+### Sustainability
+
+#### [Sustainability Insight Center](./src/sustainability/README.md)
+
+Monitor energy consumption, carbon footprint, and sustainability metrics across your HPE GreenLake infrastructure and public cloud services.
+
+**Key Capabilities:**
+
+- Track energy usage (kWh), carbon emissions (CO2e), and energy costs per device or location
+- Monitor public cloud sustainability data (AWS, Azure) with CO2 emissions tracking
+- View and manage energy cost and CO2 emission coefficients per location
+- Forecast energy consumption and costs up to 6 months with confidence intervals
+- Filter by entity type, location, tags, and time ranges with OData-style queries
+- Access data source and ingest metadata
 
 ### Security & Compliance
 

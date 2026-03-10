@@ -91,7 +91,6 @@ Monitor energy consumption, carbon footprint, and sustainability metrics across 
 - Track energy usage (kWh), carbon emissions (CO2e), and energy costs per device or location
 - Monitor public cloud sustainability data (AWS, Azure) with CO2 emissions tracking
 - View and manage energy cost and CO2 emission coefficients per location
-- Forecast energy consumption and costs up to 6 months with confidence intervals
 - Filter by entity type, location, tags, and time ranges with OData-style queries
 - Access data source and ingest metadata
 

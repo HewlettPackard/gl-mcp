@@ -15,8 +15,8 @@ A collection of [Model Context Protocol (MCP)](https://modelcontextprotocol.io) 
 - [What's in this Repository?](#whats-in-this-repository)
 - [Available MCP Servers](#available-mcp-servers)
   - [Infrastructure & Platform Management](#infrastructure--platform-management)
-  - [Sustainability](#sustainability)
   - [Security & Compliance](#security--compliance)
+  - [Sustainability Insight Center](#sustainability-insight-center)
   - [User & Access Management](#user--access-management)
 - [Quick Start](#quick-start)
 - [MCP Client Configuration](#mcp-client-configuration)
@@ -80,20 +80,6 @@ Access subscription information and licensing details for your HPE GreenLake ser
 - Query subscription details and licensing
 - Monitor subscription status
 
-### Sustainability
-
-#### [Sustainability Insight Center](./src/sustainability/README.md)
-
-Monitor energy consumption, carbon footprint, and sustainability metrics across your HPE GreenLake infrastructure and public cloud services.
-
-**Key Capabilities:**
-
-- Track energy usage (kWh), carbon emissions (CO2e), and energy costs per device or location
-- Monitor public cloud sustainability data (AWS, Azure) with CO2 emissions tracking
-- View and manage energy cost and CO2 emission coefficients per location
-- Filter by entity type, location, tags, and time ranges with OData-style queries
-- Access data source and ingest metadata
-
 ### Security & Compliance
 
 #### [Audit Logs](./src/audit-logs/README.md)
@@ -106,6 +92,20 @@ Query and analyze HPE GreenLake audit logs with powerful filtering capabilities.
 - Filter logs using advanced query operators (eq, contains, in)
 - Retrieve detailed audit log information
 - Track user activities and system events
+
+### Sustainability Insight Center
+
+#### [Sustainability Insight Center](./src/sustainability/README.md)
+
+Monitor energy consumption, carbon footprint, and sustainability metrics across your HPE GreenLake infrastructure and public cloud services.
+
+**Key Capabilities:**
+
+- Track energy usage (kWh), carbon emissions (CO2e), and energy costs per device or location
+- Monitor public cloud sustainability data (AWS, Azure) with CO2 emissions tracking
+- View and manage energy cost and CO2 emission coefficients per location
+- Filter by entity type, location, tags, and time ranges with OData-style queries
+- Access data source and ingest metadata
 
 ### User & Access Management
 

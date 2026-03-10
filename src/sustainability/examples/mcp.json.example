@@ -11,6 +11,7 @@
       "cwd": "/tmp/sustainability-insight-center",
       "env": {
         "GREENLAKE_API_BASE_URL": "https://us-west.api.greenlake.hpe.com",
+        "GREENLAKE_AUTH_BASE_URL": "https://global.api.greenlake.hpe.com",
         "LOG_LEVEL": "INFO",
         "GREENLAKE_CLIENT_ID": "<your-client-id>",
         "GREENLAKE_CLIENT_SECRET": "<your-client-secret>",

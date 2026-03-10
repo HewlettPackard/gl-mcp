@@ -15,8 +15,15 @@ class Settings(BaseSettings):
     # GreenLake API Configuration
     greenlake_api_base_url: str = Field(
         default="https://us-west.api.greenlake.hpe.com",
-        description="Base URL for HPE GreenLake APIs",
+        description="Base URL for HPE GreenLake APIs (regional for SIC)",
         alias="GREENLAKE_API_BASE_URL",
+    )
+
+    # Auth base URL — always global, separate from regional API base URL
+    greenlake_auth_base_url: str = Field(
+        default="https://global.api.greenlake.hpe.com",
+        description="Base URL for OAuth2 token endpoint (always global)",
+        alias="GREENLAKE_AUTH_BASE_URL",
     )
 
     # Authentication Configuration
@@ -89,8 +96,8 @@ class Settings(BaseSettings):
 
     @property
     def token_issuer_url(self) -> str:
-        """Get the OAuth2 token issuer URL."""
-        return f"{self.greenlake_api_base_url}/authorization/v2/oauth2/{self.greenlake_workspace_id}/token"
+        """Get the OAuth2 token issuer URL (always uses global auth base URL)."""
+        return f"{self.greenlake_auth_base_url}/authorization/v2/oauth2/{self.greenlake_workspace_id}/token"
 
     # Compatibility properties for shared auth components
     @property

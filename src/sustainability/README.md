@@ -46,7 +46,8 @@ Set the following environment variables:
 
 | Variable | Required | Description | Example |
 |----------|----------|-------------|---------|
-| `GREENLAKE_API_BASE_URL` | Yes | Base URL for GreenLake APIs | `https://us-west.api.greenlake.hpe.com` |
+| `GREENLAKE_API_BASE_URL` | Yes | Base URL for GreenLake APIs (regional) | `https://us-west.api.greenlake.hpe.com` |
+| `GREENLAKE_AUTH_BASE_URL` | No | Base URL for OAuth2 token endpoint (always global) | `https://global.api.greenlake.hpe.com` (default) |
 | `GREENLAKE_CLIENT_ID` | Yes | OAuth2 client ID | `your-client-id` |
 | `GREENLAKE_CLIENT_SECRET` | Yes | OAuth2 client secret | `your-client-secret` |
 | `GREENLAKE_WORKSPACE_ID` | Yes | Workspace identifier (token issuer auto-generated from this) | `your-workspace-id` |
@@ -167,6 +168,7 @@ Add to your `.vscode/mcp.json`:
       "cwd": "/path/to/mcp-generator/mcps/sustainability-insight-center",
       "env": {
         "GREENLAKE_API_BASE_URL": "https://us-west.api.greenlake.hpe.com",
+        "GREENLAKE_AUTH_BASE_URL": "https://global.api.greenlake.hpe.com",
         "GREENLAKE_CLIENT_ID": "your-client-id",
         "GREENLAKE_CLIENT_SECRET": "your-client-secret",
         "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
@@ -193,6 +195,7 @@ Add to your `claude_desktop_config.json`:
       "cwd": "/path/to/mcp-generator/mcps/sustainability-insight-center",
       "env": {
         "GREENLAKE_API_BASE_URL": "https://us-west.api.greenlake.hpe.com",
+        "GREENLAKE_AUTH_BASE_URL": "https://global.api.greenlake.hpe.com",
         "GREENLAKE_CLIENT_ID": "your-client-id",
         "GREENLAKE_CLIENT_SECRET": "your-client-secret", 
         "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
@@ -588,6 +591,7 @@ export GREENLAKE_CLIENT_ID=your-client-id
 export GREENLAKE_CLIENT_SECRET=your-client-secret
 export GREENLAKE_WORKSPACE_ID=your-workspace-id
 export GREENLAKE_API_BASE_URL=https://us-west.api.greenlake.hpe.com
+export GREENLAKE_AUTH_BASE_URL=https://global.api.greenlake.hpe.com
 ```
 
 **Run the full test suite** (unit + integration when credentials are present):

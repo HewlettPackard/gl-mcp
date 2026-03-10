@@ -1,5 +1,5 @@
 """
-Configuration package for sustainability MCP server.
+Configuration package for Sustainability_Insight_Center MCP server.
 """
 
 from .settings import Settings

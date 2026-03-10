@@ -1,44 +1,50 @@
 # (c) Copyright 2026 Hewlett Packard Enterprise Development LP
-"""Unit tests for the sustainability MCP server."""
+"""Unit tests for the Sustainability_Insight_Center MCP server."""
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
+from mcp.types import Tool
 from server.mcp_server import MCPServer
 
 
-class _DummyTool:
-    """Minimal tool used to exercise registration logic."""
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
-    def __init__(self, http_client) -> None:
-        self._http_client = http_client
+def _make_fastmcp_tool(name: str, description: str = "Test tool") -> MagicMock:
+    """Return a mock that looks like a FastMCP FunctionTool."""
+    tool = MagicMock()
+    tool.name = name
+    tool.description = description
+    tool.to_tool_definition.return_value = Tool(
+        name=name,
+        description=description,
+        inputSchema={"type": "object", "properties": {}},
+    )
+    return tool
 
-    @property
-    def name(self) -> str:
-        return "dummy"
 
-    @property
-    def description(self) -> str:
-        return "Tool used in unit tests."
-
-    @property
-    def input_schema(self) -> dict:
-        return {"type": "object", "properties": {}}
-
-    async def execute(self, arguments):
-        return [{"success": True, "tool": self.name, "result": arguments}]
-
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
 
 @pytest.mark.asyncio
-async def test_initialize_registers_tools(mock_http_client):
+async def test_initialize_populates_tools_from_fastmcp(mock_http_client):
+    """MCPServer.initialize() should read back tools registered with FastMCP."""
     server = MCPServer()
+
+    dummy_tool = _make_fastmcp_tool("dummy")
+
     with (
         patch("server.mcp_server.get_http_client", return_value=mock_http_client),
-        patch("server.mcp_server.get_tools", return_value=[_DummyTool]),
+        patch("server.mcp_server.get_tool_classes", return_value=[]),
     ):
+        # Pre-seed FastMCP's tool manager so initialize() can read it back
+        server.mcp._tool_manager._tools = {"dummy": dummy_tool}
         await server.initialize()
 
     assert "dummy" in server.tools
@@ -47,8 +53,9 @@ async def test_initialize_registers_tools(mock_http_client):
 
 @pytest.mark.asyncio
 async def test_get_tools_returns_protocol_objects():
+    """MCPServer.get_tools() should return mcp.types.Tool objects."""
     server = MCPServer()
-    server.tools = {"dummy": _DummyTool(AsyncMock())}
+    server.tools = {"dummy": _make_fastmcp_tool("dummy")}
 
     tools = await server.get_tools()
 
@@ -59,6 +66,7 @@ async def test_get_tools_returns_protocol_objects():
 
 @pytest.mark.asyncio
 async def test_shutdown_closes_http_client(mock_http_client):
+    """MCPServer.shutdown() should close the HTTP client."""
     server = MCPServer()
     server.http_client = mock_http_client
 

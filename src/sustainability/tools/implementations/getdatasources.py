@@ -1,103 +1,51 @@
 # (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
-getdatasources tool implementation for sustainability MCP server.
+getdatasources tool for Sustainability_Insight_Center MCP server.
 
-This tool gets all HPE Sustainability Insight Center data sources.
+Implements: GET /sustainability-insight-ctr/v1beta1/datasources
 """
 
-from typing import Any, Dict, List
-from tools.base import BaseTool
+from __future__ import annotations
+
+from typing import Annotated, Any
+
+from mcp.server.fastmcp import Context
+from pydantic import Field
+
+from config.logging import get_logger
+from server.fastmcp_instance import mcp
+
+logger = get_logger(__name__)
 
 
-class getdatasourcesTool(BaseTool):
-    """Get all HPE Sustainability Insight Center data sources. Returns information about connected data sources including collection times."""
+@mcp.tool(
+    name="getdatasources",
+    description="This returns information such as name and data collection times for each SIC data source.",
+)
+async def getdatasources(  # noqa: E501
+    ctx: Context,
+) -> list[dict[str, Any]]:
+    """This returns information such as name and data collection times for each SIC data source.
 
-    @property
-    def name(self) -> str:
-        """Tool name."""
-        return "getdatasources"
+    Returns:
+        API response data as a list containing one result dict.
+    """
+    http_client = ctx.request_context.lifespan_context.http_client
 
-    @property
-    def description(self) -> str:
-        """Tool description."""
-        return "Get all HPE Sustainability Insight Center data sources. Returns information about connected data sources including collection times."
+    # Build URL – URL-encode path parameters to prevent path-traversal attacks
+    url = "/sustainability-insight-ctr/v1beta1/datasources"
 
-    @property
-    def input_schema(self) -> Dict[str, Any]:
-        """Input schema for the tool."""
-        return {
-            "type": "object",
-            "properties": {
-                "offset": {
-                    "type": ["integer", "string"],
-                    "description": "Specifies the zero-based resource offset to start the response from.",
-                },
-                "limit": {
-                    "type": ["integer", "string"],
-                    "description": "How many items to return at one time.",
-                },
-            },
-            "required": [],
-            "additionalProperties": False,
-        }
+    # Collect query / body parameters; skip values that were not provided
+    params: dict[str, Any] = {}
 
-    def validate_arguments(self, arguments: Dict[str, Any]) -> None:
-        """
-        Validate tool arguments.
+    try:
+        response_data = await http_client.get(url, params=params)
+        return [{"success": True, "result": response_data}]
 
-        Args:
-            arguments: Arguments to validate
+    except ValueError as exc:
+        logger.error(f"Validation error in getdatasources: {exc}")
+        return [{"success": False, "error": "validation_error", "message": str(exc)}]
 
-        Raises:
-            ValueError: If arguments are invalid
-        """
-        super().validate_arguments(arguments)
-
-        # Add parameter-specific validation here
-        pass
-
-    async def execute(self, arguments: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """
-        Execute the getdatasources tool.
-
-        Args:
-            arguments: Tool arguments
-
-        Returns:
-            List of results
-        """
-        try:
-            # Validate arguments
-            self.validate_arguments(arguments)
-
-            # Build URL
-            url = "/sustainability-insight-ctr/v1beta1/datasources"
-
-            # Prepare query parameters
-            params: Dict[str, Any] = {}
-            # Parameter: offset (integer - will coerce strings)
-            param_value = arguments.get("offset")
-            if param_value is not None:
-                param_value = self.coerce_string_to_int(param_value, "offset")
-            if param_value is not None:
-                params["offset"] = param_value
-            # Parameter: limit (integer - will coerce strings)
-            param_value = arguments.get("limit")
-            if param_value is not None:
-                param_value = self.coerce_string_to_int(param_value, "limit")
-            if param_value is not None:
-                params["limit"] = param_value
-
-            # Make API request
-            response_data = await self.http_client.get(url, params=params)
-
-            # Format response for MCP
-            return [self.format_success(response_data)]
-
-        except ValueError as e:
-            self.logger.error(f"Validation error in {self.name}: {str(e)}")
-            return [self.format_validation_error(str(e))]
-
-        except Exception as e:
-            self.logger.error(f"Error executing {self.name}: {str(e)}", exc_info=True)
-            return [self.format_error(e)]
+    except Exception as exc:
+        logger.error(f"Error in getdatasources: {exc}", exc_info=True)
+        return [{"success": False, "error": "request_failed", "message": str(exc)}]

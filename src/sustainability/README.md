@@ -1,14 +1,14 @@
-# sustainability MCP Server
+# Sustainability_Insight_Center MCP Server
 
-HPE GreenLake Sustainability Insight Center MCP Server provides read-only access to the HPE GreenLake sustainability APIs through the Model Context Protocol.
+HPE GreenLake Sustainability_Insight_Center MCP Server provides read-only access to the HPE GreenLake Sustainability_Insight_Center APIs through the Model Context Protocol.
 
 ## Overview
 
-This MCP server enables AI assistants and development tools to interact with HPE GreenLake Sustainability Insight Center programmatically. It follows the standardized MCP server architecture with shared authentication components and HTTP client adapters.
+This MCP server enables AI assistants and development tools to interact with HPE GreenLake Sustainability_Insight_Center programmatically. It follows the standardized MCP server architecture with shared authentication components and HTTP client adapters.
 
 ### Key Features
 
-- **Read-only API access** to sustainability endpoints
+- **Read-only API access** to Sustainability_Insight_Center endpoints
 - **Shared authentication** using OAuth2 with automatic token management
 - **Standardized architecture** following HPE GreenLake MCP patterns
 - **Type-safe implementations** using Pydantic models
@@ -27,7 +27,7 @@ This MCP server enables AI assistants and development tools to interact with HPE
 1. Navigate to the service directory:
 
    ```bash
-   cd src/sustainability
+   cd src/sustainability-insight-center
    ```
 
 2. Install dependencies:
@@ -46,7 +46,7 @@ Set the following environment variables:
 
 | Variable | Required | Description | Example |
 |----------|----------|-------------|---------|
-| `GREENLAKE_API_BASE_URL` | Yes | Base URL for GreenLake APIs | `https://global.api.greenlake.hpe.com` |
+| `GREENLAKE_API_BASE_URL` | Yes | Base URL for GreenLake APIs | `https://us-west.api.greenlake.hpe.com` |
 | `GREENLAKE_CLIENT_ID` | Yes | OAuth2 client ID | `your-client-id` |
 | `GREENLAKE_CLIENT_SECRET` | Yes | OAuth2 client secret | `your-client-secret` |
 | `GREENLAKE_WORKSPACE_ID` | Yes | Workspace identifier (token issuer auto-generated from this) | `your-workspace-id` |
@@ -69,7 +69,7 @@ This MCP server uses [loguru](https://github.com/Delgan/loguru) for structured l
 **File logging (Optional)**:
 
 - Enable with `GREENLAKE_FILE_LOGGING=true`
-- Logs written to: `~/.hpe/mcp-logs/sustainability/sustainability-mcp.log`
+- Logs written to: `~/.hpe/mcp-logs/sustainability-insight-center/sustainability-insight-center-mcp.log`
 - Features:
   - Automatic rotation at 10 MB
   - 7-day retention policy
@@ -97,7 +97,7 @@ export GREENLAKE_FILE_LOGGING=true
 ```bash
 export GREENLAKE_LOG_LEVEL=INFO
 export GREENLAKE_FILE_LOGGING=true
-# Check logs at: ~/.hpe/mcp-logs/sustainability/
+# Check logs at: ~/.hpe/mcp-logs/sustainability-insight-center/
 ```
 
 ### Log Filtering
@@ -139,7 +139,7 @@ Configure the `MCP_TOOL_MODE` environment variable in your MCP client configurat
 ```json
 {
   "servers": {
-    "sustainability": {
+    "sustainability-insight-center": {
       "env": {
         "MCP_TOOL_MODE": "static"  // or "dynamic"
       }
@@ -160,13 +160,13 @@ Add to your `.vscode/mcp.json`:
 ```json
 {
   "servers": {
-    "sustainability": {
+    "sustainability-insight-center": {
       "type": "stdio",
       "command": "uv",
       "args": ["run", "python", "__main__.py"],
-      "cwd": "/path/to/mcp-generator/mcps/sustainability",
+      "cwd": "/path/to/mcp-generator/mcps/sustainability-insight-center",
       "env": {
-        "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
+        "GREENLAKE_API_BASE_URL": "https://us-west.api.greenlake.hpe.com",
         "GREENLAKE_CLIENT_ID": "your-client-id",
         "GREENLAKE_CLIENT_SECRET": "your-client-secret",
         "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
@@ -186,13 +186,13 @@ Add to your `claude_desktop_config.json`:
 ```json
 {
   "servers": {
-    "sustainability": {
+    "sustainability-insight-center": {
       "type": "stdio", 
       "command": "uv",
       "args": ["run", "python", "__main__.py"],
-      "cwd": "/path/to/mcp-generator/mcps/sustainability",
+      "cwd": "/path/to/mcp-generator/mcps/sustainability-insight-center",
       "env": {
-        "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
+        "GREENLAKE_API_BASE_URL": "https://us-west.api.greenlake.hpe.com",
         "GREENLAKE_CLIENT_ID": "your-client-id",
         "GREENLAKE_CLIENT_SECRET": "your-client-secret", 
         "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
@@ -209,204 +209,310 @@ Add to your `claude_desktop_config.json`:
 
 This server provides the following MCP tools:
 
-### getusagebyentity
+### getingest
 
-- **Description**: Get energy usage data grouped by entity (device). Returns energy consumption (kWh), carbon footprint (CO2e metric tons), and estimated energy cost per entity with location details.
-- **Method**: GET /sustainability-insight-ctr/v1beta1/usage-by-entity
-- **Parameters**:
-
-  - `start-time` (str, required): Start time in ISO 8601 format (e.g. '2024-01-01T00:00:00Z').
-  - `end-time` (str, required): End time in ISO 8601 format (e.g. '2024-01-31T23:59:59Z').
-  - `filter` (str, optional): Filter expression for narrowing results.
-  - `filter-tags` (str, optional): Filter by tags.
-  - `currency` (str, optional): Currency code for energy cost (e.g. 'USD').
-  - `sort` (str, optional): Sort order for results.
-  - `offset` (int, optional): Specifies the zero-based resource offset to start the response from.
-  - `limit` (int, optional): How many items to return at one time.
-
-### getusagetotals
-
-- **Description**: Get total aggregated energy usage across all entities for a defined time frame. Returns total energy consumption (kWh), carbon footprint (CO2e metric tons), and estimated energy cost.
-- **Method**: GET /sustainability-insight-ctr/v1beta1/usage-totals
-- **Parameters**:
-
-  - `start-time` (str, required): Start time in ISO 8601 format (e.g. '2024-01-01T00:00:00Z').
-  - `end-time` (str, required): End time in ISO 8601 format (e.g. '2024-01-31T23:59:59Z').
-  - `filter` (str, optional): Filter expression for narrowing results.
-  - `filter-tags` (str, optional): Filter by tags.
-  - `currency` (str, optional): Currency code for energy cost (e.g. 'USD').
-
-### getusageseries
-
-- **Description**: Get energy usage data grouped by time buckets. Returns time series of energy consumption (kWh), carbon footprint (CO2e metric tons), and cost. The interval parameter format is 'integer unit' (e.g. '1 day', '2 hours', '1 month', '1 year').
-- **Method**: GET /sustainability-insight-ctr/v1beta1/usage-series
-- **Parameters**:
-
-  - `start-time` (str, required): Start time in ISO 8601 format (e.g. '2024-01-01T00:00:00Z').
-  - `end-time` (str, required): End time in ISO 8601 format (e.g. '2024-01-31T23:59:59Z').
-  - `interval` (str, required): Time bucket interval in format 'integer unit' (e.g. '1 day', '2 hours', '1 month', '1 year').
-  - `filter` (str, optional): Filter expression for narrowing results.
-  - `filter-tags` (str, optional): Filter by tags.
-  - `currency` (str, optional): Currency code for energy cost (e.g. 'USD').
-
-### getcloudusagebyentity
-
-- **Description**: Get public cloud sustainability data grouped by entity. Returns CO2 emissions data for cloud services (AWS, Azure, etc.) per service account and region.
-- **Method**: GET /sustainability-insight-ctr/v1beta1/cloud-usage-by-entity
-- **Parameters**:
-
-  - `start-time` (str, required): Start time in ISO 8601 format (e.g. '2024-01-01T00:00:00Z').
-  - `end-time` (str, required): End time in ISO 8601 format (e.g. '2024-01-31T23:59:59Z').
-  - `filter` (str, optional): Filter expression for narrowing results.
-  - `sort` (str, optional): Sort order for results.
-  - `offset` (int, optional): Specifies the zero-based resource offset to start the response from.
-  - `limit` (int, optional): How many items to return at one time.
-
-### getcloudusagetotals
-
-- **Description**: Get total aggregated public cloud sustainability data. Returns total CO2 emissions (metric tons) across all cloud entities.
-- **Method**: GET /sustainability-insight-ctr/v1beta1/cloud-usage-totals
-- **Parameters**:
-
-  - `start-time` (str, required): Start time in ISO 8601 format (e.g. '2024-01-01T00:00:00Z').
-  - `end-time` (str, required): End time in ISO 8601 format (e.g. '2024-01-31T23:59:59Z').
-  - `filter` (str, optional): Filter expression for narrowing results.
-
-### getcloudusageseries
-
-- **Description**: Get public cloud sustainability data grouped by time buckets. Returns time series of CO2 emissions for cloud services.
-- **Method**: GET /sustainability-insight-ctr/v1beta1/cloud-usage-series
-- **Parameters**:
-
-  - `start-time` (str, required): Start time in ISO 8601 format (e.g. '2024-01-01T00:00:00Z').
-  - `end-time` (str, required): End time in ISO 8601 format (e.g. '2024-01-31T23:59:59Z').
-  - `interval` (str, required): Time bucket interval in format 'integer unit' (e.g. '1 day', '2 hours', '1 month', '1 year').
-  - `filter` (str, optional): Filter expression for narrowing results.
-
-### getcoefficients
-
-- **Description**: Get cost and CO2 coefficients. Returns the configured energy cost (per kWh) and CO2 emission rate (grams per kWh) for each location.
-- **Method**: GET /sustainability-insight-ctr/v1beta1/coefficients
-- **Parameters**:
-
-  - `filter` (str, optional): Filter expression (only locationId is filterable).
-  - `filter-tags` (str, optional): Filter by tags.
-  - `currency` (str, optional): Currency code for energy cost (e.g. 'USD').
-  - `offset` (int, optional): Specifies the zero-based resource offset to start the response from.
-  - `limit` (int, optional): How many items to return at one time.
-
-### getcoefficientbyid
-
-- **Description**: Get a specific cost and CO2 coefficient by ID.
-- **Method**: GET /sustainability-insight-ctr/v1beta1/coefficients/{id}
-- **Parameters**:
-
-  - `id` (str, required): The UUID of the coefficient to retrieve.
-
-### getingests
-
-- **Description**: Get metadata for all uploaded device measurement data imports.
-- **Method**: GET /sustainability-insight-ctr/v1beta1/ingests
-- **Parameters**:
-
-  - `offset` (int, optional): Specifies the zero-based resource offset to start the response from.
-  - `limit` (int, optional): How many items to return at one time.
-
-### getingestbyid
-
-- **Description**: Get metadata for a specific uploaded device measurement by ID.
+- **Description**: Get metadata for an ingested 3rd party device measurement.
 - **Method**: GET /sustainability-insight-ctr/v1beta1/ingests/{id}
 - **Parameters**:
 
-  - `id` (str, required): The UUID of the ingest record to retrieve.
+  - `id` (str, required):  
+    UUID of the record
 
-### getdatasources
+Example: 00000000-0000-0000-0000-0000000000000
 
-- **Description**: Get all HPE Sustainability Insight Center data sources. Returns information about connected data sources including collection times.
-- **Method**: GET /sustainability-insight-ctr/v1beta1/datasources
+
+### getusagebyentity
+
+- **Description**: Retrieves an aggregated energy usage list grouped by individual entities over a defined time frame and supports filtering, sorting, and offset-based pagination.
+- **Method**: GET /sustainability-insight-ctr/v1beta1/usage-by-entity
 - **Parameters**:
 
-  - `offset` (int, optional): Specifies the zero-based resource offset to start the response from.
-  - `limit` (int, optional): How many items to return at one time.
+  - `filter` (str, optional):  
+    Limit the entities operated on by this endpoint, returning only the subset of entities that match the filter. The filter grammar is a subset of OData 4.0 supporting "eq", "in", and "and" operators only. Usage entities can be filtered by: - entityId - entityMake - entityModel - entityType - entitySerialNum - entityProductId - locationName - locationId - locationCity - locationState - locationCountry - name Examples: - locationCountry eq 'DE' - entityModel in ('ProLiant DL325
+    Gen11', 'ProLiant DL380 Gen10') **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: co2eMetricTon, cost, costUsd, currency, entityId, entityMake, entityManufacturerTimestamp, entityModel, entityProductId, entitySerialNum, entityType, id, kwh, locationCity, locationCountry, locationId, locationName, locationState, name, tags, type
+  - `filter-tags` (str, optional):  
+    Limit the entities operated on by this endpoint, returning only the subset of entities that contain the tags. The filter grammar is a subset of OData 4.0 supporting "eq" and "or" operators only. The tag key is on the left of the operator, the value is on the right. Examples: - 'Tagged' eq '' - 'OS' eq 'Linux' or 'OS' eq 'Windows' - 'OS' eq 'Linux' **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`,
+    `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: co2eMetricTon, cost, costUsd, currency, entityId, entityMake, entityManufacturerTimestamp, entityModel, entityProductId, entitySerialNum, entityType, id, kwh, locationCity, locationCountry, locationId, locationName, locationState, name, tags, type
+  - `currency` (str, optional):  
+    The 3 letter currency code the cost returned will be in, case insensitive. Currency calculations are done via a factor queried at the beginning of the day. Defaults to USD.
 
-### getdatasourcebyid
 
-- **Description**: Get details of a specific data source by ID.
+Example: CAD
+  - `sort` (str, optional):  
+    Odata 4.0 field to sort entities on. Allowed fields are the strings "locationName", "locationCountry", "locationState", "entityId", "entityMake", "entityModel", "entityType", "entitySerialNum", "entityProductId", "name". Must be of the format "property order".
+
+Examples:
+  - entityId desc
+  - name asc
+  - `offset` (int, optional):  
+    Zero-based resource offset to start the response from.
+
+Example: 10
+  - `limit` (int, optional):  
+    Number of usages to return.
+
+Example: 10
+  - `start-time` (str, required):  
+    Start of the query's time range in ISO8601 format.
+
+Example: 2024-01-28T08:00:00Z
+  - `end-time` (str, required):  
+    End of the query's time range in ISO8601 format.
+
+Example: 2024-01-29T08:00:00Z
+
+
+### getcoefficients
+
+- **Description**: Get a list of all costs (amount per kWh) and co2 coefficients of all locations. Supports filtering by locationId.
+- **Method**: GET /sustainability-insight-ctr/v1beta1/coefficients
+- **Parameters**:
+
+  - `offset` (int, optional):  
+    Zero-based resource offset to start the response from.
+
+Example: 10
+  - `limit` (int, optional):  
+    Number of entities to return.
+
+Example: 10
+  - `filter` (str, optional):  
+    Limit the coefficients operated on by this endpoint, returning only the subset of entities that match the filter. The filter grammar is a subset of OData 4.0 supporting "eq" operator only. Coefficients can be filtered by: - locationId Example: locationId eq '00000000-0000-0000-0000-0000000000000' **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`.
+    Filterable properties: associatedLocation, co2eGramsPerKwh, costPerKwh, costUsdPerKwh, createdAt, currency, generation, id, startTime, type, updatedAt
+
+
+### getusagetotals
+
+- **Description**: Returns the total aggregated power cost, power consumption, and carbon emissions over a defined time frame and supports filtering by entities.
+- **Method**: GET /sustainability-insight-ctr/v1beta1/usage-totals
+- **Parameters**:
+
+  - `filter` (str, optional):  
+    Limit the entities operated on by this endpoint, returning only the usage for entities that match the filter. The filter grammar is a subset of OData 4.0 supporting "eq", "in", and "and" operators only. Usage entities can be filtered by: - entityId - entityMake - entityModel - entityType - entitySerialNum - entityProductId - locationName - locationId - locationCity - locationState - locationCountry Examples: - locationCountry eq 'DE' - entityModel in ('ProLiant DL325 Gen11',
+    'ProLiant DL380 Gen10') **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: co2eMetricTon, cost, costUsd, currency, kwh, type
+  - `filter-tags` (str, optional):  
+    Limit the entities operated on by this endpoint, returning only the subset of entities that contain the tags. The filter grammar is a subset of OData 4.0 supporting "eq" and "or" operators only. The tag key is on the left of the operator, the value is on the right. Examples: - 'OS' eq 'Linux' or 'OS' eq 'Windows' - 'OS' eq 'Linux' - 'Tagged' eq '' **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`,
+    `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: co2eMetricTon, cost, costUsd, currency, kwh, type
+  - `currency` (str, optional):  
+    The 3 letter currency code the cost returned will be in, case insensitive. Currency calculations are done via a factor queried at the beginning of the day. Defaults to USD.
+
+
+Example: CAD
+  - `start-time` (str, required):  
+    Start of the query's time range in ISO8601 format.
+
+Example: 2024-01-28T08:00:00Z
+  - `end-time` (str, required):  
+    End of the aggregate's time range in ISO8601 format.
+
+Example: 2024-01-29T08:00:00Z
+
+
+### getcloudusagetotals
+
+- **Description**: Returns the total carbon footprint over a defined time frame and supports filtering by cloud entities.
+- **Method**: GET /sustainability-insight-ctr/v1beta1/cloud-usage-totals
+- **Parameters**:
+
+  - `filter` (str, optional):  
+    Limit the cloud entities operated on by this endpoint, returning only the subset of entities that match the filter. The filter grammar is a subset of OData 4.0 supporting "eq", "in", and "and" operators only. Cloud entities can be filtered by: - entityId - serviceProvider - serviceName - serviceRegion - serviceAccount - name Examples: - serviceProvider eq 'AWS' - serviceRegion in ('EMEA', 'AMERICAS') **Important**: All filter values must be enclosed in single quotes,
+    including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: co2eMetricTon, type
+  - `start-time` (str, required):  
+    Start of the query's time range in ISO8601 format.
+
+Example: 2024-01-28T08:00:00Z
+  - `end-time` (str, required):  
+    End of the aggregate's time range in ISO8601 format.
+
+Example: 2024-01-29T08:00:00Z
+
+
+### getdatasource
+
+- **Description**: Get information such as name and data collection times for a SIC data source.
 - **Method**: GET /sustainability-insight-ctr/v1beta1/datasources/{id}
 - **Parameters**:
 
-  - `id` (str, required): The UUID of the data source to retrieve.
+  - `id` (str, required):  
+    ID of the data source
 
-### forecastenergy
+Example: 00000000-0000-0000-0000-0000000000000
 
-- **Description**: Get forecasted energy consumption (kWh), CO2 emissions, and costs with confidence intervals for 1 to 6 months into the future. Also returns 3 months of historical data and sustainability journey comparison.
-- **Method**: POST /sustainability-insight-ctr/v1beta1/forecast/energy
+
+### getusagebyseries
+
+- **Description**: Retrieves aggregated energy usage statistics grouped by time bucket over a defined time frame and supports filtering by entities. Behavior is non-deterministic if the time range does not divide evenly by your selected interval.
+- **Method**: GET /sustainability-insight-ctr/v1beta1/usage-series
 - **Parameters**:
 
-  - `timePeriodMonths` (int, required): Number of months to forecast (1-6).
-  - `currencyCode` (str, required): Currency code for energy cost (e.g. 'USD').
+  - `filter` (str, optional):  
+    Limit the entities operated on by this endpoint, returning only the usage for entities that match the filter. The filter grammar is a subset of OData 4.0 supporting "eq", "in", and "and" operators only. Usage entities can be filtered by: - entityId - entityMake - entityModel - entityType - entitySerialNum - entityProductId - locationName - locationId - locationCity - locationState - locationCountry Examples: - locationCountry eq 'DE' - entityModel in ('ProLiant DL325 Gen11',
+    'ProLiant DL380 Gen10') **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: co2eMetricTon, cost, costUsd, currency, id, kwh, timeBucket, type
+  - `filter-tags` (str, optional):  
+    Limit the entities operated on by this endpoint, returning only the subset of entities that contain the tags. The filter grammar is a subset of OData 4.0 supporting "eq" and "or" operators only. The tag key is on the left of the operator, the value is on the right. Examples: - 'OS' eq 'Linux' - 'Tagged' eq '' - 'OS' eq 'Linux' or 'OS' eq 'Windows' **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`,
+    `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: co2eMetricTon, cost, costUsd, currency, id, kwh, timeBucket, type
+  - `currency` (str, optional):  
+    The 3 letter currency code the cost returned will be in, case insensitive. Currency calculations are done via a factor queried at the beginning of the day. Defaults to USD.
+
+
+Example: CAD
+  - `interval` (str, required):  
+    Interval of the created time series. Must be of the format "integer unit". Valid units are day(s), hour(s), week(s), month(s), and year(s).
+
+Examples:
+  - 2 hours
+  - 1 day
+  - `start-time` (str, required):  
+    Start of the query's time range in ISO8601 format.
+
+Example: 2024-01-28T08:00:00Z
+  - `end-time` (str, required):  
+    End of the query's time range in ISO8601 format.
+
+Example: 2024-01-29T08:00:00Z
+
+
+### getcloudusagebyentity
+
+- **Description**: Retrieves aggregated carbon footprint usage in a list grouped by individual cloud entities, i.e., cloud services, over a 
+defined time frame and supports filtering, sorting, and offset-based pagination.
+
+- **Method**: GET /sustainability-insight-ctr/v1beta1/cloud-usage-by-entity
+- **Parameters**:
+
+  - `filter` (str, optional):  
+    Limit the cloud entities operated on by this endpoint, returning only the subset of entities that match the filter. The filter grammar is a subset of OData 4.0 supporting "eq", "in", and "and" operators only. Cloud entities can be filtered by: - entityId - serviceProvider - serviceName - serviceRegion - serviceAccount - name Examples: - serviceProvider eq 'AWS' - serviceRegion in ('EMEA', 'AMERICAS') **Important**: All filter values must be enclosed in single quotes,
+    including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: co2eMetricTon, entityId, id, name, serviceAccount, serviceName, serviceProvider, serviceRegion, type
+  - `sort` (str, optional):  
+    Odata 4.0 field to sort entities on. Allowed fields are the strings "entityId", "serviceProvider", "serviceName", "serviceRegion", "serviceAccount", "name". Must be of the format "property order".
+
+Examples:
+  - entityId desc
+  - serviceAccount asc
+  - `offset` (int, optional):  
+    Zero-based resource offset to start the response from.
+
+Example: 10
+  - `limit` (int, optional):  
+    Number of usages to return.
+
+Example: 10
+  - `start-time` (str, required):  
+    Start of the query's time range in ISO8601 format.
+
+Example: 2024-01-28T08:00:00Z
+  - `end-time` (str, required):  
+    End of the query's time range in ISO8601 format.
+
+Example: 2024-01-29T08:00:00Z
+
+
+### getcloudusagebyseries
+
+- **Description**: Retrieves aggregated carbon footprint usage statistics grouped by time bucket over a defined time frame and 
+supports filtering by entities. Behavior is non-deterministic if the time range does not divide evenly by your selected 
+interval.
+
+- **Method**: GET /sustainability-insight-ctr/v1beta1/cloud-usage-series
+- **Parameters**:
+
+  - `filter` (str, optional):  
+    Limit the cloud entities operated on by this endpoint, returning only the subset of entities that match the filter. The filter grammar is a subset of OData 4.0 supporting "eq", "in", and "and" operators only. Cloud entities can be filtered by: - entityId - serviceProvider - serviceName - serviceRegion - serviceAccount - name Examples: - serviceRegion in ('EMEA', 'AMERICAS') - serviceProvider eq 'AWS' **Important**: All filter values must be enclosed in single quotes,
+    including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: co2eMetricTon, id, timeBucket, type
+  - `interval` (str, required):  
+    Interval of the created time series. Must be of the format "integer unit". Valid units are day(s), hour
+(s), week(s), month(s), and year(s). Cloud usage typically is measured in months, so the smaller time units are 
+likely to be approximations.
+
+
+Examples:
+  - 3 months
+  - 1 month
+  - `start-time` (str, required):  
+    Start of the query's time range in ISO8601 format.
+
+Example: 2024-01-28T08:00:00Z
+  - `end-time` (str, required):  
+    End of the query's time range in ISO8601 format.
+
+Example: 2024-01-29T08:00:00Z
+
+
+### getcoefficient
+
+- **Description**: Get a single cost and co2 coefficient for an id
+- **Method**: GET /sustainability-insight-ctr/v1beta1/coefficients/{id}
+- **Parameters**:
+
+  - `id` (str, required):  
+    UUID of the coefficient mapping
+
+Example: 00000000-0000-0000-0000-0000000000000
+
+
+### getdatasources
+
+- **Description**: This returns information such as name and data collection times for each SIC data source.
+- **Method**: GET /sustainability-insight-ctr/v1beta1/datasources
+- **Parameters**:
+
+  - None
+
+
+### getingests
+
+- **Description**: This returns the associated metadata of each uploaded 3rd party device measurement.
+- **Method**: GET /sustainability-insight-ctr/v1beta1/ingests
+- **Parameters**:
+
+  - `offset` (int, optional):  
+    Zero-based resource offset to start the response from.
+
+Example: 10
+  - `limit` (int, optional):  
+    Number of ingested records to return.
+
+Example: 10
+
+
+
 
 ## Typical Use Cases
 
-This MCP server enables AI assistants to answer natural language questions about your HPE GreenLake sustainability resources. Here are some example queries you can try:
+This MCP server enables AI assistants to answer natural language questions about your HPE GreenLake Sustainability_Insight_Center resources. Here are some example queries you can try:
 
-**Energy Consumption:**
+**Sustainability_Insight_Center Queries:**
 
-- "What is the total energy consumption for the last month?"
-- "Show me energy usage per device for Q1 2024"
-- "Which devices consume the most energy?"
-- "Give me a daily energy usage breakdown for January"
-
-**Carbon Footprint:**
-
-- "What is our total CO2 footprint for this quarter?"
-- "Show me carbon emissions trends over the past 6 months"
-- "Which cloud services have the highest carbon emissions?"
-- "Compare on-premises vs cloud carbon footprint"
-
-**Cloud Sustainability:**
-
-- "Show me AWS carbon emissions by service"
-- "What are the cloud CO2 totals for the last month?"
-- "Give me a monthly cloud emissions time series"
-
-**Cost Analysis:**
-
-- "What is the total energy cost in USD for the last quarter?"
-- "Show me the energy cost coefficients for each location"
-- "Forecast energy costs for the next 3 months"
-
-**Forecasting:**
-
-- "Forecast our energy consumption for the next 6 months"
-- "What is the expected CO2 emissions trend?"
-- "Show me predicted energy costs with confidence intervals"
-
-**Data Management:**
-
-- "List all configured data sources"
-- "Show me the available device measurement ingests"
-- "What are the current CO2 and cost coefficients?"
+- "List all sustainability_insight_center resources"
+- "Show me details for specific sustainability_insight_center items"
+- "Find sustainability_insight_center by specific criteria"
+- "Get status of sustainability_insight_center resources"
+- "Show me recent sustainability_insight_center changes"
 
 These are just examples - you can ask questions in your own words, and the AI assistant will use the appropriate MCP tools to retrieve the information from HPE GreenLake.
 
 ## API Coverage
 
-This MCP server implements read-only access to the following sustainability API endpoints:
+This MCP server implements read-only access to the following Sustainability_Insight_Center API endpoints:
 
-- `GET /sustainability-insight-ctr/v1beta1/usage-by-entity` - Get energy usage data grouped by entity (device)
-- `GET /sustainability-insight-ctr/v1beta1/usage-totals` - Get total aggregated energy usage
-- `GET /sustainability-insight-ctr/v1beta1/usage-series` - Get energy usage time series data
-- `GET /sustainability-insight-ctr/v1beta1/cloud-usage-by-entity` - Get cloud sustainability data per entity
-- `GET /sustainability-insight-ctr/v1beta1/cloud-usage-totals` - Get aggregated cloud sustainability totals
-- `GET /sustainability-insight-ctr/v1beta1/cloud-usage-series` - Get cloud sustainability time series
-- `GET /sustainability-insight-ctr/v1beta1/coefficients` - List cost and CO2 coefficients
-- `GET /sustainability-insight-ctr/v1beta1/coefficients/{id}` - Get a specific coefficient
-- `GET /sustainability-insight-ctr/v1beta1/ingests` - List device measurement ingests
-- `GET /sustainability-insight-ctr/v1beta1/ingests/{id}` - Get a specific ingest
-- `GET /sustainability-insight-ctr/v1beta1/datasources` - List data sources
-- `GET /sustainability-insight-ctr/v1beta1/datasources/{id}` - Get a specific data source
-- `POST /sustainability-insight-ctr/v1beta1/forecast/energy` - Generate energy consumption forecasts
+- `GET /sustainability-insight-ctr/v1beta1/ingests/{id}` - Get metadata for an ingested 3rd party device measurement.
+- `GET /sustainability-insight-ctr/v1beta1/usage-by-entity` - Retrieves an aggregated energy usage list grouped by individual entities over a defined time frame and supports filtering, sorting, and offset-based pagination.
+- `GET /sustainability-insight-ctr/v1beta1/coefficients` - Get a list of all costs (amount per kWh) and co2 coefficients of all locations. Supports filtering by locationId.
+- `GET /sustainability-insight-ctr/v1beta1/usage-totals` - Returns the total aggregated power cost, power consumption, and carbon emissions over a defined time frame and supports filtering by entities.
+- `GET /sustainability-insight-ctr/v1beta1/cloud-usage-totals` - Returns the total carbon footprint over a defined time frame and supports filtering by cloud entities.
+- `GET /sustainability-insight-ctr/v1beta1/datasources/{id}` - Get information such as name and data collection times for a SIC data source.
+- `GET /sustainability-insight-ctr/v1beta1/usage-series` - Retrieves aggregated energy usage statistics grouped by time bucket over a defined time frame and supports filtering by entities. Behavior is non-deterministic if the time range does not divide evenly by your selected interval.
+- `GET /sustainability-insight-ctr/v1beta1/cloud-usage-by-entity` - Retrieves aggregated carbon footprint usage in a list grouped by individual cloud entities, i.e., cloud services, over a 
+defined time frame and supports filtering, sorting, and offset-based pagination.
+
+- `GET /sustainability-insight-ctr/v1beta1/cloud-usage-series` - Retrieves aggregated carbon footprint usage statistics grouped by time bucket over a defined time frame and 
+supports filtering by entities. Behavior is non-deterministic if the time range does not divide evenly by your selected 
+interval.
+
+- `GET /sustainability-insight-ctr/v1beta1/coefficients/{id}` - Get a single cost and co2 coefficient for an id
+- `GET /sustainability-insight-ctr/v1beta1/datasources` - This returns information such as name and data collection times for each SIC data source.
+- `GET /sustainability-insight-ctr/v1beta1/ingests` - This returns the associated metadata of each uploaded 3rd party device measurement.
+
 
 ## Development
 
@@ -422,7 +528,7 @@ make clean         # Clean build artifacts
 ### Project Structure
 
 ```text
-sustainability/
+sustainability-insight-center/
 ├── __main__.py             # Entry point
 ├── pyproject.toml          # Dependencies and configuration
 ├── README.md               # This file
@@ -448,7 +554,7 @@ sustainability/
 │   ├── registry.py         # Tool registration
 │   └── implementations/    # Tool implementations
 │       ├── __init__.py
-│       └── *.py            # 13 static tools + 3 dynamic tools
+│       └── example_tool.py # Example tool template
 ├── tests/                  # Test suite
 │   ├── __init__.py
 │   ├── conftest.py         # Shared fixtures
@@ -481,7 +587,7 @@ The test suite reads credentials from environment variables. Export the followin
 export GREENLAKE_CLIENT_ID=your-client-id
 export GREENLAKE_CLIENT_SECRET=your-client-secret
 export GREENLAKE_WORKSPACE_ID=your-workspace-id
-export GREENLAKE_API_BASE_URL=https://global.api.greenlake.hpe.com
+export GREENLAKE_API_BASE_URL=https://us-west.api.greenlake.hpe.com
 ```
 
 **Run the full test suite** (unit + integration when credentials are present):
@@ -496,7 +602,7 @@ make test
 make test-unit
 ```
 
-**Integration smoke tests** require the variables above plus any tool arguments (`MCP_TEST_SUSTAINABILITY_<PARAM_NAME>`):
+**Integration smoke tests** require the variables above plus any tool arguments (`MCP_TEST_SUSTAINABILITY_INSIGHT_CENTER_<PARAM_NAME>`):
 
 ```bash
 make test-integration

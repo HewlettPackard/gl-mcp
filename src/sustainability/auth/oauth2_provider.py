@@ -1,5 +1,5 @@
 # (c) Copyright 2026 Hewlett Packard Enterprise Development LP
-"""OAuth2 client credentials provider for sustainability API authentication."""
+"""OAuth2 client credentials provider for Sustainability_Insight_Center API authentication."""
 
 import time
 
@@ -13,9 +13,13 @@ class OAuth2TokenResponse(BaseModel):
 
     access_token: str = Field(description="The access token")
     token_type: str = Field(default="Bearer", description="Token type")
-    expires_in: int | None = Field(default=None, description="Token lifetime in seconds")
+    expires_in: int | None = Field(
+        default=None, description="Token lifetime in seconds"
+    )
     scope: str | None = Field(default=None, description="Token scope")
-    issued_at: float = Field(default_factory=time.time, description="Timestamp when token was issued")
+    issued_at: float = Field(
+        default_factory=time.time, description="Timestamp when token was issued"
+    )
 
     @property
     def expires_at(self) -> float | None:
@@ -30,7 +34,7 @@ class OAuth2TokenResponse(BaseModel):
 
 
 class OAuth2Provider:
-    """OAuth2 client credentials provider for sustainability API."""
+    """OAuth2 client credentials provider for Sustainability_Insight_Center API."""
 
     def __init__(
         self,
@@ -71,17 +75,20 @@ class OAuth2Provider:
 
     def _make_token_request(self) -> dict:
         """Make the actual HTTP request for token.
-
+        
         Returns:
             Response JSON data
-
+            
         Raises:
             httpx.HTTPStatusError: For all HTTP errors including 429
         """
         with httpx.Client(timeout=30.0) as client:
             response = client.post(
                 self.token_url,
-                headers={"Content-Type": "application/x-www-form-urlencoded"},
+                headers={
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "HPE-AI-Origin": "mcp",
+                },
                 data={
                     "grant_type": "client_credentials",
                     "client_id": self.client_id,
@@ -111,7 +118,10 @@ class OAuth2Provider:
             try:
                 # Apply backoff delay before retry attempts
                 if attempt > 0:
-                    backoff_delay = min(self.initial_backoff * (2 ** (attempt - 1)), self.max_backoff)
+                    backoff_delay = min(
+                        self.initial_backoff * (2 ** (attempt - 1)),
+                        self.max_backoff
+                    )
                     logger.warning(
                         "Retrying token request after rate limit",
                         attempt=attempt + 1,
@@ -157,7 +167,7 @@ class OAuth2Provider:
                         remaining_attempts=self.max_retries - attempt,
                     )
                     continue
-
+                
                 # Last retry or non-429 error - raise it
                 logger.error(
                     "Token request failed",
@@ -165,7 +175,7 @@ class OAuth2Provider:
                     attempts=attempt + 1,
                 )
                 raise
-
+        
         # This line should never be reached, but satisfy type checker
         raise httpx.HTTPStatusError(
             "Failed to acquire token after exhausting all retries",
@@ -183,6 +193,9 @@ class OAuth2Provider:
             True if token is valid, False otherwise
         """
         try:
+            # For now, we'll assume tokens are valid if they exist
+            # In a real implementation, you might want to make a test API call
+            # or use token introspection if supported by the OAuth2 server
             return bool(token and len(token.strip()) > 0)
 
         except Exception as e:

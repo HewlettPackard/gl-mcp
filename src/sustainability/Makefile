@@ -1,4 +1,4 @@
-# Makefile for sustainability MCP Server
+# Makefile for Sustainability_Insight_Center MCP Server
 
 .PHONY: help install test test-unit test-integration lint format clean
 

@@ -1,5 +1,5 @@
 # (c) Copyright 2026 Hewlett Packard Enterprise Development LP
-"""HTTP helper utilities for sustainability test suite."""
+"""HTTP helper utilities for Sustainability_Insight_Center test suite."""
 
 from __future__ import annotations
 

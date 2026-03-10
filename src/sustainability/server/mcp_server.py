@@ -1,130 +1,105 @@
 # (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
-MCP server implementation for sustainability.
+MCP server implementation for Sustainability_Insight_Center.
 
-This module implements the main MCP server class and request handling.
+This module provides the MCPServer wrapper class used for testing and programmatic
+lifecycle control.  In production the server is driven entirely through the
+module-level ``mcp`` FastMCP instance defined in server.fastmcp_instance; this
+class is kept for backward-compatibility and test isolation.
 """
 
-import json
-from typing import Any, Sequence
+from __future__ import annotations
 
-from mcp.server import Server
-from mcp.types import Tool, TextContent, ImageContent, EmbeddedResource
+from typing import Any
 
-from config.settings import settings
+from mcp.types import Tool
+
 from config.logging import get_logger
-from tools.registry import get_tools
+from server.fastmcp_instance import mcp  # noqa: F401  (re-exported for convenience)
+from tools.registry import get_tool_classes
 from utils.http_client import get_http_client
 
 logger = get_logger(__name__)
 
 
 class MCPServer:
-    """MCP server for sustainability."""
+    """
+    Thin wrapper around FastMCP for testing and programmatic lifecycle control.
 
-    def __init__(self):
-        """Initialize the MCP server."""
-        self.settings = settings
-        self.server = Server("sustainability-mcp")
-        self.tools = {}
-        self.http_client = None
+    In normal operation FastMCP drives the server via the lifespan context in
+    fastmcp_instance.py.  Instantiate this class in tests that need to inspect
+    tool objects without running the full FastMCP runtime.
+    """
+
+    def __init__(self) -> None:
+        # Canonical FastMCP instance – use this for everything
+        self.mcp = mcp
+        # Kept for backward-compatibility with code that references self.server
+        self.server = mcp
+        self.tools: dict[str, Any] = {}
+        self.http_client: Any = None
 
     async def initialize(self) -> None:
-        """Initialize server components."""
+        """
+        Eagerly initialise HTTP client and trigger tool registrations.
+
+        Only needed in tests or when you require direct access to the registered
+        tool list without running the full FastMCP runtime.  In production,
+        FastMCP's lifespan context manager handles initialisation transparently
+        – see server.fastmcp_instance._lifespan.
+        """
+        if self.http_client is None:
+            self.http_client = get_http_client()
+
+        # Import tool modules – each @mcp.tool() decorator fires on import and
+        # registers the function with the FastMCP instance.
+        get_tool_classes()
+
+        # Populate self.tools for test introspection by reading back what
+        # FastMCP registered.  We access the private tool manager because
+        # FastMCP has no sync public API for listing tools outside a running
+        # session.  This is intentionally limited to test/introspection use.
         try:
-            if self.http_client is None:
-                self.http_client = get_http_client()
+            raw = self.mcp._tool_manager._tools  # type: ignore[attr-defined]
+            self.tools = dict(raw)
+        except AttributeError:
+            self.tools = {}
 
-            await self._register_tools()
-            self._register_handlers()
-
-        except Exception as e:
-            logger.error(f"Failed to initialize MCP server: {e}")
-            raise
-
-    async def _register_tools(self) -> None:
-        """Register MCP tools."""
-        try:
-            if self.http_client is None:
-                raise RuntimeError("HTTP client not initialized")
-
-            tool_classes = get_tools()
-
-            for tool_class in tool_classes:
-                tool_instance = tool_class(self.http_client)
-                self.tools[tool_instance.name] = tool_instance
-
-        except Exception as e:
-            logger.error(f"Failed to register tools: {str(e)}", exc_info=True)
-            raise
-
-    def _register_handlers(self) -> None:
-        """Register MCP protocol handlers."""
-
-        @self.server.list_tools()
-        async def handle_list_tools() -> list[Tool]:
-            """Handle list_tools requests."""
-            return await self.get_tools()
-
-        @self.server.call_tool()
-        async def handle_call_tool(
-            name: str, arguments: dict[str, Any]
-        ) -> Sequence[TextContent | ImageContent | EmbeddedResource]:
-            """Handle tool calls."""
-            if name not in self.tools:
-                raise ValueError(f"Unknown tool: {name}")
-
-            try:
-                result = await self.tools[name].execute(arguments)
-
-                if isinstance(result, str):
-                    text = result
-                else:
-                    text = json.dumps(result, indent=2, ensure_ascii=False)
-
-                return [TextContent(type="text", text=text)]
-
-            except Exception as e:
-                logger.error(f"Tool execution failed: {str(e)}", exc_info=True)
-                error_msg = f"Error executing tool {name}: {str(e)}"
-                return [TextContent(type="text", text=error_msg)]
+        logger.info(f"MCPServer initialised with {len(self.tools)} tools")
 
     async def get_tools(self) -> list[Tool]:
-        """Get list of available tools."""
-        tool_list = []
+        """Return registered tools as MCP protocol Tool objects.
 
-        for tool in self.tools.values():
-            tool_list.append(
-                Tool(
-                    name=tool.name,
-                    description=tool.description,
-                    inputSchema=tool.input_schema,
+        FastMCP's internal ``FunctionTool`` objects expose
+        ``to_tool_definition()`` which produces the canonical
+        ``mcp.types.Tool``.  A minimal fallback is used for any tool whose
+        internal representation differs across FastMCP versions.
+        """
+        result: list[Tool] = []
+        for name, tool in self.tools.items():
+            try:
+                # FastMCP FunctionTool public conversion helper
+                result.append(tool.to_tool_definition())
+            except AttributeError:
+                result.append(
+                    Tool(
+                        name=name,
+                        description=getattr(tool, "description", "") or "",
+                        inputSchema={"type": "object", "properties": {}},
+                    )
                 )
-            )
-
-        return tool_list
+        return result
 
     async def shutdown(self) -> None:
-        """Gracefully shutdown server components."""
-        try:
-            logger.info("Initiating server shutdown sequence...")
-
-            if hasattr(self, "http_client") and self.http_client:
-                logger.debug("Closing HTTP client connections...")
-                try:
-                    await self.http_client.close()
-                    logger.debug("HTTP client closed successfully")
-                except Exception as e:
-                    logger.error(f"Error closing HTTP client: {str(e)}")
-
-            if hasattr(self, "tools"):
-                logger.debug(f"Clearing {len(self.tools)} tool instances...")
-                self.tools.clear()
-
-            logger.info("Server shutdown sequence complete")
-
-        except Exception as e:
-            logger.error(f"Error during shutdown: {str(e)}", exc_info=True)
+        """Gracefully shut down server components."""
+        if self.http_client is not None:
+            logger.info("Closing HTTP client...")
+            try:
+                await self.http_client.close()
+            except Exception as exc:
+                logger.error(f"Error closing HTTP client: {exc}")
+        self.tools.clear()
+        logger.info("MCPServer shutdown complete")
 
 
-# CRITICAL: Do NOT create global instances - let app.py handle instantiation
+# CRITICAL: Do NOT create global instances – app.py drives the server lifecycle

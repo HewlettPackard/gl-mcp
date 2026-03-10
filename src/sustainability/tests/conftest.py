@@ -1,5 +1,5 @@
 # (c) Copyright 2026 Hewlett Packard Enterprise Development LP
-"""Shared pytest fixtures for sustainability MCP server."""
+"""Shared pytest fixtures for Sustainability_Insight_Center MCP server."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from config.settings import Settings
-from utils.http_client import SustainabilityHttpClient
+from utils.http_client import SustainabilityInsightCenterHttpClient
 from tests.shared.http import make_json_response
 
 
@@ -40,17 +40,50 @@ def event_loop() -> Iterator[asyncio.AbstractEventLoop]:
 
 
 @pytest.fixture(autouse=True)
-def configure_env(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Populate required environment variables expected by Settings."""
+def configure_env(request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Populate required environment variables expected by Settings.
+
+    Skipped for integration tests which rely on real credentials from the environment.
+    """
+    if request.node.get_closest_marker("integration"):
+        return
     for field_name, field in Settings.model_fields.items():
         alias = field.alias or field_name.upper()
         monkeypatch.setenv(alias, _value_for_field(field_name, alias))
 
 
+@pytest.fixture(autouse=True)
+def reset_singletons(
+    request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch
+) -> Iterator[None]:
+    """Reset settings and HTTP-client singletons before/after every test.
+
+    Prevents state leakage between unit tests (mock env vars) and integration
+    tests (real env vars). Also neutralises PYTEST_CURRENT_TEST / TESTING for
+    integration tests so TokenManager performs real OAuth instead of returning
+    the fake 'test_token_12345' token.
+    """
+    import config.settings as settings_module
+    import utils.http_client as http_client_module
+
+    if request.node.get_closest_marker("integration"):
+        # Prevent is_testing=True caused by PYTEST_CURRENT_TEST env var
+        monkeypatch.delenv("PYTEST_CURRENT_TEST", raising=False)
+        monkeypatch.setenv("TESTING", "false")
+
+    # Reset before test so whatever env vars are active take effect
+    settings_module._settings = None
+    http_client_module._http_client = None
+    yield
+    # Reset after to avoid leaking state into the next test
+    settings_module._settings = None
+    http_client_module._http_client = None
+
+
 @pytest.fixture
 def mock_http_client() -> AsyncMock:
     """Provide a mock HTTP client with coroutine-capable methods."""
-    client = AsyncMock(spec=SustainabilityHttpClient)
+    client = AsyncMock(spec=SustainabilityInsightCenterHttpClient)
     for method in ("get", "post", "put", "delete"):
         setattr(client, method, AsyncMock())
     client.close = AsyncMock()

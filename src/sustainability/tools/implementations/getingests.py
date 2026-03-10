@@ -1,103 +1,74 @@
 # (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
-getingests tool implementation for sustainability MCP server.
+getingests tool for Sustainability_Insight_Center MCP server.
 
-This tool gets metadata for all uploaded device measurement data imports.
+Implements: GET /sustainability-insight-ctr/v1beta1/ingests
 """
 
-from typing import Any, Dict, List
-from tools.base import BaseTool
+from __future__ import annotations
+
+from typing import Annotated, Any
+
+from mcp.server.fastmcp import Context
+from pydantic import Field
+
+from config.logging import get_logger
+from server.fastmcp_instance import mcp
+
+logger = get_logger(__name__)
 
 
-class getingestsTool(BaseTool):
-    """Get metadata for all uploaded device measurement data imports."""
+@mcp.tool(
+    name="getingests",
+    description="This returns the associated metadata of each uploaded 3rd party device measurement.",
+)
+async def getingests(  # noqa: E501
+    ctx: Context,
+    offset: Annotated[
+        int | str | None,
+        Field(description="Zero-based resource offset to start the response from.\n\nExample: 10"),
+    ] = None,
+    limit: Annotated[
+        int | str | None,
+        Field(description="Number of ingested records to return.\n\nExample: 10", default=10),
+    ] = 10,
+) -> list[dict[str, Any]]:
+    """This returns the associated metadata of each uploaded 3rd party device measurement.
 
-    @property
-    def name(self) -> str:
-        """Tool name."""
-        return "getingests"
+    Args:
+        offset: Zero-based resource offset to start the response from.\n\nExample: 10
+        limit: Number of ingested records to return.\n\nExample: 10
+    Returns:
+        API response data as a list containing one result dict.
+    """
+    http_client = ctx.request_context.lifespan_context.http_client
 
-    @property
-    def description(self) -> str:
-        """Tool description."""
-        return "Get metadata for all uploaded device measurement data imports."
+    # Build URL – URL-encode path parameters to prevent path-traversal attacks
+    url = "/sustainability-insight-ctr/v1beta1/ingests"
 
-    @property
-    def input_schema(self) -> Dict[str, Any]:
-        """Input schema for the tool."""
-        return {
-            "type": "object",
-            "properties": {
-                "offset": {
-                    "type": ["integer", "string"],
-                    "description": "Specifies the zero-based resource offset to start the response from.",
-                },
-                "limit": {
-                    "type": ["integer", "string"],
-                    "description": "How many items to return at one time.",
-                },
-            },
-            "required": [],
-            "additionalProperties": False,
-        }
-
-    def validate_arguments(self, arguments: Dict[str, Any]) -> None:
-        """
-        Validate tool arguments.
-
-        Args:
-            arguments: Arguments to validate
-
-        Raises:
-            ValueError: If arguments are invalid
-        """
-        super().validate_arguments(arguments)
-
-        # Add parameter-specific validation here
-        pass
-
-    async def execute(self, arguments: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """
-        Execute the getingests tool.
-
-        Args:
-            arguments: Tool arguments
-
-        Returns:
-            List of results
-        """
+    # Collect query / body parameters; skip values that were not provided
+    params: dict[str, Any] = {}
+    if offset is not None and offset is not ...:
+        # Coerce string supplied by LLM clients to int
         try:
-            # Validate arguments
-            self.validate_arguments(arguments)
+            params["offset"] = int(offset)
+        except (ValueError, TypeError) as exc:
+            raise ValueError("'offset' must be an integer") from exc
+    if limit is not None and limit is not ...:
+        # Coerce string supplied by LLM clients to int
+        try:
+            params["limit"] = int(limit)
+        except (ValueError, TypeError) as exc:
+            raise ValueError("'limit' must be an integer") from exc
 
-            # Build URL
-            url = "/sustainability-insight-ctr/v1beta1/ingests"
+    try:
+        response_data = await http_client.get(url, params=params)
+        return [{"success": True, "result": response_data}]
 
-            # Prepare query parameters
-            params: Dict[str, Any] = {}
-            # Parameter: offset (integer - will coerce strings)
-            param_value = arguments.get("offset")
-            if param_value is not None:
-                param_value = self.coerce_string_to_int(param_value, "offset")
-            if param_value is not None:
-                params["offset"] = param_value
-            # Parameter: limit (integer - will coerce strings)
-            param_value = arguments.get("limit")
-            if param_value is not None:
-                param_value = self.coerce_string_to_int(param_value, "limit")
-            if param_value is not None:
-                params["limit"] = param_value
+    except ValueError as exc:
+        logger.error(f"Validation error in getingests: {exc}")
+        return [{"success": False, "error": "validation_error", "message": str(exc)}]
 
-            # Make API request
-            response_data = await self.http_client.get(url, params=params)
-
-            # Format response for MCP
-            return [self.format_success(response_data)]
-
-        except ValueError as e:
-            self.logger.error(f"Validation error in {self.name}: {str(e)}")
-            return [self.format_validation_error(str(e))]
-
-        except Exception as e:
-            self.logger.error(f"Error executing {self.name}: {str(e)}", exc_info=True)
-            return [self.format_error(e)]
+    except Exception as exc:
+        logger.error(f"Error in getingests: {exc}", exc_info=True)
+        return [{"success": False, "error": "request_failed", "message": str(exc)}]

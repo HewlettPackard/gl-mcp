@@ -8,180 +8,648 @@ from typing import Any
 import pytest
 from pydantic import ValidationError as PydanticValidationError
 
-from models import (
-    BaseModel,
-    UsageByEntity,
-    UsageTotals,
-    UsageSeries,
-    CloudUsageByEntity,
-    CloudUsageTotals,
-    CloudUsageSeries,
-    Coefficient,
-    Ingest,
-    DataSource,
-    ForecastEnergyResponse,
-    PaginatedResponse,
-    Error,
-)
-
+from models import BaseModel, cloudTotal, entity, apiError, coefficientCostInput, currencyComponent, tag, coefficient, coefficientInput, currencyCode, datasource, total, timeseries, cloudEntity, cloudTimeseries, ingest
 MODEL_TEST_MATRIX = [
     {
-        "model": UsageByEntity,
-        "name": "UsageByEntity",
+        "model": cloudTotal,
+        "name": "cloudTotal",
         "fields": [
-            {"name": "id", "sanitized": "id", "type": r"string", "required": False},
-            {"name": "type", "sanitized": "type", "type": r"string", "required": False},
-            {"name": "entityId", "sanitized": "entityId", "type": r"string", "required": False},
-            {"name": "entityMake", "sanitized": "entityMake", "type": r"string", "required": False},
-            {"name": "entityModel", "sanitized": "entityModel", "type": r"string", "required": False},
-            {"name": "entityType", "sanitized": "entityType", "type": r"string", "required": False},
-            {"name": "entitySerialNum", "sanitized": "entitySerialNum", "type": r"string", "required": False},
-            {"name": "entityProductId", "sanitized": "entityProductId", "type": r"string", "required": False},
-            {"name": "entityManufactureTimestamp", "sanitized": "entityManufactureTimestamp", "type": r"string", "required": False},
-            {"name": "locationName", "sanitized": "locationName", "type": r"string", "required": False},
-            {"name": "locationId", "sanitized": "locationId", "type": r"string", "required": False},
-            {"name": "locationCity", "sanitized": "locationCity", "type": r"string", "required": False},
-            {"name": "locationState", "sanitized": "locationState", "type": r"string", "required": False},
-            {"name": "locationCountry", "sanitized": "locationCountry", "type": r"string", "required": False},
-            {"name": "tags", "sanitized": "tags", "type": r"list[dict]", "required": False},
-            {"name": "name", "sanitized": "name", "type": r"string", "required": False},
-            {"name": "cost", "sanitized": "cost", "type": r"number", "required": False},
-            {"name": "costUsd", "sanitized": "costUsd", "type": r"number", "required": False},
-            {"name": "currency", "sanitized": "currency", "type": r"string", "required": False},
-            {"name": "co2eMetricTon", "sanitized": "co2eMetricTon", "type": r"number", "required": False},
-            {"name": "kwh", "sanitized": "kwh", "type": r"number", "required": False},
+            {
+                "name": "co2eMetricTon",
+                "sanitized": "co2eMetricTon",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r'string',
+                "required": True,
+            },
         ],
     },
     {
-        "model": UsageTotals,
-        "name": "UsageTotals",
+        "model": entity,
+        "name": "entity",
         "fields": [
-            {"name": "type", "sanitized": "type", "type": r"string", "required": False},
-            {"name": "cost", "sanitized": "cost", "type": r"number", "required": False},
-            {"name": "costUsd", "sanitized": "costUsd", "type": r"number", "required": False},
-            {"name": "currency", "sanitized": "currency", "type": r"string", "required": False},
-            {"name": "co2eMetricTon", "sanitized": "co2eMetricTon", "type": r"number", "required": False},
-            {"name": "kwh", "sanitized": "kwh", "type": r"number", "required": False},
+            {
+                "name": "locationState",
+                "sanitized": "locationState",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "entitySerialNum",
+                "sanitized": "entitySerialNum",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "entityManufacturerTimestamp",
+                "sanitized": "entityManufacturerTimestamp",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "name",
+                "sanitized": "name",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "locationName",
+                "sanitized": "locationName",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "tags",
+                "sanitized": "tags",
+                "type": r'array',
+                "required": False,
+            },
+            {
+                "name": "entityProductId",
+                "sanitized": "entityProductId",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "entityType",
+                "sanitized": "entityType",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "locationId",
+                "sanitized": "locationId",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "costUsd",
+                "sanitized": "costUsd",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "locationCity",
+                "sanitized": "locationCity",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "co2eMetricTon",
+                "sanitized": "co2eMetricTon",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "cost",
+                "sanitized": "cost",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "entityMake",
+                "sanitized": "entityMake",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "currency",
+                "sanitized": "currency",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "kwh",
+                "sanitized": "kwh",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "locationCountry",
+                "sanitized": "locationCountry",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "entityModel",
+                "sanitized": "entityModel",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "entityId",
+                "sanitized": "entityId",
+                "type": r'string',
+                "required": False,
+            },
         ],
     },
     {
-        "model": UsageSeries,
-        "name": "UsageSeries",
+        "model": apiError,
+        "name": "apiError",
         "fields": [
-            {"name": "id", "sanitized": "id", "type": r"string", "required": False},
-            {"name": "type", "sanitized": "type", "type": r"string", "required": False},
-            {"name": "timeBucket", "sanitized": "timeBucket", "type": r"string", "required": False},
-            {"name": "cost", "sanitized": "cost", "type": r"number", "required": False},
-            {"name": "currency", "sanitized": "currency", "type": r"string", "required": False},
-            {"name": "costUsd", "sanitized": "costUsd", "type": r"number", "required": False},
-            {"name": "co2eMetricTon", "sanitized": "co2eMetricTon", "type": r"number", "required": False},
-            {"name": "kwh", "sanitized": "kwh", "type": r"number", "required": False},
+            {
+                "name": "debugId",
+                "sanitized": "debugId",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "errorCode",
+                "sanitized": "errorCode",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "httpStatusCode",
+                "sanitized": "httpStatusCode",
+                "type": r'integer',
+                "required": True,
+            },
+            {
+                "name": "message",
+                "sanitized": "message",
+                "type": r'string',
+                "required": True,
+            },
         ],
     },
     {
-        "model": CloudUsageByEntity,
-        "name": "CloudUsageByEntity",
+        "model": coefficientCostInput,
+        "name": "coefficientCostInput",
         "fields": [
-            {"name": "id", "sanitized": "id", "type": r"string", "required": False},
-            {"name": "type", "sanitized": "type", "type": r"string", "required": False},
-            {"name": "serviceProvider", "sanitized": "serviceProvider", "type": r"string", "required": False},
-            {"name": "serviceName", "sanitized": "serviceName", "type": r"string", "required": False},
-            {"name": "serviceRegion", "sanitized": "serviceRegion", "type": r"string", "required": False},
-            {"name": "serviceAccount", "sanitized": "serviceAccount", "type": r"string", "required": False},
-            {"name": "name", "sanitized": "name", "type": r"string", "required": False},
-            {"name": "co2eMetricTon", "sanitized": "co2eMetricTon", "type": r"number", "required": False},
+            {
+                "name": "useCurrent",
+                "sanitized": "useCurrent",
+                "type": r'boolean',
+                "required": True,
+            },
+            {
+                "name": "useDefault",
+                "sanitized": "useDefault",
+                "type": r'boolean',
+                "required": True,
+            },
+            {
+                "name": "value",
+                "sanitized": "value",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "currencyCode",
+                "sanitized": "currencyCode",
+                "type": r'string',
+                "required": False,
+            },
         ],
     },
     {
-        "model": CloudUsageTotals,
-        "name": "CloudUsageTotals",
+        "model": currencyComponent,
+        "name": "currencyComponent",
         "fields": [
-            {"name": "type", "sanitized": "type", "type": r"string", "required": False},
-            {"name": "co2eMetricTon", "sanitized": "co2eMetricTon", "type": r"number", "required": False},
+            {
+                "name": "currencyCode",
+                "sanitized": "currencyCode",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "currencyName",
+                "sanitized": "currencyName",
+                "type": r'string',
+                "required": True,
+            },
         ],
     },
     {
-        "model": CloudUsageSeries,
-        "name": "CloudUsageSeries",
+        "model": tag,
+        "name": "tag",
         "fields": [
-            {"name": "id", "sanitized": "id", "type": r"string", "required": False},
-            {"name": "type", "sanitized": "type", "type": r"string", "required": False},
-            {"name": "timeBucket", "sanitized": "timeBucket", "type": r"string", "required": False},
-            {"name": "co2eMetricTon", "sanitized": "co2eMetricTon", "type": r"number", "required": False},
+            {
+                "name": "name",
+                "sanitized": "name",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "value",
+                "sanitized": "value",
+                "type": r'string',
+                "required": True,
+            },
         ],
     },
     {
-        "model": Coefficient,
-        "name": "Coefficient",
+        "model": coefficient,
+        "name": "coefficient",
         "fields": [
-            {"name": "id", "sanitized": "id", "type": r"string", "required": False},
-            {"name": "type", "sanitized": "type", "type": r"string", "required": False},
-            {"name": "associatedLocation", "sanitized": "associatedLocation", "type": r"object", "required": False},
-            {"name": "startTime", "sanitized": "startTime", "type": r"string", "required": False},
-            {"name": "co2eGramsPerKwh", "sanitized": "co2eGramsPerKwh", "type": r"number", "required": False},
-            {"name": "costUsdPerKwh", "sanitized": "costUsdPerKwh", "type": r"number", "required": False},
-            {"name": "costPerKwh", "sanitized": "costPerKwh", "type": r"number", "required": False},
-            {"name": "currency", "sanitized": "currency", "type": r"string", "required": False},
-            {"name": "generation", "sanitized": "generation", "type": r"integer", "required": False},
-            {"name": "createdAt", "sanitized": "createdAt", "type": r"string", "required": False},
-            {"name": "updatedAt", "sanitized": "updatedAt", "type": r"string", "required": False},
+            {
+                "name": "costPerKwh",
+                "sanitized": "costPerKwh",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "currency",
+                "sanitized": "currency",
+                "type": r'object',
+                "required": False,
+            },
+            {
+                "name": "updatedAt",
+                "sanitized": "updatedAt",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "associatedLocation",
+                "sanitized": "associatedLocation",
+                "type": r'object',
+                "required": False,
+            },
+            {
+                "name": "co2eGramsPerKwh",
+                "sanitized": "co2eGramsPerKwh",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "startTime",
+                "sanitized": "startTime",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "costUsdPerKwh",
+                "sanitized": "costUsdPerKwh",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "createdAt",
+                "sanitized": "createdAt",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "generation",
+                "sanitized": "generation",
+                "type": r'integer',
+                "required": True,
+            },
         ],
     },
     {
-        "model": Ingest,
-        "name": "Ingest",
+        "model": coefficientInput,
+        "name": "coefficientInput",
         "fields": [
-            {"name": "id", "sanitized": "id", "type": r"string", "required": False},
-            {"name": "type", "sanitized": "type", "type": r"string", "required": False},
-            {"name": "name", "sanitized": "name", "type": r"string", "required": False},
-            {"name": "description", "sanitized": "description", "type": r"string", "required": False},
-            {"name": "generation", "sanitized": "generation", "type": r"integer", "required": False},
-            {"name": "createdAt", "sanitized": "createdAt", "type": r"string", "required": False},
-            {"name": "updatedAt", "sanitized": "updatedAt", "type": r"string", "required": False},
+            {
+                "name": "useDefault",
+                "sanitized": "useDefault",
+                "type": r'boolean',
+                "required": True,
+            },
+            {
+                "name": "value",
+                "sanitized": "value",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "useCurrent",
+                "sanitized": "useCurrent",
+                "type": r'boolean',
+                "required": True,
+            },
         ],
     },
     {
-        "model": DataSource,
-        "name": "DataSource",
+        "model": currencyCode,
+        "name": "currencyCode",
         "fields": [
-            {"name": "id", "sanitized": "id", "type": r"string", "required": False},
-            {"name": "type", "sanitized": "type", "type": r"string", "required": False},
-            {"name": "name", "sanitized": "name", "type": r"string", "required": False},
-            {"name": "provider", "sanitized": "provider", "type": r"string", "required": False},
-            {"name": "lastCollectionTime", "sanitized": "lastCollectionTime", "type": r"string", "required": False},
-            {"name": "firstCollectionTime", "sanitized": "firstCollectionTime", "type": r"string", "required": False},
-            {"name": "generation", "sanitized": "generation", "type": r"integer", "required": False},
-            {"name": "createdAt", "sanitized": "createdAt", "type": r"string", "required": False},
-            {"name": "updatedAt", "sanitized": "updatedAt", "type": r"string", "required": False},
         ],
     },
     {
-        "model": ForecastEnergyResponse,
-        "name": "ForecastEnergyResponse",
+        "model": datasource,
+        "name": "datasource",
         "fields": [
-            {"name": "pastSeries", "sanitized": "pastSeries", "type": r"list[dict]", "required": False},
-            {"name": "forecasts", "sanitized": "forecasts", "type": r"list[dict]", "required": False},
-            {"name": "sustainabilityJourney", "sanitized": "sustainabilityJourney", "type": r"object", "required": False},
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "provider",
+                "sanitized": "provider",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "updatedAt",
+                "sanitized": "updatedAt",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "lastCollectionTime",
+                "sanitized": "lastCollectionTime",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "name",
+                "sanitized": "name",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "firstCollectionTime",
+                "sanitized": "firstCollectionTime",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "createdAt",
+                "sanitized": "createdAt",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "generation",
+                "sanitized": "generation",
+                "type": r'integer',
+                "required": True,
+            },
         ],
     },
     {
-        "model": PaginatedResponse,
-        "name": "PaginatedResponse",
+        "model": total,
+        "name": "total",
         "fields": [
-            {"name": "items", "sanitized": "items", "type": r"array", "required": True},
-            {"name": "count", "sanitized": "count", "type": r"integer", "required": True},
-            {"name": "offset", "sanitized": "offset", "type": r"integer", "required": False},
-            {"name": "total", "sanitized": "total", "type": r"integer", "required": False},
+            {
+                "name": "costUsd",
+                "sanitized": "costUsd",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "currency",
+                "sanitized": "currency",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "kwh",
+                "sanitized": "kwh",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "co2eMetricTon",
+                "sanitized": "co2eMetricTon",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "cost",
+                "sanitized": "cost",
+                "type": r'number',
+                "required": False,
+            },
         ],
     },
     {
-        "model": Error,
-        "name": "Error",
+        "model": timeseries,
+        "name": "timeseries",
         "fields": [
-            {"name": "httpStatusCode", "sanitized": "httpStatusCode", "type": r"integer", "required": False},
-            {"name": "message", "sanitized": "message", "type": r"string", "required": False},
-            {"name": "debugId", "sanitized": "debugId", "type": r"string", "required": False},
-            {"name": "errorCode", "sanitized": "errorCode", "type": r"string", "required": False},
+            {
+                "name": "costUsd",
+                "sanitized": "costUsd",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "currency",
+                "sanitized": "currency",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "kwh",
+                "sanitized": "kwh",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "timeBucket",
+                "sanitized": "timeBucket",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "co2eMetricTon",
+                "sanitized": "co2eMetricTon",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "cost",
+                "sanitized": "cost",
+                "type": r'number',
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": cloudEntity,
+        "name": "cloudEntity",
+        "fields": [
+            {
+                "name": "serviceName",
+                "sanitized": "serviceName",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "serviceRegion",
+                "sanitized": "serviceRegion",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "entityId",
+                "sanitized": "entityId",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "serviceAccount",
+                "sanitized": "serviceAccount",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "name",
+                "sanitized": "name",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "serviceProvider",
+                "sanitized": "serviceProvider",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "co2eMetricTon",
+                "sanitized": "co2eMetricTon",
+                "type": r'number',
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": cloudTimeseries,
+        "name": "cloudTimeseries",
+        "fields": [
+            {
+                "name": "co2eMetricTon",
+                "sanitized": "co2eMetricTon",
+                "type": r'number',
+                "required": False,
+            },
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "timeBucket",
+                "sanitized": "timeBucket",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r'string',
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": ingest,
+        "name": "ingest",
+        "fields": [
+            {
+                "name": "updatedAt",
+                "sanitized": "updatedAt",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "createdAt",
+                "sanitized": "createdAt",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "description",
+                "sanitized": "description",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "generation",
+                "sanitized": "generation",
+                "type": r'integer',
+                "required": True,
+            },
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r'string',
+                "required": True,
+            },
+            {
+                "name": "name",
+                "sanitized": "name",
+                "type": r'string',
+                "required": False,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r'string',
+                "required": True,
+            },
         ],
     },
 ]
@@ -197,17 +665,16 @@ def _value_for_type(type_name: str) -> Any:
     # Handle Literal types - extract the literal value
     if "literal[" in normalized:
         import re
-
         # Try to extract string literal: Literal["value"] or Literal['value']
-        match = re.search(r"literal\[[\"\'](.+?)[\"\']\]", type_name, re.IGNORECASE)
+        match = re.search(r'literal\[[\"\'](.+?)[\"\']\]', type_name, re.IGNORECASE)
         if match:
             return match.group(1)
         # Try to extract numeric literal: Literal[1] or Literal[1.5]
-        match = re.search(r"literal\[(\d+\.?\d*)\]", type_name, re.IGNORECASE)
+        match = re.search(r'literal\[(\d+\.?\d*)\]', type_name, re.IGNORECASE)
         if match:
             value = match.group(1)
             # Return int if no decimal point, float otherwise
-            return int(value) if "." not in value else float(value)
+            return int(value) if '.' not in value else float(value)
         return "example"
 
     # Handle List[Union[Dict[...], ...]] - return list with dict
@@ -247,7 +714,10 @@ def _value_for_type(type_name: str) -> Any:
 
 @pytest.mark.parametrize("config", MODEL_TEST_MATRIX, ids=lambda cfg: cfg["name"])
 def test_model_accepts_valid_payload(config):
-    payload = {field["name"]: _value_for_type(field["type"]) for field in config["fields"]}
+    payload = {
+        field["name"]: _value_for_type(field["type"])
+        for field in config["fields"]
+    }
 
     model = config["model"].model_validate(payload)
 
@@ -269,7 +739,11 @@ def test_model_requires_mandatory_fields(config, required_fields):
     if not required_fields:
         pytest.skip("Model has no required fields.")
 
-    payload = {field["name"]: _value_for_type(field["type"]) for field in config["fields"] if not field["required"]}
+    payload = {
+        field["name"]: _value_for_type(field["type"])
+        for field in config["fields"]
+        if not field["required"]
+    }
 
     with pytest.raises(PydanticValidationError):
         config["model"].model_validate(payload)

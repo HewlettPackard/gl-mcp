@@ -1,1 +1,1 @@
-"""Integration tests for sustainability MCP server."""
+"""Integration smoke tests for Sustainability_Insight_Center MCP server."""

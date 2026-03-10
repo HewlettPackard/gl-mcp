@@ -1,117 +1,48 @@
 # (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
-Application entry point for sustainability MCP server.
+Application entry point for Sustainability_Insight_Center MCP server.
 
-This module initializes and runs the MCP server.
+Starts the FastMCP server with stdio transport. FastMCP handles the event loop,
+signal handling (SIGTERM/SIGINT), and the application lifespan (HTTP client
+setup/teardown) defined in server.fastmcp_instance.
 """
 
-import asyncio
-import signal
 import sys
-from typing import Optional
 
-# CRITICAL: Setup logging FIRST, before any other imports that might create loggers
-# This ensures all loggers use stderr instead of stdout (required for MCP protocol)
+# CRITICAL: Setup logging FIRST, before any other imports that might create loggers.
+# All loggers must write to stderr so stdout is kept clean for the MCP protocol.
 from config.logging import setup_logging
 
 setup_logging()
 
-from mcp.server.stdio import stdio_server  # noqa: E402
 from config.logging import get_logger, flush_logs  # noqa: E402
-from server.mcp_server import MCPServer  # noqa: E402
+from server.fastmcp_instance import mcp  # noqa: E402
+
+from tools.registry import get_tool_classes  # noqa: E402
 
 logger = get_logger(__name__)
 
-# Global reference to server instance for signal handlers
-_server_instance: Optional[MCPServer] = None
-_shutdown_event = asyncio.Event()
 
-
-def handle_shutdown_signal(signum: int, frame) -> None:
-    """
-    Handle shutdown signals (SIGTERM, SIGINT) gracefully.
-
-    This function is called when the process receives a termination signal.
-    It triggers the shutdown event to initiate graceful shutdown.
-    """
-    signal_name = signal.Signals(signum).name
-    logger.info(f"Received {signal_name} signal, initiating graceful shutdown...")
-    _shutdown_event.set()
-
-
-async def main() -> None:
-    """Main application entry point with graceful shutdown handling."""
-    global _server_instance
-
-    # Register signal handlers for graceful shutdown
-    signal.signal(signal.SIGTERM, handle_shutdown_signal)
-    signal.signal(signal.SIGINT, handle_shutdown_signal)
-
-    logger.info("Starting sustainability MCP server...")
-
+def main() -> None:
+    """Run the Sustainability_Insight_Center MCP server over stdio."""
+    logger.info("Starting Sustainability_Insight_Center MCP server (stdio transport)...")
+    # Calling get_tool_classes() triggers the side-effect imports that execute every
+    # @mcp.tool() decorator, registering all tools with the FastMCP instance before
+    # the server starts serving requests.
+    get_tool_classes()
     try:
-        # Create and initialize server instance
-        _server_instance = MCPServer()
-        await _server_instance.initialize()
-
-        logger.info("MCP server initialized successfully")
-
-        # Run the MCP server with stdio transport
-        async with stdio_server() as (read_stream, write_stream):
-            # Create a task to run the server
-            server_task = asyncio.create_task(
-                _server_instance.server.run(
-                    read_stream,
-                    write_stream,
-                    _server_instance.server.create_initialization_options(),
-                )
-            )
-
-            # Create a task to wait for shutdown signal
-            shutdown_task = asyncio.create_task(_shutdown_event.wait())
-
-            # Wait for either server completion or shutdown signal
-            done, pending = await asyncio.wait({server_task, shutdown_task}, return_when=asyncio.FIRST_COMPLETED)
-
-            # If shutdown was triggered, cancel the server task
-            if shutdown_task in done:
-                logger.info("Shutdown signal received, stopping server...")
-                server_task.cancel()
-                try:
-                    await server_task
-                except asyncio.CancelledError:
-                    pass
-
-            # Cancel any remaining tasks
-            for task in pending:
-                task.cancel()
-                try:
-                    await task
-                except asyncio.CancelledError:
-                    pass
-
-    except Exception as e:
-        logger.error(f"Server error: {str(e)}", exc_info=True)
+        # mcp.run() is synchronous – it calls asyncio.run() internally,
+        # handles SIGTERM/SIGINT gracefully, and invokes the lifespan context.
+        mcp.run(transport="stdio")
+    except KeyboardInterrupt:
+        # FastMCP already handles Ctrl-C; this is a safety catch.
+        pass
+    except Exception as exc:
+        logger.error(f"Fatal server error: {exc}", exc_info=True)
         sys.exit(1)
     finally:
-        # Always perform cleanup, even if an error occurred
-        if _server_instance is not None:
-            logger.info("Shutting down server components...")
-            try:
-                await _server_instance.shutdown()
-                logger.info("Server shutdown complete")
-            except Exception as e:
-                logger.error(f"Error during shutdown: {str(e)}", exc_info=True)
-
-        # Flush all log handlers to ensure logs are written
         flush_logs()
 
 
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        pass
-    except Exception as e:
-        logger.error(f"Fatal error: {e}", exc_info=True)
-        sys.exit(1)
+    main()

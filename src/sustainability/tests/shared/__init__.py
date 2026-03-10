@@ -1,1 +1,1 @@
-"""Shared test utilities for sustainability MCP server."""
+"""Shared helpers for Sustainability_Insight_Center MCP server tests."""

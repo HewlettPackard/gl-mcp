@@ -1,6 +1,6 @@
 # (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
-Logging configuration for sustainability MCP server.
+Logging configuration for Sustainability_Insight_Center MCP server.
 
 This module sets up structured logging for the MCP server using loguru.
 CRITICAL: MCP protocol requires stdout for JSON-RPC messages only.
@@ -58,9 +58,9 @@ logger.add(
 # Optional: Add file logging for debugging and audit purposes
 # Logs are written to user's home directory for persistence
 if os.getenv("GREENLAKE_FILE_LOGGING", "false").lower() == "true":
-    log_dir = Path.home() / ".hpe" / "mcp-logs" / "sustainability"
+    log_dir = Path.home() / ".hpe" / "mcp-logs" / "sustainability-insight-center"
     log_dir.mkdir(parents=True, exist_ok=True)
-    log_file = log_dir / "sustainability-mcp.log"
+    log_file = log_dir / "sustainability-insight-center-mcp.log"
     logger.add(
         log_file,
         rotation="10 MB",

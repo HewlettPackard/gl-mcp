@@ -1,187 +1,98 @@
 # (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
-Tool registry for sustainability MCP server.
+Tool registry for Sustainability_Insight_Center MCP server.
 
-This module handles tool discovery and registration with support for both static and dynamic modes.
+Importing this module (or calling ``get_tool_classes()``) triggers the side-effect
+imports that execute every ``@mcp.tool()`` decorator, which registers all tools
+with the FastMCP instance defined in ``server.fastmcp_instance``.
 """
 
+from __future__ import annotations
+
 from loguru import logger
-from typing import List, Optional, Type
-from tools.base import BaseTool
+
 from config.settings import get_settings
 
 
-def get_tools(mode: Optional[str] = None) -> List[Type[BaseTool]]:
+def get_tool_classes(mode: str | None = None) -> list:
     """
-    Get all available tool classes based on the specified mode.
+    Import tool modules so that ``@mcp.tool()`` decorators fire.
+
+    This function has *no* meaningful return value – the registrations happen as a
+    side effect of the imports.  It is called by ``server.app`` and by
+    ``MCPServer.initialize()`` to ensure tools are wired up before the server
+    starts serving requests.
 
     Args:
-        mode: Tool mode - "static" for individual endpoint tools, "dynamic" for meta-tools.
-              If None, uses MCP_TOOL_MODE from settings (defaults to "static")
+        mode: ``"static"`` for one tool per endpoint (default),
+              ``"dynamic"`` for the 3 meta-tools.  ``None`` reads from settings.
 
     Returns:
-        List of tool classes
+        Empty list (tools are registered as FastMCP functions, not class objects).
     """
     if mode is None:
         mode = get_settings().mcp_tool_mode
 
-    tools = []
-
     try:
         if mode == "dynamic":
-            # Dynamic mode: Import the 3 generic dynamic meta-tools
-            from tools.implementations.list_endpoints import ListEndpointsTool
-            from tools.implementations.get_endpoint_schema import GetEndpointSchemaTool
-            from tools.implementations.invoke_dynamic_tool import InvokeDynamicTool
-
-            tools.extend([ListEndpointsTool, GetEndpointSchemaTool, InvokeDynamicTool])
-            logger.info("Using dynamic mode with 3 meta-tools")
+            from tools.implementations.list_endpoints import list_endpoints  # noqa: F401
+            from tools.implementations.get_endpoint_schema import get_endpoint_schema  # noqa: F401
+            from tools.implementations.invoke_dynamic_tool import invoke_dynamic_tool  # noqa: F401
+            logger.info("Dynamic mode: 3 meta-tools registered")
         else:
-            # Static mode: Import one tool per endpoint (default)
-            from tools.implementations.getusagebyentity import getusagebyentityTool
-            from tools.implementations.getusagetotals import getusagetotalsTool
-            from tools.implementations.getusageseries import getusageseriesTool
-            from tools.implementations.getcloudusagebyentity import getcloudusagebyentityTool
-            from tools.implementations.getcloudusagetotals import getcloudusagetotalsTool
-            from tools.implementations.getcloudusageseries import getcloudusageseriesTool
-            from tools.implementations.getcoefficients import getcoefficientsTool
-            from tools.implementations.getcoefficientbyid import getcoefficientbyidTool
-            from tools.implementations.getingests import getingestsTool
-            from tools.implementations.getingestbyid import getingestbyidTool
-            from tools.implementations.getdatasources import getdatasourcesTool
-            from tools.implementations.getdatasourcebyid import getdatasourcebyidTool
-            from tools.implementations.forecastenergy import forecastenergyTool
+            # Static mode: import every per-endpoint tool module.
+            # The @mcp.tool() decorators inside each module fire on import and
+            # register the function with the FastMCP instance.
+            import tools.implementations.getingest  # noqa: F401 (triggers @mcp.tool registration)
+            import tools.implementations.getusagebyentity  # noqa: F401 (triggers @mcp.tool registration)
+            import tools.implementations.getcoefficients  # noqa: F401 (triggers @mcp.tool registration)
+            import tools.implementations.getusagetotals  # noqa: F401 (triggers @mcp.tool registration)
+            import tools.implementations.getcloudusagetotals  # noqa: F401 (triggers @mcp.tool registration)
+            import tools.implementations.getdatasource  # noqa: F401 (triggers @mcp.tool registration)
+            import tools.implementations.getusagebyseries  # noqa: F401 (triggers @mcp.tool registration)
+            import tools.implementations.getcloudusagebyentity  # noqa: F401 (triggers @mcp.tool registration)
+            import tools.implementations.getcloudusagebyseries  # noqa: F401 (triggers @mcp.tool registration)
+            import tools.implementations.getcoefficient  # noqa: F401 (triggers @mcp.tool registration)
+            import tools.implementations.getdatasources  # noqa: F401 (triggers @mcp.tool registration)
+            import tools.implementations.getingests  # noqa: F401 (triggers @mcp.tool registration)
 
-            tools.extend(
-                [
-                    getusagebyentityTool,
-                    getusagetotalsTool,
-                    getusageseriesTool,
-                    getcloudusagebyentityTool,
-                    getcloudusagetotalsTool,
-                    getcloudusageseriesTool,
-                    getcoefficientsTool,
-                    getcoefficientbyidTool,
-                    getingestsTool,
-                    getingestbyidTool,
-                    getdatasourcesTool,
-                    getdatasourcebyidTool,
-                    forecastenergyTool,
-                ]
-            )
-            logger.info(f"Using static mode with {len(tools)} endpoint-specific tools")
+            logger.info("Static mode: 12 endpoint tools registered")
+    except ImportError as exc:
+        logger.error(f"Failed to import tool module: {exc}")
 
-    except ImportError as e:
-        logger.error(f"Failed to import tools: {str(e)}")
-        # Fallback to dynamic discovery
-        tools = discover_tools()
-
-    return tools
+    return []
 
 
-def get_static_tools() -> List[Type[BaseTool]]:
-    """
-    Get static tools (one tool per endpoint).
-
-    Returns:
-        List of static tool classes
-    """
-    return get_tools(mode="static")
+def get_static_tools() -> list:
+    """Trigger static tool registrations (one tool per endpoint)."""
+    return get_tool_classes(mode="static")
 
 
-def get_dynamic_tools() -> List[Type[BaseTool]]:
-    """
-    Get dynamic tools (3 meta-tools for all endpoints).
-
-    Returns:
-        List of dynamic tool classes
-    """
-    return get_tools(mode="dynamic")
+def get_dynamic_tools() -> list:
+    """Trigger dynamic meta-tool registrations."""
+    return get_tool_classes(mode="dynamic")
 
 
 def set_tool_mode(mode: str) -> None:
     """
-    Set the tool mode for this session.
+    Persist a tool mode override for this process.
 
     Args:
-        mode: "static" or "dynamic"
-
-    Raises:
-        pydantic.ValidationError: If mode is not 'static' or 'dynamic' (validated by Settings)
+        mode: ``"static"`` or ``"dynamic"``
     """
-    # Update the settings instance (validation happens in Settings.validate_tool_mode)
     settings = get_settings()
     settings.mcp_tool_mode = mode
     logger.info(f"Tool mode set to: {mode}")
 
 
 def get_tool_mode() -> str:
-    """
-    Get the current tool mode.
-
-    Returns:
-        Current tool mode ("static" or "dynamic")
-    """
+    """Return the current tool mode (``"static"`` or ``"dynamic"``)."""
     return get_settings().mcp_tool_mode
 
 
-def register_tool(tool_class: Type[BaseTool]) -> None:
-    """
-    Register a tool class.
+# ---------------------------------------------------------------------------
+# Backwards-compatibility shim
+# ---------------------------------------------------------------------------
 
-    This function can be used for manual tool registration if needed.
-
-    Args:
-        tool_class: Tool class to register
-    """
-    # This could be extended to maintain a registry of tools
-    # For now, it's a placeholder for future enhancement
-    pass
-
-
-# DYNAMIC TOOL DISCOVERY (OPTIONAL)
-def discover_tools(mode: Optional[str] = None) -> List[Type[BaseTool]]:
-    """
-    Dynamically discover tools from the implementations package.
-
-    This is an alternative to manual imports in get_tools().
-
-    Returns:
-        List of discovered tool classes
-    """
-    import importlib
-    from pathlib import Path
-
-    tools: List[Type[BaseTool]] = []
-    implementations_dir = Path(__file__).parent / "implementations"
-
-    if not implementations_dir.exists():
-        logger.warning("Implementations directory not found")
-        return tools
-
-    try:
-        for file_path in implementations_dir.glob("*.py"):
-            if file_path.name.startswith("__"):
-                continue
-
-            module_name = f"tools.implementations.{file_path.stem}"
-
-            try:
-                module = importlib.import_module(module_name)
-
-                # Look for classes that inherit from BaseTool
-                for attr_name in dir(module):
-                    attr = getattr(module, attr_name)
-
-                    if isinstance(attr, type) and issubclass(attr, BaseTool) and attr is not BaseTool:
-                        tools.append(attr)
-                        logger.debug(f"Discovered tool: {attr.__name__}")
-
-            except ImportError as e:
-                logger.error(f"Failed to import {module_name}: {str(e)}")
-                continue
-
-    except Exception as e:
-        logger.error(f"Tool discovery failed: {str(e)}")
-
-    return tools
+#: Alias kept so that code importing ``get_tools`` still works.
+get_tools = get_tool_classes

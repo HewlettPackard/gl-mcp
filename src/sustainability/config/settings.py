@@ -1,6 +1,6 @@
 # (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
-Settings configuration for sustainability MCP server.
+Settings configuration for Sustainability_Insight_Center MCP server.
 
 This module handles environment variable configuration and application settings.
 """
@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     # GreenLake API Configuration
     greenlake_api_base_url: str = Field(
-        default="https://global.api.greenlake.hpe.com",
+        default="https://us-west.api.greenlake.hpe.com",
         description="Base URL for HPE GreenLake APIs",
         alias="GREENLAKE_API_BASE_URL",
     )
@@ -30,15 +30,23 @@ class Settings(BaseSettings):
         alias="GREENLAKE_CLIENT_SECRET",
     )
 
-    greenlake_workspace_id: str = Field(description="GreenLake workspace identifier", alias="GREENLAKE_WORKSPACE_ID")
+    greenlake_workspace_id: str = Field(
+        description="GreenLake workspace identifier", alias="GREENLAKE_WORKSPACE_ID"
+    )
 
     # Application Configuration
-    log_level: str = Field(default="INFO", description="Logging level", alias="LOG_LEVEL")
+    log_level: str = Field(
+        default="INFO", description="Logging level", alias="LOG_LEVEL"
+    )
 
     # HTTP Client Configuration
-    http_timeout: int = Field(default=30, description="HTTP request timeout in seconds", alias="HTTP_TIMEOUT")
+    http_timeout: int = Field(
+        default=30, description="HTTP request timeout in seconds", alias="HTTP_TIMEOUT"
+    )
 
-    http_retries: int = Field(default=3, description="HTTP request retry attempts", alias="HTTP_RETRIES")
+    http_retries: int = Field(
+        default=3, description="HTTP request retry attempts", alias="HTTP_RETRIES"
+    )
 
     # MCP Tool Configuration
     mcp_tool_mode: str = Field(
@@ -75,6 +83,8 @@ class Settings(BaseSettings):
             # Any non-empty string from PYTEST_CURRENT_TEST means we're testing
             if v and v.lower() not in ("false", "0", "no", "off"):
                 return True
+            # Empty string or explicit falsey values ("false", "0", etc.) → False
+            return False
         return bool(v)
 
     @property
@@ -103,7 +113,9 @@ class Settings(BaseSettings):
         """Get token issuer URL (compatibility with shared auth)."""
         return self.token_issuer_url
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"
+    )
 
     # SERVICE-SPECIFIC PROPERTIES
     @property

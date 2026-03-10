@@ -1,125 +1,73 @@
 # (c) Copyright 2026 Hewlett Packard Enterprise Development LP
 """
-getcloudusagetotals tool implementation for sustainability MCP server.
+getcloudusagetotals tool for Sustainability_Insight_Center MCP server.
 
-This tool gets total aggregated public cloud sustainability data.
+Implements: GET /sustainability-insight-ctr/v1beta1/cloud-usage-totals
 """
 
-from typing import Any, Dict, List
-from tools.base import BaseTool
+from __future__ import annotations
+
+from typing import Annotated, Any
+
+from mcp.server.fastmcp import Context
+from pydantic import Field
+
+from config.logging import get_logger
+from server.fastmcp_instance import mcp
+
+logger = get_logger(__name__)
 
 
-class getcloudusagetotalsTool(BaseTool):
-    """Get total aggregated public cloud sustainability data. Returns total CO2 emissions (metric tons) across all cloud entities."""
+@mcp.tool(
+    name="getcloudusagetotals",
+    description="Returns the total carbon footprint over a defined time frame and supports filtering by cloud entities.",
+)
+async def getcloudusagetotals(  # noqa: E501
+    ctx: Context,
+    filter: Annotated[
+        str | None,
+        Field(description="Limit the cloud entities operated on by this endpoint, returning only the subset of entities that match the filter. The \nfilter grammar is a subset of OData 4.0 supporting \"eq\", \"in\", and \"and\" operators only.\n\nCloud entities can be filtered by:\n- entityId\n- serviceProvider\n- serviceName\n- serviceRegion\n- serviceAccount\n- name\n\n\nExamples:\n  - serviceProvider eq 'AWS'\n  - serviceRegion in ('EMEA', 'AMERICAS')\n\n**Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`.\n\nFilterable properties: co2eMetricTon, type"),
+    ] = None,
+    start_time: Annotated[
+        str,
+        Field(description="Start of the query's time range in ISO8601 format.\n\nExample: 2024-01-28T08:00:00Z"),
+    ] = ...,
+    end_time: Annotated[
+        str,
+        Field(description="End of the aggregate's time range in ISO8601 format.\n\nExample: 2024-01-29T08:00:00Z"),
+    ] = ...,
+) -> list[dict[str, Any]]:
+    """Returns the total carbon footprint over a defined time frame and supports filtering by cloud entities.
 
-    @property
-    def name(self) -> str:
-        """Tool name."""
-        return "getcloudusagetotals"
+    Args:
+        filter: Limit the cloud entities operated on by this endpoint, returning only the subset of entities that match the filter. The \nfilter grammar is a subset of OData 4.0 supporting \"eq\", \"in\", and \"and\" operators only.\n\nCloud entities can be filtered by:\n- entityId\n- serviceProvider\n- serviceName\n- serviceRegion\n- serviceAccount\n- name\n\n\nExamples:\n  - serviceProvider eq 'AWS'\n  - serviceRegion in ('EMEA', 'AMERICAS')\n\n**Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`.\n\nFilterable properties: co2eMetricTon, type
+        start-time: Start of the query's time range in ISO8601 format.\n\nExample: 2024-01-28T08:00:00Z
+        end-time: End of the aggregate's time range in ISO8601 format.\n\nExample: 2024-01-29T08:00:00Z
+    Returns:
+        API response data as a list containing one result dict.
+    """
+    http_client = ctx.request_context.lifespan_context.http_client
 
-    @property
-    def description(self) -> str:
-        """Tool description."""
-        return "Get total aggregated public cloud sustainability data. Returns total CO2 emissions (metric tons) across all cloud entities."
+    # Build URL – URL-encode path parameters to prevent path-traversal attacks
+    url = "/sustainability-insight-ctr/v1beta1/cloud-usage-totals"
 
-    @property
-    def input_schema(self) -> Dict[str, Any]:
-        """Input schema for the tool."""
-        return {
-            "type": "object",
-            "properties": {
-                "start-time": {
-                    "type": "string",
-                    "description": "Start time in ISO 8601 format (e.g. '2024-01-01T00:00:00Z').",
-                },
-                "end-time": {
-                    "type": "string",
-                    "description": "End time in ISO 8601 format (e.g. '2024-01-31T23:59:59Z').",
-                },
-                "filter": {
-                    "type": "string",
-                    "description": "Filter expression for narrowing results.",
-                },
-            },
-            "required": [
-                "start-time",
-                "end-time",
-            ],
-            "additionalProperties": False,
-        }
+    # Collect query / body parameters; skip values that were not provided
+    params: dict[str, Any] = {}
+    if filter is not None and filter is not ...:
+        params["filter"] = filter
+    if start_time is not None and start_time is not ...:
+        params["start-time"] = start_time
+    if end_time is not None and end_time is not ...:
+        params["end-time"] = end_time
 
-    def validate_arguments(self, arguments: Dict[str, Any]) -> None:
-        """
-        Validate tool arguments.
+    try:
+        response_data = await http_client.get(url, params=params)
+        return [{"success": True, "result": response_data}]
 
-        Args:
-            arguments: Arguments to validate
+    except ValueError as exc:
+        logger.error(f"Validation error in getcloudusagetotals: {exc}")
+        return [{"success": False, "error": "validation_error", "message": str(exc)}]
 
-        Raises:
-            ValueError: If arguments are invalid
-        """
-        super().validate_arguments(arguments)
-
-        if "start-time" not in arguments:
-            raise ValueError("start-time is required")
-
-        if arguments["start-time"] is None:
-            raise ValueError("start-time cannot be None")
-
-        if isinstance(arguments["start-time"], str) and arguments["start-time"].strip() == "":
-            raise ValueError("start-time cannot be empty")
-
-        if "end-time" not in arguments:
-            raise ValueError("end-time is required")
-
-        if arguments["end-time"] is None:
-            raise ValueError("end-time cannot be None")
-
-        if isinstance(arguments["end-time"], str) and arguments["end-time"].strip() == "":
-            raise ValueError("end-time cannot be empty")
-
-    async def execute(self, arguments: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """
-        Execute the getcloudusagetotals tool.
-
-        Args:
-            arguments: Tool arguments
-
-        Returns:
-            List of results
-        """
-        try:
-            # Validate arguments
-            self.validate_arguments(arguments)
-
-            # Build URL
-            url = "/sustainability-insight-ctr/v1beta1/cloud-usage-totals"
-
-            # Prepare query parameters
-            params: Dict[str, Any] = {}
-            # Parameter: start-time
-            param_value = arguments.get("start-time")
-            if param_value is not None:
-                params["start-time"] = param_value
-            # Parameter: end-time
-            param_value = arguments.get("end-time")
-            if param_value is not None:
-                params["end-time"] = param_value
-            # Parameter: filter
-            param_value = arguments.get("filter")
-            if param_value is not None:
-                params["filter"] = param_value
-
-            # Make API request
-            response_data = await self.http_client.get(url, params=params)
-
-            # Format response for MCP
-            return [self.format_success(response_data)]
-
-        except ValueError as e:
-            self.logger.error(f"Validation error in {self.name}: {str(e)}")
-            return [self.format_validation_error(str(e))]
-
-        except Exception as e:
-            self.logger.error(f"Error executing {self.name}: {str(e)}", exc_info=True)
-            return [self.format_error(e)]
+    except Exception as exc:
+        logger.error(f"Error in getcloudusagetotals: {exc}", exc_info=True)
+        return [{"success": False, "error": "request_failed", "message": str(exc)}]

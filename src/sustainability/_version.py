@@ -1,13 +1,13 @@
 # (c) Copyright 2025 Hewlett Packard Enterprise Development LP
 """
-Version information for sustainability MCP server.
+Version information for Sustainability_Insight_Center MCP server.
 
 This module provides version and identification information used for
 User-Agent headers and other metadata purposes.
 """
 
 # Server identification
-SERVER_NAME: str = "sustainability"
+SERVER_NAME: str = "sustainability-insight-center"
 SERVER_VERSION: str = "1.0.0"
 
 # User-Agent string for API calls

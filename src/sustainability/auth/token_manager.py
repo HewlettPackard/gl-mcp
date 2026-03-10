@@ -1,5 +1,5 @@
 # (c) Copyright 2026 Hewlett Packard Enterprise Development LP
-"""Token management for sustainability API authentication."""
+"""Token management for Sustainability_Insight_Center API authentication."""
 
 import time
 from typing import Any
@@ -14,8 +14,12 @@ class TokenInfo(BaseModel):
     """Token information."""
 
     token: str = Field(description="The JWT token")
-    expires_at: float | None = Field(default=None, description="Token expiration timestamp")
-    created_at: float = Field(default_factory=time.time, description="Token creation timestamp")
+    expires_at: float | None = Field(
+        default=None, description="Token expiration timestamp"
+    )
+    created_at: float = Field(
+        default_factory=time.time, description="Token creation timestamp"
+    )
 
     def is_expired(self, buffer_seconds: int = 300) -> bool:
         """Check if the token is expired.
@@ -27,6 +31,7 @@ class TokenInfo(BaseModel):
             True if the token is expired or will expire within buffer_seconds
         """
         if self.expires_at is None:
+            # If no expiration time, assume it's valid for safety
             return False
 
         current_time = time.time()
@@ -45,9 +50,11 @@ class TokenInfo(BaseModel):
 
 
 class TokenManager:
-    """Manages authentication tokens for sustainability API."""
+    """Manages authentication tokens for Sustainability_Insight_Center API."""
 
-    def __init__(self, settings: Any | None = None, initial_token: str | None = None) -> None:
+    def __init__(
+        self, settings: Any | None = None, initial_token: str | None = None
+    ) -> None:
         """Initialize the token manager.
 
         Args:
@@ -76,7 +83,8 @@ class TokenManager:
         # Otherwise, use LAZY initialization - token will be generated on first use
         else:
             logger.info(
-                "Token manager initialized with lazy token generation", has_oauth2=self._oauth2_provider is not None
+                "Token manager initialized with lazy token generation",
+                has_oauth2=self._oauth2_provider is not None
             )
 
     def _set_token(self, token: str, expires_at: float | None = None) -> None:
@@ -126,10 +134,20 @@ class TokenManager:
                 logger.info("Token expired or missing, generating new token")
                 self._generate_new_token()
             else:
-                raise RuntimeError("Token expired and no OAuth2 provider configured for renewal")
+                raise RuntimeError(
+                    "Token expired and no OAuth2 provider configured for renewal"
+                )
 
     def get_auth_headers(self) -> dict[str, str]:
         """Get authentication headers for API requests.
+        
+        This method implements lazy token initialization:
+        - On first call: Fetches a new token from OAuth2 provider
+        - Subsequent calls: Returns cached token if still valid
+        - Auto-refresh: Automatically refreshes expired tokens with retry logic
+        
+        The token is fetched on-demand, not during TokenManager initialization,
+        which improves startup time and ensures token freshness.
 
         Returns:
             Dictionary containing authorization headers
@@ -137,6 +155,7 @@ class TokenManager:
         Raises:
             RuntimeError: If no valid token is available
         """
+        # Ensure we have a valid token before returning headers
         self._ensure_valid_token()
 
         if not self._token_info:

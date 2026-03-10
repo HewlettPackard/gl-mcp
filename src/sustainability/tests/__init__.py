@@ -1,1 +1,1 @@
-"""Test suite for sustainability MCP server."""
+"""Test suite for Sustainability_Insight_Center MCP server."""

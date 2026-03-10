@@ -1,6 +1,6 @@
 {
   "servers": {
-    "sustainability": {
+    "sustainability-insight-center": {
       "type": "stdio",
       "command": "uv",
       "args": [
@@ -8,9 +8,9 @@
         "python",
         "__main__.py"
       ],
-      "cwd": "/tmp/sustainability",
+      "cwd": "/tmp/sustainability-insight-center",
       "env": {
-        "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
+        "GREENLAKE_API_BASE_URL": "https://us-west.api.greenlake.hpe.com",
         "LOG_LEVEL": "INFO",
         "GREENLAKE_CLIENT_ID": "<your-client-id>",
         "GREENLAKE_CLIENT_SECRET": "<your-client-secret>",

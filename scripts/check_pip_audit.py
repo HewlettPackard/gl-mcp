@@ -21,11 +21,19 @@ def install_pip_audit() -> bool:
 
 def run_vulnerability_scan() -> tuple[int, str]:
     """Run vulnerability scan using pip-audit and write directly to file."""
+    # CVEs ignored until patched versions are available on PyPI
+    IGNORED_VULNS = [
+        "CVE-2026-4539",  # pygments: no fix available as of 2026-03-25
+    ]
+    ignore_args = []
+    for cve in IGNORED_VULNS:
+        ignore_args += ["--ignore-vuln", cve]
+
     try:
         # Use pip-audit's built-in output option to write directly to our target file
         print("🔍 Running pip-audit vulnerability scan...")
         result = subprocess.run(
-            ["pip-audit", "--format=json", "--output=pip-audit-results.json"],
+            ["pip-audit", "--format=json", "--output=pip-audit-results.json"] + ignore_args,
             capture_output=True,
             text=True,
             check=False,

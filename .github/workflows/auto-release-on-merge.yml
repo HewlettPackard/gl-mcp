@@ -12,7 +12,7 @@ jobs:
     
     # Global environment variables
     env:
-      ALL_SERVICES: "audit-logs devices users workspaces subscriptions"
+      ALL_SERVICES: "audit-logs devices users workspaces subscriptions reporting"
     
     steps:
       - name: Checkout code
@@ -241,6 +241,7 @@ jobs:
               "users") DISPLAY_NAME="Users" ;;
               "workspaces") DISPLAY_NAME="Workspaces" ;;
               "subscriptions") DISPLAY_NAME="Subscriptions" ;;
+              "reporting") DISPLAY_NAME="Reporting" ;;
               *) DISPLAY_NAME="$service" ;;
             esac
             
@@ -406,6 +407,7 @@ jobs:
           - **👥 Users** - User management and lookup functionality
           - **🏢 Workspaces** - Workspace information retrieval
           - **📋 Subscriptions** - Subscription management and monitoring
+          - **📊 Reporting** - Reporting and analytics functionality
 
           ### ✨ Common Features
           All services include:
@@ -429,6 +431,7 @@ jobs:
               "users") DISPLAY_NAME="👥 Users" ;;
               "workspaces") DISPLAY_NAME="🏢 Workspaces" ;;
               "subscriptions") DISPLAY_NAME="📋 Subscriptions" ;;
+              "reporting") DISPLAY_NAME="📊 Reporting" ;;
               *) DISPLAY_NAME="$service" ;;
             esac
             

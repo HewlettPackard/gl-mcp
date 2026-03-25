@@ -161,6 +161,7 @@ jobs:
         with:
           files: |
             .github/workflows/ci-public.yml
+            scripts/**
 
             
       - name: Check for changes in src directory

@@ -565,6 +565,12 @@ jobs:
           else
             echo "MCP_TEST_SAMPLE_SERVICE_PETID: ❌ NOT SET"
           fi
+
+          if [ -n "${{ secrets.MCP_TEST_REPORTING_ID }}" ]; then
+            echo "MCP_TEST_REPORTING_ID: ✅ SET"
+          else
+            echo "MCP_TEST_REPORTING_ID: ❌ NOT SET"
+          fi
           echo "=============================="
 
       # ==========================================
@@ -599,6 +605,7 @@ jobs:
           MCP_TEST_SUBSCRIPTIONS_ID: ${{ secrets.MCP_TEST_SUBSCRIPTIONS_ID }}
           MCP_TEST_USERS_ID: ${{ secrets.MCP_TEST_USERS_ID }}
           MCP_TEST_WORKSPACES_WORKSPACEID: ${{ secrets.GREENLAKE_WORKSPACE_ID }}
+          MCP_TEST_REPORTING_ID: ${{ secrets.MCP_TEST_REPORTING_ID }}
         run: |
           if [[ -d "tests/integration" ]]; then
             echo "::group::Integration Tests for ${{ matrix.servers }} (Python ${{ matrix.python-version }})"

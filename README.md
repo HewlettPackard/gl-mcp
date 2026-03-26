@@ -14,9 +14,6 @@ A collection of [Model Context Protocol (MCP)](https://modelcontextprotocol.io) 
 - [What is the Model Context Protocol?](#what-is-the-model-context-protocol)
 - [What's in this Repository?](#whats-in-this-repository)
 - [Available MCP Servers](#available-mcp-servers)
-  - [Infrastructure & Platform Management](#infrastructure--platform-management)
-  - [Security & Compliance](#security--compliance)
-  - [User & Access Management](#user--access-management)
 - [Quick Start](#quick-start)
 - [MCP Client Configuration](#mcp-client-configuration)
 - [Tool Modes](#tool-modes)
@@ -47,62 +44,14 @@ This repository contains production-ready MCP servers for HPE GreenLake platform
 
 ## Available MCP Servers
 
-### Infrastructure & Platform Management
-
-#### [Devices](./src/devices/README.md)
-
-Manage and query HPE GreenLake devices in your workspace. Filter devices by type, serial number, tags, and other properties.
-
-**Key Capabilities:**
-
-- Retrieve device lists with advanced filtering
-- Get detailed device information by ID
-- Query devices by tags, device type, serial number, and more
-
-#### [Workspaces](./src/workspaces/README.md)
-
-Interact with HPE GreenLake workspace management APIs. View workspace details and manage workspace-level configurations.
-
-**Key Capabilities:**
-
-- List and query workspaces
-- Retrieve workspace details and configurations
-- Access workspace-level settings
-
-#### [Subscriptions](./src/subscriptions/README.md)
-
-Access subscription information and licensing details for your HPE GreenLake services.
-
-**Key Capabilities:**
-
-- View active subscriptions
-- Query subscription details and licensing
-- Monitor subscription status
-
-### Security & Compliance
-
-#### [Audit Logs](./src/audit-logs/README.md)
-
-Query and analyze HPE GreenLake audit logs with powerful filtering capabilities.
-
-**Key Capabilities:**
-
-- Search audit logs by category, user, timestamp, and more
-- Filter logs using advanced query operators (eq, contains, in)
-- Retrieve detailed audit log information
-- Track user activities and system events
-
-### User & Access Management
-
-#### [Users](./src/users/README.md)
-
-Manage user accounts and access controls in HPE GreenLake workspaces.
-
-**Key Capabilities:**
-
-- List and query workspace users
-- View user details and permissions
-- Monitor user activity
+| Service | Category | Description | Key Capabilities |
+|---------|----------|-------------|-----------------|
+| [Devices](./src/devices/README.md) | Infrastructure & Platform | Manage and query HPE GreenLake devices in your workspace | Filter by type, serial number, tags; retrieve device details by ID |
+| [Workspaces](./src/workspaces/README.md) | Infrastructure & Platform | Interact with HPE GreenLake workspace management APIs | List/query workspaces; retrieve details and configurations |
+| [Subscriptions](./src/subscriptions/README.md) | Infrastructure & Platform | Access subscription information and licensing details | View active subscriptions; query licensing; monitor subscription status |
+| [Audit Logs](./src/audit-logs/README.md) | Security & Compliance | Query and analyze HPE GreenLake audit logs | Filter by category, user, timestamp; track user activities and system events |
+| [Users](./src/users/README.md) | User & Access Management | Manage user accounts and access controls | List/query users; view permissions; monitor user activity |
+| [Reporting](./src/reporting/README.md) | Reporting & Analytics | Generate and retrieve reports on workspaces, devices, and subscriptions | Customizable report types; async report tracking; date range and column filters |
 
 ## Quick Start
 
@@ -231,6 +180,7 @@ flowchart TB
         users["Users"]
         workspaces["Workspaces"]
         subscriptions["Subscriptions"]
+        reporting["Reporting"]
         serviceX["..."]
         
         subgraph shared["<i> Shared Components </i>"]
@@ -257,7 +207,7 @@ flowchart TB
     classDef platformContainerStyle fill:none,stroke:#01a982,stroke-width:3px,rx:15,ry:15
     
     class claude,vscode,other clientStyle
-    class audit,devices,users,workspaces,subscriptions,serviceX serverStyle
+    class audit,devices,users,workspaces,subscriptions,reporting,serviceX serverStyle
     class oauth authStyle
     class api platformStyle
     class clients clientContainerStyle

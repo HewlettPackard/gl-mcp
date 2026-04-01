@@ -58,9 +58,3 @@ markers = [
 [tool.ruff]
 line-length = 120
 target-version = "py310"
-
-[dependency-groups]
-dev = [
-    "pytest>=9.0.2",
-    "pytest-asyncio>=1.3.0",
-]

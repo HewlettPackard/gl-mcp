@@ -15,18 +15,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Validate branch name
+      - name: Verify dispatch source
         env:
-          BRANCH: ${{ github.event.client_payload.branch }}
+          ACTOR: ${{ github.actor }}
+          SOURCE_REPO: ${{ github.event.client_payload.source_repo }}
+          EXPECTED_REPO: glcp/gl-mcp
         run: |
-          # Only branches created by the internal sync workflow are accepted.
-          # Those are always named: sync/<source_branch>-<YYYYmmdd-HHMMSS>
-          if [[ ! "$BRANCH" =~ ^sync/[a-zA-Z0-9_/-]+-[0-9]{8}-[0-9]{6}$ ]]; then
-            echo "❌ Rejected: branch name '$BRANCH' does not match the expected pattern sync/<name>-<YYYYmmdd-HHMMSS>."
-            echo "PRs can only be opened for branches created by the internal sync workflow."
+          echo "=== Dispatch debug info ==="
+          echo "github.actor               : $ACTOR"
+          echo "  (= owner of the PAT in PUBLIC_REPO_DISPATCH_TOKEN on glcp/gl-mcp)"
+          echo "  (set server-side by GitHub — cannot be forged via client_payload)"
+          echo "client_payload.source_repo : $SOURCE_REPO"
+          echo "client_payload.branch      : ${{ github.event.client_payload.branch }}"
+          echo "github.event_type          : ${{ github.event_type }}"
+          echo "github.run_id              : ${{ github.run_id }}"
+          echo "==========================="
+
+          # github.actor reflects the owner of PUBLIC_REPO_DISPATCH_TOKEN (the PAT
+          # used in the curl /dispatches call in sync-to-public.yml on glcp/gl-mcp).
+          # It is NOT the SSH deploy key — that key is only used for git push.
+          # github-actions[bot] would only appear if GITHUB_TOKEN were used, which it isn't.
+          ALLOWED_ACTORS="lchinglen"
+          ACTOR_OK=false
+          for a in $ALLOWED_ACTORS; do
+            [ "$ACTOR" = "$a" ] && ACTOR_OK=true && break
+          done
+
+          if [ "$ACTOR_OK" = "false" ]; then
+            echo "❌ Rejected: dispatch actor '$ACTOR' is not in the allow-list."
             exit 1
           fi
-          echo "✅ Branch name validated: $BRANCH"
+
+          if [ "$SOURCE_REPO" != "$EXPECTED_REPO" ]; then
+            echo "❌ Rejected: source_repo '$SOURCE_REPO' does not match expected '$EXPECTED_REPO'."
+            exit 1
+          fi
+
+          echo "✅ Dispatch verified — actor: $ACTOR, source_repo: $SOURCE_REPO"
 
       - name: Checkout synced branch
         uses: actions/checkout@v4
@@ -40,6 +65,12 @@ jobs:
         run: |
           git fetch origin main
           AHEAD=$(git rev-list --count origin/main..HEAD)
+          echo "=== Branch debug info ==="
+          echo "Branch                : $BRANCH"
+          echo "Commits ahead of main : $AHEAD"
+          echo "Recent commits on branch:"
+          git log --oneline -5
+          echo "========================="
           if [ "$AHEAD" -eq 0 ]; then
             echo "❌ Branch '$BRANCH' has no commits ahead of main — nothing to PR."
             exit 1

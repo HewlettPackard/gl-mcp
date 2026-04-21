@@ -13,6 +13,9 @@ jobs:
     # Global environment variables
     env:
       ALL_SERVICES: "audit-logs devices users workspaces subscriptions reporting"
+
+    outputs:
+      changed_services: ${{ steps.detect-changes.outputs.changed_services }}
     
     steps:
       - name: Checkout code
@@ -32,7 +35,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install toml
+          pip install toml build twine
 
       - name: Validate and sanitize user inputs
         id: sanitize
@@ -479,6 +482,216 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Prepare PyPI READMEs
+        if: steps.create-tags.outputs.created_tags != ''
+        run: |
+          CREATED_TAGS="${{ steps.create-tags.outputs.created_tags }}"
+
+          echo "📝 Stripping source-only sections from READMEs for PyPI..."
+
+          for tag in $CREATED_TAGS; do
+            service=$(echo $tag | cut -d'/' -f1)
+            README="src/${service}/README.md"
+
+            if [ ! -f "$README" ]; then
+              echo "  ⚠️  No README.md found for $service – skipping"
+              continue
+            fi
+
+            python3 - "$README" <<'PYEOF'
+          import re
+          import sys
+
+          path = sys.argv[1]
+          with open(path, "r") as f:
+              content = f.read()
+
+          # Strip <!-- @begin:source --> ... <!-- @end --> blocks (source-only content)
+          content = re.sub(
+              r"<!-- @begin:source -->.*?<!-- @end -->",
+              "",
+              content,
+              flags=re.DOTALL,
+          )
+
+          # Unwrap <!-- @begin:pypi --> ... <!-- @end --> markers (keep content, remove tags)
+          content = re.sub(r"<!-- @begin:pypi -->\n?", "", content)
+          content = re.sub(r"<!-- @end -->\n?", "", content)
+
+          # Collapse runs of 3+ blank lines into 2
+          content = re.sub(r"\n{3,}", "\n\n", content)
+
+          with open(path, "w") as f:
+              f.write(content)
+
+          print(f"  ✅ Processed {path}")
+          PYEOF
+          done
+
+      - name: Build service packages
+        if: steps.create-tags.outputs.created_tags != ''
+        id: build-packages
+        run: |
+          CREATED_TAGS="${{ steps.create-tags.outputs.created_tags }}"
+          mkdir -p /tmp/dist
+          BUILT_PACKAGES=""
+
+          echo "📦 Building service packages..."
+
+          for tag in $CREATED_TAGS; do
+            service=$(echo $tag | cut -d'/' -f1)
+
+            if [ -f "src/${service}/pyproject.toml" ]; then
+              echo "🔨 Building $service..."
+              if python -m build "src/${service}/" --outdir /tmp/dist; then
+                echo "  ✅ Successfully built $service"
+                BUILT_PACKAGES="$BUILT_PACKAGES $service"
+              else
+                echo "  ❌ Failed to build $service"
+              fi
+            else
+              echo "  ⚠️  No pyproject.toml found for $service – skipping"
+            fi
+          done
+
+          echo "built_packages=${BUILT_PACKAGES}" >> $GITHUB_OUTPUT
+          echo ""
+          echo "📊 Build Summary:"
+          ls -lh /tmp/dist/ || echo "No artifacts in /tmp/dist"
+
+      - name: Publish to PyPI
+        if: steps.create-tags.outputs.created_tags != '' && steps.build-packages.outputs.built_packages != ''
+        run: |
+          echo "🚀 Publishing packages to PyPI..."
+          twine upload \
+            --non-interactive \
+            --skip-existing \
+            /tmp/dist/*
+          echo "✅ Published to PyPI"
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Verify PyPI publication
+        if: steps.create-tags.outputs.created_tags != '' && steps.build-packages.outputs.built_packages != ''
+        id: verify-pypi
+        run: |
+          BUILT_PACKAGES="${{ steps.build-packages.outputs.built_packages }}"
+          VERIFIED_PACKAGES=""
+          FAILED_PACKAGES=""
+          MAX_RETRIES=5
+          RETRY_DELAY=20
+
+          echo "🔍 Verifying packages on PyPI..."
+          echo "  (polling up to ${MAX_RETRIES}x with ${RETRY_DELAY}s delay between attempts)"
+          echo ""
+
+          for service in $BUILT_PACKAGES; do
+            PACKAGE_NAME=$(python3 -c "import toml; data=toml.load('src/${service}/pyproject.toml'); print(data['project']['name'])" 2>/dev/null || echo "greenlake-${service}-mcp")
+            VERSION=$(python3 -c "import toml; data=toml.load('src/${service}/pyproject.toml'); print(data['project']['version'])" 2>/dev/null || echo "0.0.0")
+
+            echo "📦 Checking $service → $PACKAGE_NAME==$VERSION"
+            FOUND=false
+
+            for attempt in $(seq 1 $MAX_RETRIES); do
+              HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+                "https://pypi.org/pypi/${PACKAGE_NAME}/${VERSION}/json")
+
+              if [ "$HTTP_STATUS" = "200" ]; then
+                echo "  ✅ Attempt $attempt: $PACKAGE_NAME==$VERSION is available on PyPI"
+                VERIFIED_PACKAGES="$VERIFIED_PACKAGES ${PACKAGE_NAME}==${VERSION}"
+                FOUND=true
+                break
+              else
+                echo "  ⏳ Attempt $attempt/$MAX_RETRIES: HTTP $HTTP_STATUS — waiting ${RETRY_DELAY}s..."
+                sleep $RETRY_DELAY
+              fi
+            done
+
+            if [ "$FOUND" = "false" ]; then
+              echo "  ❌ $PACKAGE_NAME==$VERSION not found on PyPI after $MAX_RETRIES attempts"
+              FAILED_PACKAGES="$FAILED_PACKAGES ${PACKAGE_NAME}==${VERSION}"
+            fi
+            echo ""
+          done
+
+          echo "verified_packages=${VERIFIED_PACKAGES}" >> $GITHUB_OUTPUT
+          echo "failed_packages=${FAILED_PACKAGES}" >> $GITHUB_OUTPUT
+
+          echo "📊 Verification Summary:"
+          [ -n "$VERIFIED_PACKAGES" ] && echo "✅ Verified: $VERIFIED_PACKAGES"
+          [ -n "$FAILED_PACKAGES" ] && echo "❌ Failed:   $FAILED_PACKAGES"
+
+          if [ -n "$FAILED_PACKAGES" ]; then
+            echo "::error::One or more packages failed PyPI verification: $FAILED_PACKAGES"
+            exit 1
+          fi
+
+      - name: Co-installation test (namespace clash check)
+        if: steps.verify-pypi.outputs.verified_packages != ''
+        run: |
+          VERIFIED_PACKAGES="${{ steps.verify-pypi.outputs.verified_packages }}"
+          BUILT_PACKAGES="${{ steps.build-packages.outputs.built_packages }}"
+
+          echo "🧪 Testing all new packages install together without namespace clashes..."
+
+          # Build pip install args for all verified packages from PyPI
+          INSTALL_ARGS=""
+          for pkg in $VERIFIED_PACKAGES; do
+            INSTALL_ARGS="$INSTALL_ARGS $pkg"
+          done
+
+          echo "📦 Installing together: $INSTALL_ARGS"
+
+          # Create isolated venv
+          python -m venv /tmp/coinstall-venv
+          /tmp/coinstall-venv/bin/pip install --quiet --upgrade pip
+
+          # Install all packages together from PyPI
+          /tmp/coinstall-venv/bin/pip install \
+            --index-url https://pypi.org/simple/ \
+            $INSTALL_ARGS
+
+          echo ""
+          echo "✅ All packages installed successfully — no dependency conflicts"
+          echo ""
+
+          # Import each package to verify no namespace collisions at runtime
+          echo "🔍 Checking for namespace collisions..."
+          CLASH_FOUND=false
+
+          for service in $BUILT_PACKAGES; do
+            PKG_MODULE=$(python3 -c "
+          import toml, re
+          data = toml.load('src/${service}/pyproject.toml')
+          # Derive importable module name from package name
+          name = data['project']['name'].replace('-', '_')
+          print(name)
+          " 2>/dev/null || echo "")
+
+            if [ -z "$PKG_MODULE" ]; then
+              echo "  ⚠️  Could not determine module name for $service – skipping import check"
+              continue
+            fi
+
+            echo -n "  import $PKG_MODULE ... "
+            if /tmp/coinstall-venv/bin/python -c "import $PKG_MODULE" 2>/tmp/import_err.txt; then
+              echo "✅"
+            else
+              echo "❌"
+              cat /tmp/import_err.txt
+              CLASH_FOUND=true
+            fi
+          done
+
+          if [ "$CLASH_FOUND" = "true" ]; then
+            echo "::error::Namespace collision detected — one or more packages failed to import when installed together"
+            exit 1
+          fi
+
+          echo ""
+          echo "✅ Co-installation test passed — no namespace clashes detected"
+
       - name: Create workflow summary
         if: always()
         run: |
@@ -536,4 +749,35 @@ jobs:
           else
             echo "### ℹ️ No Services Changed" >> $GITHUB_STEP_SUMMARY
             echo "No service directories were modified in this PR." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          BUILT_PACKAGES="${{ steps.build-packages.outputs.built_packages }}"
+          if [ -n "$BUILT_PACKAGES" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 📦 Published to PyPI" >> $GITHUB_STEP_SUMMARY
+            for pkg in $BUILT_PACKAGES; do
+              PKG_NAME=$(python3 -c "import toml; data=toml.load('src/${pkg}/pyproject.toml'); print(data['project']['name'])" 2>/dev/null || echo "greenlake-${pkg}-mcp")
+              PKG_VER=$(python3 -c "import toml; data=toml.load('src/${pkg}/pyproject.toml'); print(data['project']['version'])" 2>/dev/null || echo "0.0.0")
+              echo "- 🔗 [\`${PKG_NAME}\` v${PKG_VER}](https://pypi.org/project/${PKG_NAME}/${PKG_VER}/)" >> $GITHUB_STEP_SUMMARY
+            done
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          VERIFIED_PACKAGES="${{ steps.verify-pypi.outputs.verified_packages }}"
+          FAILED_PACKAGES="${{ steps.verify-pypi.outputs.failed_packages }}"
+          if [ -n "$VERIFIED_PACKAGES" ] || [ -n "$FAILED_PACKAGES" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 🔍 PyPI Verification" >> $GITHUB_STEP_SUMMARY
+            if [ -n "$VERIFIED_PACKAGES" ]; then
+              for pkg in $VERIFIED_PACKAGES; do
+                PKG_NAME=$(echo "$pkg" | cut -d'=' -f1)
+                PKG_VER=$(echo "$pkg" | sed 's/.*==//')
+                echo "- ✅ [\`${pkg}\`](https://pypi.org/project/${PKG_NAME}/${PKG_VER}/) — available on PyPI" >> $GITHUB_STEP_SUMMARY
+              done
+            fi
+            if [ -n "$FAILED_PACKAGES" ]; then
+              for pkg in $FAILED_PACKAGES; do
+                echo "- ❌ \`$pkg\` — NOT found on PyPI" >> $GITHUB_STEP_SUMMARY
+              done
+            fi
           fi

@@ -52,6 +52,7 @@ This repository contains production-ready MCP servers for HPE GreenLake platform
 | [Audit Logs](./src/audit-logs/README.md) | Security & Compliance | Query and analyze HPE GreenLake audit logs | Filter by category, user, timestamp; track user activities and system events |
 | [Users](./src/users/README.md) | User & Access Management | Manage user accounts and access controls | List/query users; view permissions; monitor user activity |
 | [Reporting](./src/reporting/README.md) | Reporting & Analytics | Generate and retrieve reports on workspaces, devices, and subscriptions | Customizable report types; async report tracking; date range and column filters |
+| [Service Catalog](./src/service-catalog/README.md) | Infrastructure & Platform | Access service catalog and provisioning information | View service offers, provisions, managers, manager-provisions and regions |
 
 ## Quick Start
 

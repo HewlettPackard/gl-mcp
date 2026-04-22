@@ -12,7 +12,7 @@ jobs:
     
     # Global environment variables
     env:
-      ALL_SERVICES: "audit-logs devices users workspaces subscriptions reporting"
+      ALL_SERVICES: "audit-logs devices users workspaces subscriptions reporting service-catalog"
 
     outputs:
       changed_services: ${{ steps.detect-changes.outputs.changed_services }}
@@ -245,6 +245,7 @@ jobs:
               "workspaces") DISPLAY_NAME="Workspaces" ;;
               "subscriptions") DISPLAY_NAME="Subscriptions" ;;
               "reporting") DISPLAY_NAME="Reporting" ;;
+              "service-catalog") DISPLAY_NAME="Service Catalog" ;;
               *) DISPLAY_NAME="$service" ;;
             esac
             
@@ -411,6 +412,7 @@ jobs:
           - **🏢 Workspaces** - Workspace information retrieval
           - **📋 Subscriptions** - Subscription management and monitoring
           - **📊 Reporting** - Reporting and analytics functionality
+          - **🗂️ Service Catalog** - Service catalog browsing and discovery
 
           ### ✨ Common Features
           All services include:
@@ -435,6 +437,7 @@ jobs:
               "workspaces") DISPLAY_NAME="🏢 Workspaces" ;;
               "subscriptions") DISPLAY_NAME="📋 Subscriptions" ;;
               "reporting") DISPLAY_NAME="📊 Reporting" ;;
+              "service-catalog") DISPLAY_NAME="🗂️ Service Catalog" ;;
               *) DISPLAY_NAME="$service" ;;
             esac
             

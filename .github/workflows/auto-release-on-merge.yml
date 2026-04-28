@@ -17,6 +17,7 @@ jobs:
     outputs:
       changed_services: ${{ steps.detect-changes.outputs.changed_services }}
       built_packages: ${{ steps.build-packages.outputs.built_packages }}
+      newly_published: ${{ steps.publish-pypi.outputs.newly_published }}
       verified_packages: ${{ steps.verify-pypi.outputs.verified_packages }}
     
     steps:
@@ -566,7 +567,26 @@ jobs:
 
       - name: Publish to PyPI
         if: steps.create-tags.outputs.created_tags != '' && steps.build-packages.outputs.built_packages != ''
+        id: publish-pypi
         run: |
+          BUILT_PACKAGES="${{ steps.build-packages.outputs.built_packages }}"
+          NEWLY_PUBLISHED=""
+
+          # Determine which packages are not yet on PyPI before uploading
+          for service in $BUILT_PACKAGES; do
+            PACKAGE_NAME=$(python3 -c "import toml; data=toml.load('src/${service}/pyproject.toml'); print(data['project']['name'])" 2>/dev/null || echo "greenlake-${service}-mcp")
+            VERSION=$(python3 -c "import toml; data=toml.load('src/${service}/pyproject.toml'); print(data['project']['version'])" 2>/dev/null || echo "0.0.0")
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://pypi.org/pypi/${PACKAGE_NAME}/${VERSION}/json")
+            if [ "$HTTP_STATUS" != "200" ]; then
+              echo "🆕 $PACKAGE_NAME==$VERSION not yet on PyPI — will publish"
+              NEWLY_PUBLISHED="$NEWLY_PUBLISHED $service"
+            else
+              echo "⏭️  $PACKAGE_NAME==$VERSION already on PyPI — skipping"
+            fi
+          done
+
+          echo "newly_published=${NEWLY_PUBLISHED}" >> $GITHUB_OUTPUT
+
           echo "🚀 Publishing packages to PyPI..."
           twine upload \
             --non-interactive \
@@ -578,10 +598,10 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
 
       - name: Verify PyPI publication
-        if: steps.create-tags.outputs.created_tags != '' && steps.build-packages.outputs.built_packages != ''
+        if: steps.create-tags.outputs.created_tags != '' && steps.publish-pypi.outputs.newly_published != ''
         id: verify-pypi
         run: |
-          BUILT_PACKAGES="${{ steps.build-packages.outputs.built_packages }}"
+          BUILT_PACKAGES="${{ steps.publish-pypi.outputs.newly_published }}"
           VERIFIED_PACKAGES=""
           FAILED_PACKAGES=""
           MAX_RETRIES=5
@@ -725,7 +745,7 @@ jobs:
   # ---------------------------------------------------------------------------
   # Publish to MCP Registry after successful PyPI publication.
   # Runs per-service only if:
-  #   1. PyPI publish succeeded (verified_packages is non-empty)
+  #   1. Packages were freshly published to PyPI this run (verified_packages is non-empty)
   #   2. The version is NOT already listed in the MCP Registry
   # ---------------------------------------------------------------------------
   publish-to-mcp-registry:
@@ -762,14 +782,15 @@ jobs:
 
       - name: Publish services to MCP Registry
         run: |
-          BUILT_PACKAGES="${{ needs.auto-release.outputs.built_packages }}"
+          # Only iterate over services that were freshly published to PyPI this run
+          NEWLY_PUBLISHED="${{ needs.auto-release.outputs.newly_published }}"
           VERIFIED_PACKAGES="${{ needs.auto-release.outputs.verified_packages }}"
 
           PUBLISHED=""
           SKIPPED=""
           FAILED=""
 
-          for service in $BUILT_PACKAGES; do
+          for service in $NEWLY_PUBLISHED; do
             SERVER_JSON="src/${service}/server.json"
 
             if [[ ! -f "$SERVER_JSON" ]]; then

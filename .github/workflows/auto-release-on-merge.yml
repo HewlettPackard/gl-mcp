@@ -16,6 +16,8 @@ jobs:
 
     outputs:
       changed_services: ${{ steps.detect-changes.outputs.changed_services }}
+      built_packages: ${{ steps.build-packages.outputs.built_packages }}
+      verified_packages: ${{ steps.verify-pypi.outputs.verified_packages }}
     
     steps:
       - name: Checkout code
@@ -719,3 +721,136 @@ jobs:
               done
             fi
           fi
+
+  # ---------------------------------------------------------------------------
+  # Publish to MCP Registry after successful PyPI publication.
+  # Runs per-service only if:
+  #   1. PyPI publish succeeded (verified_packages is non-empty)
+  #   2. The version is NOT already listed in the MCP Registry
+  # ---------------------------------------------------------------------------
+  publish-to-mcp-registry:
+    name: Publish to MCP Registry
+    runs-on: ubuntu-latest
+    needs: auto-release
+    if: |
+      needs.auto-release.result == 'success' &&
+      needs.auto-release.outputs.verified_packages != ''
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install mcp-publisher
+        run: |
+          OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+          ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+          DOWNLOAD_URL="https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_${OS}_${ARCH}.tar.gz"
+          mkdir -p /tmp/mcp-publisher-bin
+          curl -fsSL "$DOWNLOAD_URL" | tar xz -C /tmp/mcp-publisher-bin mcp-publisher
+          echo "/tmp/mcp-publisher-bin" >> $GITHUB_PATH
+          echo "✅ mcp-publisher installed: $(/tmp/mcp-publisher-bin/mcp-publisher --version 2>/dev/null || echo 'ok')"
+
+      - name: Authenticate with MCP Registry
+        run: |
+          echo "🔐 Authenticating via GitHub OIDC..."
+          mcp-publisher login github-oidc
+          echo "✅ Authenticated"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish services to MCP Registry
+        run: |
+          BUILT_PACKAGES="${{ needs.auto-release.outputs.built_packages }}"
+          VERIFIED_PACKAGES="${{ needs.auto-release.outputs.verified_packages }}"
+
+          PUBLISHED=""
+          SKIPPED=""
+          FAILED=""
+
+          for service in $BUILT_PACKAGES; do
+            SERVER_JSON="src/${service}/server.json"
+
+            if [[ ! -f "$SERVER_JSON" ]]; then
+              echo "⚠️  No server.json for $service — skipping"
+              SKIPPED="$SKIPPED $service"
+              continue
+            fi
+
+            SERVER_NAME=$(jq -r '.name' "$SERVER_JSON")
+            VERSION=$(python3 -c "
+          import toml
+          try:
+              data = toml.load('src/${service}/pyproject.toml')
+              print(data['project']['version'])
+          except:
+              print('0.0.0')
+          ")
+
+            echo ""
+            echo "📦 $service — name: $SERVER_NAME, version: $VERSION"
+
+            # Query MCP Registry to check if this version is already published
+            ENCODED_NAME=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${SERVER_NAME}'))")
+            REGISTRY_RESPONSE=$(curl -s "https://registry.modelcontextprotocol.io/v0.1/servers?search=${ENCODED_NAME}")
+            EXISTING_VERSION=$(echo "$REGISTRY_RESPONSE" | jq -r \
+              --arg name "$SERVER_NAME" \
+              --arg ver "$VERSION" \
+              '.servers[] | select(.server.name == $name) | .server.version' 2>/dev/null | head -1)
+
+            if [[ "$EXISTING_VERSION" == "$VERSION" ]]; then
+              echo "  ⏭️  $SERVER_NAME v$VERSION already in MCP Registry — skipping"
+              SKIPPED="$SKIPPED $service"
+              continue
+            fi
+
+            echo "  🚀 Publishing $SERVER_NAME v$VERSION to MCP Registry..."
+
+            # Patch version into a temp server.json
+            PATCHED_JSON="/tmp/${service}-server.json"
+            jq --arg v "$VERSION" '.version = $v | .packages[0].version = $v' "$SERVER_JSON" > "$PATCHED_JSON"
+
+            if mcp-publisher publish --file "$PATCHED_JSON"; then
+              echo "  ✅ Published $SERVER_NAME v$VERSION"
+              PUBLISHED="$PUBLISHED $service"
+            else
+              echo "  ❌ Failed to publish $SERVER_NAME v$VERSION"
+              FAILED="$FAILED $service"
+            fi
+
+            rm -f "$PATCHED_JSON"
+          done
+
+          echo ""
+          echo "📊 MCP Registry Publish Summary:"
+          [ -n "$PUBLISHED" ] && echo "  ✅ Published: $PUBLISHED"
+          [ -n "$SKIPPED"   ] && echo "  ⏭️  Skipped (already exists or no server.json): $SKIPPED"
+          [ -n "$FAILED"    ] && echo "  ❌ Failed: $FAILED"
+
+          # Write to step summary
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🗂️ MCP Registry" >> $GITHUB_STEP_SUMMARY
+          if [ -n "$PUBLISHED" ]; then
+            for svc in $PUBLISHED; do
+              SERVER_NAME=$(jq -r '.name' "src/${svc}/server.json")
+              VERSION=$(python3 -c "import toml; print(toml.load('src/${svc}/pyproject.toml')['project']['version'])" 2>/dev/null || echo "?")
+              echo "- ✅ [\`${SERVER_NAME}\` v${VERSION}](https://registry.modelcontextprotocol.io)" >> $GITHUB_STEP_SUMMARY
+            done
+          fi
+          if [ -n "$SKIPPED" ]; then
+            for svc in $SKIPPED; do
+              echo "- ⏭️ \`$svc\` — skipped (version already in registry or no server.json)" >> $GITHUB_STEP_SUMMARY
+            done
+          fi
+          if [ -n "$FAILED" ]; then
+            for svc in $FAILED; do
+              echo "- ❌ \`$svc\` — publish failed" >> $GITHUB_STEP_SUMMARY
+            done
+            echo "::error::One or more services failed MCP Registry publication: $FAILED"
+            exit 1
+          fi
+
+    permissions:
+      id-token: write   # required for GitHub OIDC authentication
+      contents: read

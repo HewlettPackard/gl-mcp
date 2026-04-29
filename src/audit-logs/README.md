@@ -1,5 +1,7 @@
 # audit-logs MCP Server
 
+<!-- mcp-name: io.github.HewlettPackard/greenlake-audit-logs-mcp -->
+
 HPE GreenLake audit-logs MCP Server provides read-only access to the HPE GreenLake audit-logs APIs through the Model Context Protocol.
 
 ## Overview
@@ -24,6 +26,24 @@ This MCP server enables AI assistants and development tools to interact with HPE
 
 ### Installation
 
+<!-- @begin:pypi -->
+**From PyPI (recommended):**
+
+```bash
+pip install greenlake-audit-logs-mcp
+```
+
+After installation, run the server with:
+
+```bash
+python -m greenlake_audit_logs_mcp
+```
+
+<!-- @end -->
+
+<!-- @begin:source -->
+**From source (development):**
+
 1. Navigate to the service directory:
 
    ```bash
@@ -39,6 +59,8 @@ This MCP server enables AI assistants and development tools to interact with HPE
 3. Configure environment variables (see Configuration section)
 
 4. Configure in your MCP client (see MCP Client Configuration section below)
+
+<!-- @end -->
 
 ## Configuration
 
@@ -157,14 +179,16 @@ Configure the `MCP_TOOL_MODE` environment variable in your MCP client configurat
 
 Add to your `.vscode/mcp.json`:
 
+<!-- @begin:pypi -->
+**Using PyPI package:**
+
 ```json
 {
   "servers": {
     "audit-logs": {
       "type": "stdio",
-      "command": "uv",
-      "args": ["run", "python", "__main__.py"],
-      "cwd": "/path/to/mcp-generator/mcps/audit-logs",
+      "command": "python",
+      "args": ["-m", "greenlake_audit_logs_mcp"],
       "env": {
         "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
         "GREENLAKE_CLIENT_ID": "your-client-id",
@@ -179,22 +203,23 @@ Add to your `.vscode/mcp.json`:
 }
 ```
 
-### Claude Desktop
+<!-- @end -->
 
-Add to your `claude_desktop_config.json`:
+<!-- @begin:source -->
+**Using uv (from source):**
 
 ```json
 {
   "servers": {
     "audit-logs": {
-      "type": "stdio", 
+      "type": "stdio",
       "command": "uv",
       "args": ["run", "python", "__main__.py"],
-      "cwd": "/path/to/mcp-generator/mcps/audit-logs",
+      "cwd": "/path/to/gl-mcp/src/audit-logs",
       "env": {
         "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
         "GREENLAKE_CLIENT_ID": "your-client-id",
-        "GREENLAKE_CLIENT_SECRET": "your-client-secret", 
+        "GREENLAKE_CLIENT_SECRET": "your-client-secret",
         "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
         "MCP_TOOL_MODE": "static",
         "GREENLAKE_LOG_LEVEL": "INFO",
@@ -205,9 +230,75 @@ Add to your `claude_desktop_config.json`:
 }
 ```
 
+<!-- @end -->
+
+### Claude Desktop
+
+Add to your `claude_desktop_config.json`:
+
+<!-- @begin:pypi -->
+**Using PyPI package:**
+
+```json
+{
+  "mcpServers": {
+    "audit-logs": {
+      "command": "python",
+      "args": ["-m", "greenlake_audit_logs_mcp"],
+      "env": {
+        "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
+        "GREENLAKE_CLIENT_ID": "your-client-id",
+        "GREENLAKE_CLIENT_SECRET": "your-client-secret",
+        "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
+        "MCP_TOOL_MODE": "static",
+        "GREENLAKE_LOG_LEVEL": "INFO",
+        "GREENLAKE_FILE_LOGGING": "false"
+      }
+    }
+  }
+}
+```
+
+<!-- @end -->
+
+<!-- @begin:source -->
+**Using uv (from source):**
+
+```json
+{
+  "mcpServers": {
+    "audit-logs": {
+      "command": "uv",
+      "args": ["run", "python", "__main__.py"],
+      "cwd": "/path/to/gl-mcp/src/audit-logs",
+      "env": {
+        "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
+        "GREENLAKE_CLIENT_ID": "your-client-id",
+        "GREENLAKE_CLIENT_SECRET": "your-client-secret",
+        "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
+        "MCP_TOOL_MODE": "static",
+        "GREENLAKE_LOG_LEVEL": "INFO",
+        "GREENLAKE_FILE_LOGGING": "false"
+      }
+    }
+  }
+}
+```
+
+<!-- @end -->
+
 ## Available Tools
 
 This server provides the following MCP tools:
+
+### getauditlogdetails
+
+- **Description**: Get additional detail of an audit log.
+- **Method**: GET /audit-log/v1/logs/{id}/detail
+- **Parameters**:
+
+  - `id` (str, required):  
+    Provide the ID of the audit log record that has the `hasDetails` value set to `true` to fetch the additional details.
 
 ### getauditlogs
 
@@ -234,9 +325,7 @@ This server provides the following MCP tools:
   - `filter` (str, optional):  
     Example: category eq 'User Management' and contains(description, 'logged out')
 
-**Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`.
-
-Filterable properties: additionalInfo, application, category, createdAt, description, generation, hasDetails, id, region, type, updatedAt, user, workspace
+**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
 
 - `select` (str, optional):  
     Use the `select` query parameter to restrict the number of properties included in the audit log response.
@@ -262,15 +351,6 @@ Example: logged in user
 - `offset` (int, optional):  
     Specifies the zero-based resource offset to start the response from.
 
-### getauditlogdetails
-
-- **Description**: Get additional detail of an audit log.
-- **Method**: GET /audit-log/v1/logs/{id}/detail
-- **Parameters**:
-
-  - `id` (str, required):  
-    Provide the ID of the audit log record that has the `hasDetails` value set to `true` to fetch the additional details.
-
 ## Typical Use Cases
 
 This MCP server enables AI assistants to answer natural language questions about your HPE GreenLake audit-logs resources. Here are some example queries you can try:
@@ -289,6 +369,7 @@ These are just examples - you can ask questions in your own words, and the AI as
 
 This MCP server implements read-only access to the following audit-logs API endpoints:
 
+- `GET /audit-log/v1/logs/{id}/detail` - Get additional detail of an audit log.
 - `GET /audit-log/v1/logs` - The audit logs can be filtered using a variety of parameters. Queries should be separated by `and` and can utilize `eq`, `contains`, and `in` operators to construct the final query. Each query should follow the format:
 - key eq 'value' for equality operation.
 - contains(key, 'value') for contains operation.
@@ -306,8 +387,6 @@ This MCP server implements read-only access to the following audit-logs API endp
 | region                   | eq                  | region code in string   | region eq 'us-west'                                                                             |
 | hasDetails               | eq                  | boolean                 | hasDetails eq 'true'                                                                              |
 
-- `GET /audit-log/v1/logs/{id}/detail` - Get additional detail of an audit log.
-
 ## Development
 
 ### Commands
@@ -323,46 +402,46 @@ make clean         # Clean build artifacts
 
 ```text
 audit-logs/
-├── __main__.py             # Entry point
 ├── pyproject.toml          # Dependencies and configuration
 ├── README.md               # This file
 ├── Makefile                # Development commands
-├── auth/                   # Authentication components
+├── greenlake_audit_logs_mcp/           # Python package
 │   ├── __init__.py
-│   ├── oauth2_provider.py  # OAuth2 client credentials
-│   └── token_manager.py    # Token lifecycle management
-├── config/                 # Configuration management
-│   ├── __init__.py
-│   ├── logging.py          # Logging configuration
-│   └── settings.py         # Application settings
-├── models/                 # Data models
-│   ├── __init__.py
-│   └── base.py             # Base model classes
-├── server/                 # MCP server implementation
-│   ├── __init__.py
-│   ├── app.py              # Application factory
-│   └── mcp_server.py       # MCP server core
-├── tools/                  # MCP tools
-│   ├── __init__.py
-│   ├── base.py             # Base tool class
-│   ├── registry.py         # Tool registration
-│   └── implementations/    # Tool implementations
-│       ├── __init__.py
-│       └── example_tool.py # Example tool template
-├── tests/                  # Test suite
-│   ├── __init__.py
-│   ├── conftest.py         # Shared fixtures
-│   ├── shared/
-│   │   └── http.py        # Testing helpers
-│   ├── unit/
+│   ├── __main__.py         # Entry point
+│   ├── _version.py         # Version constants
+│   ├── auth/               # Authentication components
 │   │   ├── __init__.py
-│   │   └── test_*.py      # Unit tests
-│   └── integration/
+│   │   ├── oauth2_provider.py  # OAuth2 client credentials
+│   │   └── token_manager.py    # Token lifecycle management
+│   ├── config/             # Configuration management
+│   │   ├── __init__.py
+│   │   ├── logging.py      # Logging configuration
+│   │   └── settings.py     # Application settings
+│   ├── models/             # Data models
+│   │   ├── __init__.py
+│   │   └── base.py         # Base model classes
+│   ├── server/             # MCP server implementation
+│   │   ├── __init__.py
+│   │   ├── app.py          # Application factory
+│   │   ├── fastmcp_instance.py # FastMCP singleton
+│   │   └── mcp_server.py   # MCP server core
+│   ├── tools/              # MCP tools
+│   │   ├── __init__.py
+│   │   ├── base.py         # Base tool class
+│   │   ├── registry.py     # Tool registration
+│   │   └── implementations/
+│   │       └── *.py        # Tool implementations
+│   └── utils/              # Utility modules
 │       ├── __init__.py
-│       └── test_live_tools.py
-└── utils/                  # Utility modules
-    ├── __init__.py
-    └── http_client.py      # HTTP client utilities
+│       └── http_client.py  # HTTP client utilities
+└── tests/                  # Test suite
+    ├── conftest.py         # Shared fixtures
+    ├── shared/
+    │   └── http.py         # Testing helpers
+    ├── unit/
+    │   └── test_*.py       # Unit tests
+    └── integration/
+        └── test_live_tools.py
 ```
 
 ### Adding New Tools
@@ -416,7 +495,12 @@ The generated suite provides:
 **Server won't start:**
 
 - Verify environment variables are set
+<!-- @begin:source -->
 - Check uv dependencies are installed
+<!-- @end -->
+<!-- @begin:pypi -->
+- Check that the package is installed: `pip show greenlake-audit-logs-mcp`
+<!-- @end -->
 - Review log output for specific errors
 
 **Authentication failures:**

@@ -1,5 +1,7 @@
 # devices MCP Server
 
+<!-- mcp-name: io.github.HewlettPackard/greenlake-devices-mcp -->
+
 HPE GreenLake devices MCP Server provides read-only access to the HPE GreenLake devices APIs through the Model Context Protocol.
 
 ## Overview
@@ -24,6 +26,24 @@ This MCP server enables AI assistants and development tools to interact with HPE
 
 ### Installation
 
+<!-- @begin:pypi -->
+**From PyPI (recommended):**
+
+```bash
+pip install greenlake-devices-mcp
+```
+
+After installation, run the server with:
+
+```bash
+python -m greenlake_devices_mcp
+```
+
+<!-- @end -->
+
+<!-- @begin:source -->
+**From source (development):**
+
 1. Navigate to the service directory:
 
    ```bash
@@ -39,6 +59,8 @@ This MCP server enables AI assistants and development tools to interact with HPE
 3. Configure environment variables (see Configuration section)
 
 4. Configure in your MCP client (see MCP Client Configuration section below)
+
+<!-- @end -->
 
 ## Configuration
 
@@ -157,14 +179,16 @@ Configure the `MCP_TOOL_MODE` environment variable in your MCP client configurat
 
 Add to your `.vscode/mcp.json`:
 
+<!-- @begin:pypi -->
+**Using PyPI package:**
+
 ```json
 {
   "servers": {
     "devices": {
       "type": "stdio",
-      "command": "uv",
-      "args": ["run", "python", "__main__.py"],
-      "cwd": "/path/to/mcp-generator/mcps/devices",
+      "command": "python",
+      "args": ["-m", "greenlake_devices_mcp"],
       "env": {
         "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
         "GREENLAKE_CLIENT_ID": "your-client-id",
@@ -179,22 +203,23 @@ Add to your `.vscode/mcp.json`:
 }
 ```
 
-### Claude Desktop
+<!-- @end -->
 
-Add to your `claude_desktop_config.json`:
+<!-- @begin:source -->
+**Using uv (from source):**
 
 ```json
 {
   "servers": {
     "devices": {
-      "type": "stdio", 
+      "type": "stdio",
       "command": "uv",
       "args": ["run", "python", "__main__.py"],
-      "cwd": "/path/to/mcp-generator/mcps/devices",
+      "cwd": "/path/to/gl-mcp/src/devices",
       "env": {
         "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
         "GREENLAKE_CLIENT_ID": "your-client-id",
-        "GREENLAKE_CLIENT_SECRET": "your-client-secret", 
+        "GREENLAKE_CLIENT_SECRET": "your-client-secret",
         "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
         "MCP_TOOL_MODE": "static",
         "GREENLAKE_LOG_LEVEL": "INFO",
@@ -204,6 +229,63 @@ Add to your `claude_desktop_config.json`:
   }
 }
 ```
+
+<!-- @end -->
+
+### Claude Desktop
+
+Add to your `claude_desktop_config.json`:
+
+<!-- @begin:pypi -->
+**Using PyPI package:**
+
+```json
+{
+  "mcpServers": {
+    "devices": {
+      "command": "python",
+      "args": ["-m", "greenlake_devices_mcp"],
+      "env": {
+        "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
+        "GREENLAKE_CLIENT_ID": "your-client-id",
+        "GREENLAKE_CLIENT_SECRET": "your-client-secret",
+        "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
+        "MCP_TOOL_MODE": "static",
+        "GREENLAKE_LOG_LEVEL": "INFO",
+        "GREENLAKE_FILE_LOGGING": "false"
+      }
+    }
+  }
+}
+```
+
+<!-- @end -->
+
+<!-- @begin:source -->
+**Using uv (from source):**
+
+```json
+{
+  "mcpServers": {
+    "devices": {
+      "command": "uv",
+      "args": ["run", "python", "__main__.py"],
+      "cwd": "/path/to/gl-mcp/src/devices",
+      "env": {
+        "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
+        "GREENLAKE_CLIENT_ID": "your-client-id",
+        "GREENLAKE_CLIENT_SECRET": "your-client-secret",
+        "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
+        "MCP_TOOL_MODE": "static",
+        "GREENLAKE_LOG_LEVEL": "INFO",
+        "GREENLAKE_FILE_LOGGING": "false"
+      }
+    }
+  }
+}
+```
+
+<!-- @end -->
 
 ## Available Tools
 
@@ -216,22 +298,20 @@ This server provides the following MCP tools:
 - **Parameters**:
 
   - `filter` (str, optional):  
-    Filter expressions consisting of simple comparison operations joined by logical operators.\<br\> | CLASS | EXAMPLES | |---------------------|----------------------------------------------------| | Types | integer, decimal, timestamp, string, boolean, null | | Comparison | eq, ne, gt, ge, lt, le, in | | Logical Expressions | and, or, not | The following examples are not an exhaustive list of all possible filtering options. Examples: - not serialNumber eq 'STIAPL6404' Return
-    devices where a property does not equal a value. Example syntax, not \\<property\> eq \\<value\>. - deviceType in 'COMPUTE', 'STORAGE' Return devices where a property is one of multiple values. Example syntax, \\<property\> in \\<value\>,\\<value\>. - deviceType eq 'STORAGE' and partNumber eq 'RTICXL6413' Return devices that exactly satisfy multiple filter queries. Example syntax, \\<property\> eq \\<value\> and \\<property\> eq \\<value\>. - serialNumber eq 'STIAPL6404' or
-    partNumber eq 'RTICXL6413' Return devices that exactly satisfy one of multiple filter queries. Example syntax, \\<property\> eq \\<value\> or \\<property\> eq \\<value\>. - serialNumber eq 'STIAPL6404' Return devices where a property equals a value. Example syntax, \\<property\> eq \\<value\>. - createdAt ge ''2024-01-18T19:53:51.480Z'' Return devices where a property is greater or equal to a value. Example syntax, \\<property\> ge \\<value\>. - updatedAt le
-    '2024-02-18T19:53:51.480Z' Return devices where a property is lesser or equal to a value. Example syntax, \\<property\> ge \\<value\>. **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: application, archived, assignedState, createdAt, dedicatedPlatformWorkspace, deviceName, deviceType, id, location, macAddress, model, partNumber,
-    region, secondaryName, serialNumber, subscription, tags, tenantWorkspaceId, type, updatedAt, warranty
+    Filter expressions consisting of simple comparison operations joined by logical operators.\<br\> | CLASS | EXAMPLES | |---------------------|----------------------------------------------------| | Types | integer, decimal, timestamp, string, boolean, null | | Comparison | eq, ne, gt, ge, lt, le, in | | Logical Expressions | and, or, not | The following examples are not an exhaustive list of all possible filtering options. Examples: - updatedAt le '2024-02-18T19:53:51.480Z'
+    Return devices where a property is lesser or equal to a value. Example syntax, \\<property\> ge \\<value\>. - not serialNumber eq 'STIAPL6404' Return devices where a property does not equal a value. Example syntax, not \\<property\> eq \\<value\>. - deviceType in 'COMPUTE', 'STORAGE' Return devices where a property is one of multiple values. Example syntax, \\<property\> in \\<value\>,\\<value\>. - deviceType eq 'STORAGE' and partNumber eq 'RTICXL6413' Return devices that
+    exactly satisfy multiple filter queries. Example syntax, \\<property\> eq \\<value\> and \\<property\> eq \\<value\>. - serialNumber eq 'STIAPL6404' or partNumber eq 'RTICXL6413' Return devices that exactly satisfy one of multiple filter queries. Example syntax, \\<property\> eq \\<value\> or \\<property\> eq \\<value\>. - serialNumber eq 'STIAPL6404' Return devices where a property equals a value. Example syntax, \\<property\> eq \\<value\>. - createdAt ge
+    ''2024-01-18T19:53:51.480Z'' Return devices where a property is greater or equal to a value. Example syntax, \\<property\> ge \\<value\>. **Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
   - `filter-tags` (str, optional):  
-    Filter expressions consisting of simple comparison operations joined by logical operators to be applied on the assigned tags or their values.\<br\> | CLASS | EXAMPLES | |---------------------|-----------------| | Types | string | | Comparison | eq, ne, in | | Logical Expressions | and, or, not | Examples: - 'street' in 'Regent Street', 'Oxford Street', 'Piccadilly' Return devices containing the tag key and at least one of the specified values. Example syntax, \\<property\> in
-    \\<value\>,\\<value\>. - 'city' eq 'London' and 'street' eq 'Piccadilly' Return devices that exactly satisfy multiple filter queries applied to tag keys. Example syntax, \\<property\> eq \\<value\> and \\<property\> eq \\<value\>. - 'street' eq 'Oxford Street' or 'street' eq 'Piccadilly' Return devices that satisfy any of multiple filter queries applied to tag keys. Example syntax, \\<property\> eq \\<value\> or \\<property\> eq \\<value\>. - 'city' eq 'London' Return devices
-    where a tag key is equal to a tag value. Example syntax, \\<tagKey\> eq \\<tagValue\>. - not 'city' eq 'Tokyo' Return devices where a tag key does not equal a tag value. Example syntax, not \\<property\> eq \\<value\>. **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: application, archived, assignedState, createdAt,
-    dedicatedPlatformWorkspace, deviceName, deviceType, id, location, macAddress, model, partNumber, region, secondaryName, serialNumber, subscription, tags, tenantWorkspaceId, type, updatedAt, warranty
+    Filter expressions consisting of simple comparison operations joined by logical operators to be applied on the assigned tags or their values.\<br\> | CLASS | EXAMPLES | |---------------------|-----------------| | Types | string | | Comparison | eq, ne, in | | Logical Expressions | and, or, not | Examples: - not 'city' eq 'Tokyo' Return devices where a tag key does not equal a tag value. Example syntax, not \\<property\> eq \\<value\>. - 'street' in 'Regent Street', 'Oxford
+    Street', 'Piccadilly' Return devices containing the tag key and at least one of the specified values. Example syntax, \\<property\> in \\<value\>,\\<value\>. - 'city' eq 'London' and 'street' eq 'Piccadilly' Return devices that exactly satisfy multiple filter queries applied to tag keys. Example syntax, \\<property\> eq \\<value\> and \\<property\> eq \\<value\>. - 'street' eq 'Oxford Street' or 'street' eq 'Piccadilly' Return devices that satisfy any of multiple filter
+    queries applied to tag keys. Example syntax, \\<property\> eq \\<value\> or \\<property\> eq \\<value\>. - 'city' eq 'London' Return devices where a tag key is equal to a tag value. Example syntax, \\<tagKey\> eq \\<tagValue\>. **Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
   - `sort` (str, optional):  
     A comma separated list of sort expressions. A sort expression is a property name optionally followed by a direction indicator `asc` or `desc`. The default is ascending order.
 
 Example: serialNumber,macAddress desc
 
-- `select` (List[str], optional):  
+- `select` (list[str], optional):  
     A comma separated list of select properties to display in the response. The default is that all properties are returned.
 
 Example: serialNumber,macAddress
@@ -284,46 +364,46 @@ make clean         # Clean build artifacts
 
 ```text
 devices/
-├── __main__.py             # Entry point
 ├── pyproject.toml          # Dependencies and configuration
 ├── README.md               # This file
 ├── Makefile                # Development commands
-├── auth/                   # Authentication components
+├── greenlake_devices_mcp/           # Python package
 │   ├── __init__.py
-│   ├── oauth2_provider.py  # OAuth2 client credentials
-│   └── token_manager.py    # Token lifecycle management
-├── config/                 # Configuration management
-│   ├── __init__.py
-│   ├── logging.py          # Logging configuration
-│   └── settings.py         # Application settings
-├── models/                 # Data models
-│   ├── __init__.py
-│   └── base.py             # Base model classes
-├── server/                 # MCP server implementation
-│   ├── __init__.py
-│   ├── app.py              # Application factory
-│   └── mcp_server.py       # MCP server core
-├── tools/                  # MCP tools
-│   ├── __init__.py
-│   ├── base.py             # Base tool class
-│   ├── registry.py         # Tool registration
-│   └── implementations/    # Tool implementations
-│       ├── __init__.py
-│       └── example_tool.py # Example tool template
-├── tests/                  # Test suite
-│   ├── __init__.py
-│   ├── conftest.py         # Shared fixtures
-│   ├── shared/
-│   │   └── http.py        # Testing helpers
-│   ├── unit/
+│   ├── __main__.py         # Entry point
+│   ├── _version.py         # Version constants
+│   ├── auth/               # Authentication components
 │   │   ├── __init__.py
-│   │   └── test_*.py      # Unit tests
-│   └── integration/
+│   │   ├── oauth2_provider.py  # OAuth2 client credentials
+│   │   └── token_manager.py    # Token lifecycle management
+│   ├── config/             # Configuration management
+│   │   ├── __init__.py
+│   │   ├── logging.py      # Logging configuration
+│   │   └── settings.py     # Application settings
+│   ├── models/             # Data models
+│   │   ├── __init__.py
+│   │   └── base.py         # Base model classes
+│   ├── server/             # MCP server implementation
+│   │   ├── __init__.py
+│   │   ├── app.py          # Application factory
+│   │   ├── fastmcp_instance.py # FastMCP singleton
+│   │   └── mcp_server.py   # MCP server core
+│   ├── tools/              # MCP tools
+│   │   ├── __init__.py
+│   │   ├── base.py         # Base tool class
+│   │   ├── registry.py     # Tool registration
+│   │   └── implementations/
+│   │       └── *.py        # Tool implementations
+│   └── utils/              # Utility modules
 │       ├── __init__.py
-│       └── test_live_tools.py
-└── utils/                  # Utility modules
-    ├── __init__.py
-    └── http_client.py      # HTTP client utilities
+│       └── http_client.py  # HTTP client utilities
+└── tests/                  # Test suite
+    ├── conftest.py         # Shared fixtures
+    ├── shared/
+    │   └── http.py         # Testing helpers
+    ├── unit/
+    │   └── test_*.py       # Unit tests
+    └── integration/
+        └── test_live_tools.py
 ```
 
 ### Adding New Tools
@@ -377,7 +457,12 @@ The generated suite provides:
 **Server won't start:**
 
 - Verify environment variables are set
+<!-- @begin:source -->
 - Check uv dependencies are installed
+<!-- @end -->
+<!-- @begin:pypi -->
+- Check that the package is installed: `pip show greenlake-devices-mcp`
+<!-- @end -->
 - Review log output for specific errors
 
 **Authentication failures:**

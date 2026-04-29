@@ -1,5 +1,7 @@
 # reporting MCP Server
 
+<!-- mcp-name: io.github.HewlettPackard/greenlake-reporting-mcp -->
+
 HPE GreenLake reporting MCP Server provides read-only access to the HPE GreenLake reporting APIs through the Model Context Protocol.
 
 ## Overview
@@ -24,6 +26,24 @@ This MCP server enables AI assistants and development tools to interact with HPE
 
 ### Installation
 
+<!-- @begin:pypi -->
+**From PyPI (recommended):**
+
+```bash
+pip install greenlake-reporting-mcp
+```
+
+After installation, run the server with:
+
+```bash
+python -m greenlake_reporting_mcp
+```
+
+<!-- @end -->
+
+<!-- @begin:source -->
+**From source (development):**
+
 1. Navigate to the service directory:
 
    ```bash
@@ -39,6 +59,8 @@ This MCP server enables AI assistants and development tools to interact with HPE
 3. Configure environment variables (see Configuration section)
 
 4. Configure in your MCP client (see MCP Client Configuration section below)
+
+<!-- @end -->
 
 ## Configuration
 
@@ -157,6 +179,35 @@ Configure the `MCP_TOOL_MODE` environment variable in your MCP client configurat
 
 Add to your `.vscode/mcp.json`:
 
+<!-- @begin:pypi -->
+**Using PyPI package:**
+
+```json
+{
+  "servers": {
+    "reporting": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["-m", "greenlake_reporting_mcp"],
+      "env": {
+        "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
+        "GREENLAKE_CLIENT_ID": "your-client-id",
+        "GREENLAKE_CLIENT_SECRET": "your-client-secret",
+        "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
+        "MCP_TOOL_MODE": "static",
+        "GREENLAKE_LOG_LEVEL": "INFO",
+        "GREENLAKE_FILE_LOGGING": "false"
+      }
+    }
+  }
+}
+```
+
+<!-- @end -->
+
+<!-- @begin:source -->
+**Using uv (from source):**
+
 ```json
 {
   "servers": {
@@ -164,7 +215,7 @@ Add to your `.vscode/mcp.json`:
       "type": "stdio",
       "command": "uv",
       "args": ["run", "python", "__main__.py"],
-      "cwd": "/path/to/mcp-generator/mcps/reporting",
+      "cwd": "/path/to/gl-mcp/src/reporting",
       "env": {
         "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
         "GREENLAKE_CLIENT_ID": "your-client-id",
@@ -178,19 +229,22 @@ Add to your `.vscode/mcp.json`:
   }
 }
 ```
+
+<!-- @end -->
 
 ### Claude Desktop
 
 Add to your `claude_desktop_config.json`:
 
+<!-- @begin:pypi -->
+**Using PyPI package:**
+
 ```json
 {
-  "servers": {
+  "mcpServers": {
     "reporting": {
-      "type": "stdio", 
-      "command": "uv",
-      "args": ["run", "python", "__main__.py"],
-      "cwd": "/path/to/mcp-generator/mcps/reporting",
+      "command": "python",
+      "args": ["-m", "greenlake_reporting_mcp"],
       "env": {
         "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
         "GREENLAKE_CLIENT_ID": "your-client-id",
@@ -205,50 +259,37 @@ Add to your `claude_desktop_config.json`:
 }
 ```
 
+<!-- @end -->
+
+<!-- @begin:source -->
+**Using uv (from source):**
+
+```json
+{
+  "mcpServers": {
+    "reporting": {
+      "command": "uv",
+      "args": ["run", "python", "__main__.py"],
+      "cwd": "/path/to/gl-mcp/src/reporting",
+      "env": {
+        "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
+        "GREENLAKE_CLIENT_ID": "your-client-id",
+        "GREENLAKE_CLIENT_SECRET": "your-client-secret",
+        "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
+        "MCP_TOOL_MODE": "static",
+        "GREENLAKE_LOG_LEVEL": "INFO",
+        "GREENLAKE_FILE_LOGGING": "false"
+      }
+    }
+  }
+}
+```
+
+<!-- @end -->
+
 ## Available Tools
 
 This server provides the following MCP tools:
-
-### get_reporting_v1_report_exports_metadata
-
-- **Description**: This API is a support tool that assists with generating a report. Use it to find the supported columns, filter criteria, and values for a report type.  In a response, the API returns:
-
-  - `columns`&mdash;An array containing the supported columns.
-  - `filterCriteria`&mdash;An array comprising of filter names and their corresponding data types.
-  - `supportedOperators`&mdash;A collection of supported operators assisting you in selecting the correct operator to use in a filter attribute. The following operators are supported:
-    - `EQ`&mdash;Checks if a field is equal to a value.
-    - `NE`&mdash;Checks if a field is not equal to a value.
-    - `LT`&mdash;Checks if a field is less than a value.
-    - `LE`&mdash;Checks if a field is less than or equal to a value.
-    - `GT`&mdash;Checks if a field is greater than a value.
-    - `GE`&mdash;Checks if a field is greater than or equals to a value.
-    - `IN`&mdash;Checks if a value is in a list.
-
-- **Method**: GET /reporting/v1/report-exports-metadata
-- **Parameters**:
-
-  - `filter` (str, required):  
-    Limit the resources operated on by an endpoint or when used with a multiple-GET endpoint, return only the subset of resources that match the filter. The filter grammar is a subset of OData 4.0. **NOTE:** The filter query parameter must use [URL encoding](https://en.wikipedia.org/wiki/URL_encoding). Most clients do this automatically with inputs provided to them specifically as query parameters. Encoding must be done manually for any query parameters provided as part of the
-    URL. The reserved characters `!` `#` `$` `&` `'` `(` `)` `*` `+` `,` `/` `:` `;` `=` `?` `@` `[` `]` must be encoded with percent encoded equivalents. For example: the value `P06760-B21+2M212504P8` must be encoded as `P06760-B21%2B2M212504P8` when it is used in a query parameter. | CLASS | EXAMPLES | |-----------|----------------------------------------------------| | Types | integer, decimal, timestamp, string, boolean, null | | Operations| eq, ne, gt, ge, lt, le, in | |
-    Logic | and, or, not | Example: name ne Subscriptions and group eq Device inventory **Filter Syntax**: Use OData-style filters. String values must be enclosed in single quotes. Filterable properties: columns, filterCriteria, id, kind, name, type
-  - `select` (str, required):  
-    The select query parameter is used to limit the properties returned for a resource. The value of the select query parameter is a comma-separated list of properties.
-
-Example: map[equals:map[description:Return activities where a property equals a value.
- summary:select with equality check value:select=name]]
-
-- `sort` (str, required):  
-    The order in which to return the resources in the collection. The value of the sort query parameter is a comma separated list of sort expressions. Each sort expression is a property name optionally followed by a direction indicator asc (ascending) or desc (descending). The first sort expression in the list defines the primary sort order, the second defines the secondary sort order, and so on. If a direction indicator is omitted, the default direction is ascending. Examples: -
-    name asc Order ascending by name - name,createdAt desc Order resources ascending by name and then by descending by createdAt
-- `limit` (int, optional):  
-    The maximum number of reports to return.
-
-Example: 10
-
-- `offset` (int, optional):  
-    Zero-based resource offset to start the response from.
-
-Example: 20
 
 ### getreportingstatuses
 
@@ -260,13 +301,11 @@ Example: 20
   - `filter` (str, required):  
     Example: type eq "REPORT"
 
-**Filter Syntax**: Use OData-style filters. String values must be enclosed in single quotes.
-
-Filterable properties: createdAt, description, id, isExpired, message, name, recipientEmailId, reportDownloadUrl, reportType, resourceUri, stage, startTime, status, statusTimestamp, type, userName
+**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in double quotes.
 
 - `sort` (str, optional):  
     The order in which to return the resources in the collection.The value of the sort query parameter is a comma separated list of sort expressions. Each sort expression is a property name optionally followed by a direction indicator asc (ascending) or desc (descending).The first sort expression in the list defines the primary sort order, the second defines the secondary sort order, and so on. If a direction indicator is omitted the default direction is ascending. Examples: -
-    name asc Order ascending by name - name,createdAt desc Order resources ascending by name and then by descending by createdAt
+    name,createdAt desc Order resources ascending by name and then by descending by createdAt - name asc Order ascending by name
 - `limit` (int, optional):  
     The maximum number of reports to return.
 
@@ -307,19 +346,6 @@ These are just examples - you can ask questions in your own words, and the AI as
 
 This MCP server implements read-only access to the following reporting API endpoints:
 
-- `GET /reporting/v1/report-exports-metadata` - This API is a support tool that assists with generating a report. Use it to find the supported columns, filter criteria, and values for a report type.  In a response, the API returns:
-
-  - `columns`&mdash;An array containing the supported columns.
-  - `filterCriteria`&mdash;An array comprising of filter names and their corresponding data types.
-  - `supportedOperators`&mdash;A collection of supported operators assisting you in selecting the correct operator to use in a filter attribute. The following operators are supported:
-    - `EQ`&mdash;Checks if a field is equal to a value.
-    - `NE`&mdash;Checks if a field is not equal to a value.
-    - `LT`&mdash;Checks if a field is less than a value.
-    - `LE`&mdash;Checks if a field is less than or equal to a value.
-    - `GT`&mdash;Checks if a field is greater than a value.
-    - `GE`&mdash;Checks if a field is greater than or equals to a value.
-    - `IN`&mdash;Checks if a value is in a list.
-
 - `GET /reporting/v1/statuses` - This API is designed to fetch the status of all reports for a specific workspace. Only reports belonging to the workspace ID and username are returned. This API supports pagination, allowing you to use offset and limit parameters.
 
 - `GET /reporting/v1/statuses/{id}` - Retrieve the status of a specific report by passing the report status ID.
@@ -339,46 +365,46 @@ make clean         # Clean build artifacts
 
 ```text
 reporting/
-├── __main__.py             # Entry point
 ├── pyproject.toml          # Dependencies and configuration
 ├── README.md               # This file
 ├── Makefile                # Development commands
-├── auth/                   # Authentication components
+├── greenlake_reporting_mcp/           # Python package
 │   ├── __init__.py
-│   ├── oauth2_provider.py  # OAuth2 client credentials
-│   └── token_manager.py    # Token lifecycle management
-├── config/                 # Configuration management
-│   ├── __init__.py
-│   ├── logging.py          # Logging configuration
-│   └── settings.py         # Application settings
-├── models/                 # Data models
-│   ├── __init__.py
-│   └── base.py             # Base model classes
-├── server/                 # MCP server implementation
-│   ├── __init__.py
-│   ├── app.py              # Application factory
-│   └── mcp_server.py       # MCP server core
-├── tools/                  # MCP tools
-│   ├── __init__.py
-│   ├── base.py             # Base tool class
-│   ├── registry.py         # Tool registration
-│   └── implementations/    # Tool implementations
-│       ├── __init__.py
-│       └── example_tool.py # Example tool template
-├── tests/                  # Test suite
-│   ├── __init__.py
-│   ├── conftest.py         # Shared fixtures
-│   ├── shared/
-│   │   └── http.py        # Testing helpers
-│   ├── unit/
+│   ├── __main__.py         # Entry point
+│   ├── _version.py         # Version constants
+│   ├── auth/               # Authentication components
 │   │   ├── __init__.py
-│   │   └── test_*.py      # Unit tests
-│   └── integration/
+│   │   ├── oauth2_provider.py  # OAuth2 client credentials
+│   │   └── token_manager.py    # Token lifecycle management
+│   ├── config/             # Configuration management
+│   │   ├── __init__.py
+│   │   ├── logging.py      # Logging configuration
+│   │   └── settings.py     # Application settings
+│   ├── models/             # Data models
+│   │   ├── __init__.py
+│   │   └── base.py         # Base model classes
+│   ├── server/             # MCP server implementation
+│   │   ├── __init__.py
+│   │   ├── app.py          # Application factory
+│   │   ├── fastmcp_instance.py # FastMCP singleton
+│   │   └── mcp_server.py   # MCP server core
+│   ├── tools/              # MCP tools
+│   │   ├── __init__.py
+│   │   ├── base.py         # Base tool class
+│   │   ├── registry.py     # Tool registration
+│   │   └── implementations/
+│   │       └── *.py        # Tool implementations
+│   └── utils/              # Utility modules
 │       ├── __init__.py
-│       └── test_live_tools.py
-└── utils/                  # Utility modules
-    ├── __init__.py
-    └── http_client.py      # HTTP client utilities
+│       └── http_client.py  # HTTP client utilities
+└── tests/                  # Test suite
+    ├── conftest.py         # Shared fixtures
+    ├── shared/
+    │   └── http.py         # Testing helpers
+    ├── unit/
+    │   └── test_*.py       # Unit tests
+    └── integration/
+        └── test_live_tools.py
 ```
 
 ### Adding New Tools
@@ -432,7 +458,12 @@ The generated suite provides:
 **Server won't start:**
 
 - Verify environment variables are set
+<!-- @begin:source -->
 - Check uv dependencies are installed
+<!-- @end -->
+<!-- @begin:pypi -->
+- Check that the package is installed: `pip show greenlake-reporting-mcp`
+<!-- @end -->
 - Review log output for specific errors
 
 **Authentication failures:**

@@ -34,7 +34,7 @@ async def per_region_service_managers_v1(  # noqa: E501
     filter: Annotated[
         str | None,
         Field(
-            description="Limit the resources operated on by an endpoint and return only the subset of resources that match the filter using an [OData V4](https://www.odata.org/documentation/) formatted filter string. Service manager by region can be filtered by `mspsupported` See examples of filtering options.\n\nExamples:\n  - mspSupported eq false\n    Return service managers when msp supported equals false\n  - mspSupported eq true\n    Return service managers when msp supported equals true\n\n**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes."
+            description="Limit the resources operated on by an endpoint and return only the subset of resources that match the filter using an [OData V4](https://www.odata.org/documentation/) formatted filter string. Service manager by region can be filtered by `mspsupported` See examples of filtering options.\n\nExamples:\n  - mspSupported eq true\n    Return service managers when msp supported equals true\n  - mspSupported eq false\n    Return service managers when msp supported equals false\n\n**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes."
         ),
     ] = None,
 ) -> list[dict[str, Any]]:
@@ -43,7 +43,7 @@ async def per_region_service_managers_v1(  # noqa: E501
     Args:
         offset: Zero-based resource offset to start the response from.\n\nExample: 0
         limit: The maximum number of records to return.\n\nExample: 10
-        filter: Limit the resources operated on by an endpoint and return only the subset of resources that match the filter using an [OData V4](https://www.odata.org/documentation/) formatted filter string. Service manager by region can be filtered by `mspsupported` See examples of filtering options.\n\nExamples:\n  - mspSupported eq false\n    Return service managers when msp supported equals false\n  - mspSupported eq true\n    Return service managers when msp supported equals true\n\n**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
+        filter: Limit the resources operated on by an endpoint and return only the subset of resources that match the filter using an [OData V4](https://www.odata.org/documentation/) formatted filter string. Service manager by region can be filtered by `mspsupported` See examples of filtering options.\n\nExamples:\n  - mspSupported eq true\n    Return service managers when msp supported equals true\n  - mspSupported eq false\n    Return service managers when msp supported equals false\n\n**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
     Returns:
         API response data as a list containing one result dict.
     """

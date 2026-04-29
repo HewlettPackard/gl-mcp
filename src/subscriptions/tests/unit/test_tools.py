@@ -1,163 +1,71 @@
 # (c) Copyright 2026 Hewlett Packard Enterprise Development LP
-"""Unit tests for generated tools."""
+"""Unit tests for all generated tools."""
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, cast
+from typing import Any
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from tools.implementations.getsubscriptiondetailsbyidv1 import getsubscriptiondetailsbyidv1Tool
-from tools.implementations.getsubscriptionsv1 import getsubscriptionsv1Tool
+from greenlake_subscriptions_mcp.tools.implementations.getsubscriptionsv1 import (
+    getsubscriptionsv1 as _impl_getsubscriptionsv1,
+)
+from greenlake_subscriptions_mcp.tools.implementations.getsubscriptiondetailsbyidv1 import (
+    getsubscriptiondetailsbyidv1 as _impl_getsubscriptiondetailsbyidv1,
+)
 
-# Build test matrix - de-duplicate by (name, path) to handle cases where
-# multiple endpoints map to the same tool name
-_TOOL_TEST_MATRIX_RAW = [
+_TOOL_TEST_MATRIX: list[dict[str, Any]] = [
     {
-        "class": getsubscriptiondetailsbyidv1Tool,
-        "name": "getsubscriptiondetailsbyidv1",
-        "method": "get",
-        "path": "/subscriptions/v1/subscriptions/{id}",
-        "parameters": [
-            {
-                "name": "id",
-                "in": "path",
-                "required": True,
-                "type": "str",
-                "default": None,
-            },
-        ],
-    },
-    {
-        "class": getsubscriptionsv1Tool,
+        "func": _impl_getsubscriptionsv1,
         "name": "getsubscriptionsv1",
         "method": "get",
-        "path": "/subscriptions/v1/subscriptions",
-        "parameters": [
-            {
-                "name": "filter",
-                "in": "query",
-                "required": False,
-                "type": "str",
-                "default": None,
-            },
-            {
-                "name": "filter-tags",
-                "in": "query",
-                "required": False,
-                "type": "str",
-                "default": None,
-            },
-            {
-                "name": "sort",
-                "in": "query",
-                "required": False,
-                "type": "str",
-                "default": None,
-            },
-            {
-                "name": "select",
-                "in": "query",
-                "required": False,
-                "type": "List[str]",
-                "default": None,
-            },
-            {
-                "name": "limit",
-                "in": "query",
-                "required": False,
-                "type": "int",
-                "default": 50,
-            },
-            {
-                "name": "offset",
-                "in": "query",
-                "required": False,
-                "type": "int",
-                "default": None,
-            },
-        ],
+    },
+    {
+        "func": _impl_getsubscriptiondetailsbyidv1,
+        "name": "getsubscriptiondetailsbyidv1",
+        "method": "get",
     },
 ]
 
-# De-duplicate by class name - keep last occurrence which overwrites the tool file
-_seen_classes: set[type] = set()
-TOOL_TEST_MATRIX: list[dict[str, Any]] = []
-for tool_config in reversed(_TOOL_TEST_MATRIX_RAW):
-    tool_class = cast(type, tool_config["class"])
-    if tool_class not in _seen_classes:
-        _seen_classes.add(tool_class)
-        TOOL_TEST_MATRIX.insert(0, tool_config)
 
-
-if not TOOL_TEST_MATRIX:
+if not _TOOL_TEST_MATRIX:
     pytest.skip("No endpoint tools were generated; skipping tool unit tests.", allow_module_level=True)
 
 
-def _sample_value(parameter: dict[str, Any]) -> Any:
-    if parameter["default"] is not None:
-        return parameter["default"]
-
-    match parameter["type"]:
-        case "int":
-            return 1
-        case "float":
-            return 1.0
-        case "bool":
-            return True
-        case "list":
-            return ["example"]
-    return "example"
-
-
-def _build_arguments(config: dict[str, Any]) -> dict[str, Any]:
-    arguments: dict[str, Any] = {}
-    for parameter in config["parameters"]:
-        if parameter["required"]:
-            arguments[parameter["name"]] = _sample_value(parameter)
-    return arguments
+def _make_mock_ctx(http_client: AsyncMock | None = None) -> MagicMock:
+    """Return a MagicMock that looks like a FastMCP Context."""
+    ctx = MagicMock()
+    ctx.request_context.lifespan_context.http_client = http_client or AsyncMock()
+    return ctx
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("config", TOOL_TEST_MATRIX, ids=lambda cfg: cfg["name"])
-async def test_execute_success(config, mock_http_client):
-    tool = config["class"](mock_http_client)
-    getattr(mock_http_client, config["method"]).return_value = {"status": "ok"}
+@pytest.mark.parametrize("config", _TOOL_TEST_MATRIX, ids=lambda c: c["name"])
+async def test_execute_success(config: dict[str, Any]) -> None:
+    """Every tool must return a success result when the API responds normally."""
+    mock_client = AsyncMock()
+    getattr(mock_client, config["method"]).return_value = {"status": "ok"}
+    ctx = _make_mock_ctx(mock_client)
 
-    result = await tool.execute(_build_arguments(config))
+    result = await config["func"](ctx)
 
-    assert result
+    assert isinstance(result, list)
+    assert len(result) == 1
     assert result[0]["success"] is True
-    getattr(mock_http_client, config["method"]).assert_awaited_once()
-
-
-REQUIRED_PARAM_CASES: List[Dict[str, Any]] = [
-    config
-    for config in TOOL_TEST_MATRIX
-    if any(param["required"] for param in config["parameters"])  # type: ignore[attr-defined]
-]
+    getattr(mock_client, config["method"]).assert_awaited_once()
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("config", REQUIRED_PARAM_CASES, ids=lambda cfg: cfg["name"])
-async def test_execute_requires_arguments(config, mock_http_client):
-    if not any(param["required"] for param in config["parameters"]):
-        pytest.skip("Tool has no required parameters.")
+@pytest.mark.parametrize("config", _TOOL_TEST_MATRIX, ids=lambda c: c["name"])
+async def test_execute_handles_errors(config: dict[str, Any]) -> None:
+    """Every tool must catch exceptions and return a failure dict."""
+    mock_client = AsyncMock()
+    getattr(mock_client, config["method"]).side_effect = RuntimeError("boom")
+    ctx = _make_mock_ctx(mock_client)
 
-    tool = config["class"](mock_http_client)
+    result = await config["func"](ctx)
 
-    result = await tool.execute({})
-
+    assert isinstance(result, list)
+    assert len(result) == 1
     assert result[0]["success"] is False
-    assert result[0]["error"] == "ValidationError"
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("config", TOOL_TEST_MATRIX, ids=lambda cfg: cfg["name"])
-async def test_execute_handles_errors(config, mock_http_client):
-    tool = config["class"](mock_http_client)
-    getattr(mock_http_client, config["method"]).side_effect = RuntimeError("boom")
-
-    result = await tool.execute(_build_arguments(config))
-
-    assert result[0]["success"] is False
-    assert result[0]["error"] == "RuntimeError"
+    assert "boom" in result[0]["message"]

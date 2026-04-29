@@ -8,120 +8,36 @@ from typing import Any
 import pytest
 from pydantic import ValidationError as PydanticValidationError
 
-from models import (
+from greenlake_reporting_mcp.models import (
     BaseModel,
-    error,
-    filterCriteria,
-    generateDocResponse,
     delivery,
     enrollment,
+    filterCriteria,
+    reportDefinition,
+    generateReportBody,
     generateResponse,
     queryElements,
-    reportDefinition,
     reportDoc,
-    generateReportBody,
     asyncOperationResponse,
+    generateDocResponse,
+    error,
 )
 
 MODEL_TEST_MATRIX = [
-    {
-        "model": error,
-        "name": "error",
-        "fields": [
-            {
-                "name": "debugId",
-                "sanitized": "debugId",
-                "type": r"string",
-                "required": True,
-            },
-            {
-                "name": "errorCode",
-                "sanitized": "errorCode",
-                "type": r"string",
-                "required": True,
-            },
-            {
-                "name": "httpStatusCode",
-                "sanitized": "httpStatusCode",
-                "type": r"integer",
-                "required": True,
-            },
-            {
-                "name": "message",
-                "sanitized": "message",
-                "type": r"string",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": filterCriteria,
-        "name": "filterCriteria",
-        "fields": [
-            {
-                "name": "key",
-                "sanitized": "key",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "operator",
-                "sanitized": "operator",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "value",
-                "sanitized": "value",
-                "type": r"string",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": generateDocResponse,
-        "name": "generateDocResponse",
-        "fields": [
-            {
-                "name": "count",
-                "sanitized": "count",
-                "type": r"integer",
-                "required": True,
-            },
-            {
-                "name": "items",
-                "sanitized": "items",
-                "type": r"array",
-                "required": True,
-            },
-            {
-                "name": "offset",
-                "sanitized": "offset",
-                "type": r"integer",
-                "required": True,
-            },
-            {
-                "name": "total",
-                "sanitized": "total",
-                "type": r"integer",
-                "required": True,
-            },
-        ],
-    },
     {
         "model": delivery,
         "name": "delivery",
         "fields": [
             {
-                "name": "email",
-                "sanitized": "email",
-                "type": r"object",
-                "required": False,
-            },
-            {
                 "name": "format",
                 "sanitized": "format",
                 "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "email",
+                "sanitized": "email",
+                "type": r"object",
                 "required": False,
             },
         ],
@@ -134,6 +50,84 @@ MODEL_TEST_MATRIX = [
                 "name": "delivery",
                 "sanitized": "delivery",
                 "type": r"object",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": filterCriteria,
+        "name": "filterCriteria",
+        "fields": [
+            {
+                "name": "value",
+                "sanitized": "value",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "key",
+                "sanitized": "key",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "operator",
+                "sanitized": "operator",
+                "type": r"string",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": reportDefinition,
+        "name": "reportDefinition",
+        "fields": [
+            {
+                "name": "enrollment",
+                "sanitized": "enrollment",
+                "type": r"object",
+                "required": False,
+            },
+            {
+                "name": "queryElements",
+                "sanitized": "queryElements",
+                "type": r"object",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": generateReportBody,
+        "name": "generateReportBody",
+        "fields": [
+            {
+                "name": "kind",
+                "sanitized": "kind",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "name",
+                "sanitized": "name",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "definition",
+                "sanitized": "definition",
+                "type": r"object",
+                "required": False,
+            },
+            {
+                "name": "description",
+                "sanitized": "description",
+                "type": r"string",
                 "required": False,
             },
         ],
@@ -170,24 +164,6 @@ MODEL_TEST_MATRIX = [
                 "name": "filterCriteria",
                 "sanitized": "filterCriteria",
                 "type": r"array",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": reportDefinition,
-        "name": "reportDefinition",
-        "fields": [
-            {
-                "name": "enrollment",
-                "sanitized": "enrollment",
-                "type": r"object",
-                "required": False,
-            },
-            {
-                "name": "queryElements",
-                "sanitized": "queryElements",
-                "type": r"object",
                 "required": False,
             },
         ],
@@ -235,50 +211,38 @@ MODEL_TEST_MATRIX = [
         ],
     },
     {
-        "model": generateReportBody,
-        "name": "generateReportBody",
+        "model": asyncOperationResponse,
+        "name": "asyncOperationResponse",
         "fields": [
             {
-                "name": "definition",
-                "sanitized": "definition",
-                "type": r"object",
-                "required": False,
-            },
-            {
-                "name": "description",
-                "sanitized": "description",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "kind",
-                "sanitized": "kind",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "name",
-                "sanitized": "name",
-                "type": r"string",
-                "required": False,
+                "name": "logMessages",
+                "sanitized": "logMessages",
+                "type": r"array",
+                "required": True,
             },
             {
                 "name": "type",
                 "sanitized": "type",
                 "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "error",
+                "sanitized": "error",
+                "type": r"object",
                 "required": False,
             },
-        ],
-    },
-    {
-        "model": asyncOperationResponse,
-        "name": "asyncOperationResponse",
-        "fields": [
             {
-                "name": "id",
-                "sanitized": "id",
+                "name": "startedAt",
+                "sanitized": "startedAt",
                 "type": r"string",
-                "required": True,
+                "required": False,
+            },
+            {
+                "name": "endedAt",
+                "sanitized": "endedAt",
+                "type": r"string",
+                "required": False,
             },
             {
                 "name": "results",
@@ -287,10 +251,16 @@ MODEL_TEST_MATRIX = [
                 "required": False,
             },
             {
-                "name": "error",
-                "sanitized": "error",
-                "type": r"object",
-                "required": False,
+                "name": "state",
+                "sanitized": "state",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r"string",
+                "required": True,
             },
             {
                 "name": "sourceResourceUri",
@@ -304,35 +274,65 @@ MODEL_TEST_MATRIX = [
                 "type": r"integer",
                 "required": True,
             },
+        ],
+    },
+    {
+        "model": generateDocResponse,
+        "name": "generateDocResponse",
+        "fields": [
             {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"string",
+                "name": "total",
+                "sanitized": "total",
+                "type": r"integer",
                 "required": True,
             },
             {
-                "name": "startedAt",
-                "sanitized": "startedAt",
-                "type": r"string",
-                "required": False,
+                "name": "count",
+                "sanitized": "count",
+                "type": r"integer",
+                "required": True,
             },
             {
-                "name": "logMessages",
-                "sanitized": "logMessages",
+                "name": "items",
+                "sanitized": "items",
                 "type": r"array",
                 "required": True,
             },
             {
-                "name": "state",
-                "sanitized": "state",
+                "name": "offset",
+                "sanitized": "offset",
+                "type": r"integer",
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": error,
+        "name": "error",
+        "fields": [
+            {
+                "name": "errorCode",
+                "sanitized": "errorCode",
                 "type": r"string",
                 "required": True,
             },
             {
-                "name": "endedAt",
-                "sanitized": "endedAt",
+                "name": "httpStatusCode",
+                "sanitized": "httpStatusCode",
+                "type": r"integer",
+                "required": True,
+            },
+            {
+                "name": "message",
+                "sanitized": "message",
                 "type": r"string",
-                "required": False,
+                "required": True,
+            },
+            {
+                "name": "debugId",
+                "sanitized": "debugId",
+                "type": r"string",
+                "required": True,
             },
         ],
     },

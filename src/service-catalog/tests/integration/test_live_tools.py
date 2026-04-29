@@ -44,34 +44,6 @@ pytestmark = pytest.mark.skipif(
 )
 TOOL_CASES = [
     {
-        "name": "getserviceofferregions",
-        "path": "/service-catalog/v1beta1/service-offer-regions",
-        "method": "get",
-        "parameters": [
-            {
-                "name": "next",
-                "required": False,
-                "type": "str",
-                "env": "MCP_TEST_SERVICE_CATALOG_GETSERVICEOFFERREGIONS_NEXT",
-                "default": None,
-            },
-            {
-                "name": "limit",
-                "required": False,
-                "type": "int",
-                "env": "MCP_TEST_SERVICE_CATALOG_GETSERVICEOFFERREGIONS_LIMIT",
-                "default": 2000,
-            },
-            {
-                "name": "filter",
-                "required": False,
-                "type": "str",
-                "env": "MCP_TEST_SERVICE_CATALOG_GETSERVICEOFFERREGIONS_FILTER",
-                "default": None,
-            },
-        ],
-    },
-    {
         "name": "getserviceprovisions",
         "path": "/service-catalog/v1beta1/service-provisions",
         "method": "get",
@@ -121,6 +93,55 @@ TOOL_CASES = [
         ],
     },
     {
+        "name": "get_service_managers_v1",
+        "path": "/service-catalog/v1/service-managers",
+        "method": "get",
+        "parameters": [
+            {
+                "name": "offset",
+                "required": False,
+                "type": "int",
+                "env": "MCP_TEST_SERVICE_CATALOG_GET_SERVICE_MANAGERS_V1_OFFSET",
+                "default": None,
+            },
+            {
+                "name": "limit",
+                "required": False,
+                "type": "int",
+                "env": "MCP_TEST_SERVICE_CATALOG_GET_SERVICE_MANAGERS_V1_LIMIT",
+                "default": 2000,
+            },
+        ],
+    },
+    {
+        "name": "get_service_manager_v1",
+        "path": "/service-catalog/v1/service-managers/{id}",
+        "method": "get",
+        "parameters": [
+            {
+                "name": "id",
+                "required": True,
+                "type": "str",
+                "env": "MCP_TEST_SERVICE_CATALOG_GET_SERVICE_MANAGER_V1_ID",
+                "default": None,
+            },
+        ],
+    },
+    {
+        "name": "get_service_manager_provision_v1",
+        "path": "/service-catalog/v1/service-manager-provisions/{id}",
+        "method": "get",
+        "parameters": [
+            {
+                "name": "id",
+                "required": True,
+                "type": "str",
+                "env": "MCP_TEST_SERVICE_CATALOG_GET_SERVICE_MANAGER_PROVISION_V1_ID",
+                "default": None,
+            },
+        ],
+    },
+    {
         "name": "getserviceoffers",
         "path": "/service-catalog/v1beta1/service-offers",
         "method": "get",
@@ -144,97 +165,6 @@ TOOL_CASES = [
                 "required": False,
                 "type": "str",
                 "env": "MCP_TEST_SERVICE_CATALOG_GETSERVICEOFFERS_FILTER",
-                "default": None,
-            },
-        ],
-    },
-    {
-        "name": "getserviceofferregion",
-        "path": "/service-catalog/v1beta1/service-offer-regions/{id}",
-        "method": "get",
-        "parameters": [
-            {
-                "name": "id",
-                "required": True,
-                "type": "str",
-                "env": "MCP_TEST_SERVICE_CATALOG_GETSERVICEOFFERREGION_ID",
-                "default": None,
-            },
-        ],
-    },
-    {
-        "name": "service_managers_for_a_region_v1",
-        "path": "/service-catalog/v1/per-region-service-managers/{id}",
-        "method": "get",
-        "parameters": [
-            {
-                "name": "id",
-                "required": True,
-                "type": "str",
-                "env": "MCP_TEST_SERVICE_CATALOG_SERVICE_MANAGERS_FOR_A_REGION_V1_ID",
-                "default": None,
-            },
-        ],
-    },
-    {
-        "name": "get_service_manager_provisions_v1",
-        "path": "/service-catalog/v1/service-manager-provisions",
-        "method": "get",
-        "parameters": [
-            {
-                "name": "offset",
-                "required": False,
-                "type": "int",
-                "env": "MCP_TEST_SERVICE_CATALOG_GET_SERVICE_MANAGER_PROVISIONS_V1_OFFSET",
-                "default": None,
-            },
-            {
-                "name": "limit",
-                "required": False,
-                "type": "int",
-                "env": "MCP_TEST_SERVICE_CATALOG_GET_SERVICE_MANAGER_PROVISIONS_V1_LIMIT",
-                "default": 2000,
-            },
-            {
-                "name": "filter",
-                "required": False,
-                "type": "str",
-                "env": "MCP_TEST_SERVICE_CATALOG_GET_SERVICE_MANAGER_PROVISIONS_V1_FILTER",
-                "default": None,
-            },
-        ],
-    },
-    {
-        "name": "get_service_managers_v1",
-        "path": "/service-catalog/v1/service-managers",
-        "method": "get",
-        "parameters": [
-            {
-                "name": "offset",
-                "required": False,
-                "type": "int",
-                "env": "MCP_TEST_SERVICE_CATALOG_GET_SERVICE_MANAGERS_V1_OFFSET",
-                "default": None,
-            },
-            {
-                "name": "limit",
-                "required": False,
-                "type": "int",
-                "env": "MCP_TEST_SERVICE_CATALOG_GET_SERVICE_MANAGERS_V1_LIMIT",
-                "default": 2000,
-            },
-        ],
-    },
-    {
-        "name": "get_service_manager_provision_v1",
-        "path": "/service-catalog/v1/service-manager-provisions/{id}",
-        "method": "get",
-        "parameters": [
-            {
-                "name": "id",
-                "required": True,
-                "type": "str",
-                "env": "MCP_TEST_SERVICE_CATALOG_GET_SERVICE_MANAGER_PROVISION_V1_ID",
                 "default": None,
             },
         ],
@@ -268,6 +198,76 @@ TOOL_CASES = [
         ],
     },
     {
+        "name": "service_managers_for_a_region_v1",
+        "path": "/service-catalog/v1/per-region-service-managers/{id}",
+        "method": "get",
+        "parameters": [
+            {
+                "name": "id",
+                "required": True,
+                "type": "str",
+                "env": "MCP_TEST_SERVICE_CATALOG_SERVICE_MANAGERS_FOR_A_REGION_V1_ID",
+                "default": None,
+            },
+        ],
+    },
+    {
+        "name": "getserviceofferregions",
+        "path": "/service-catalog/v1beta1/service-offer-regions",
+        "method": "get",
+        "parameters": [
+            {
+                "name": "next",
+                "required": False,
+                "type": "str",
+                "env": "MCP_TEST_SERVICE_CATALOG_GETSERVICEOFFERREGIONS_NEXT",
+                "default": None,
+            },
+            {
+                "name": "limit",
+                "required": False,
+                "type": "int",
+                "env": "MCP_TEST_SERVICE_CATALOG_GETSERVICEOFFERREGIONS_LIMIT",
+                "default": 2000,
+            },
+            {
+                "name": "filter",
+                "required": False,
+                "type": "str",
+                "env": "MCP_TEST_SERVICE_CATALOG_GETSERVICEOFFERREGIONS_FILTER",
+                "default": None,
+            },
+        ],
+    },
+    {
+        "name": "getserviceoffer",
+        "path": "/service-catalog/v1beta1/service-offers/{id}",
+        "method": "get",
+        "parameters": [
+            {
+                "name": "id",
+                "required": True,
+                "type": "str",
+                "env": "MCP_TEST_SERVICE_CATALOG_GETSERVICEOFFER_ID",
+                "default": None,
+            },
+        ],
+    },
+    {
+        "name": "getserviceofferregion",
+        "path": "/service-catalog/v1beta1/service-offer-regions/{id}",
+        "method": "get",
+        "parameters": [
+            {
+                "name": "id",
+                "required": True,
+                "type": "str",
+                "env": "MCP_TEST_SERVICE_CATALOG_GETSERVICEOFFERREGION_ID",
+                "default": None,
+            },
+        ],
+    },
+    {
         "name": "getserviceprovision",
         "path": "/service-catalog/v1beta1/service-provisions/{id}",
         "method": "get",
@@ -289,29 +289,29 @@ TOOL_CASES = [
         ],
     },
     {
-        "name": "getserviceoffer",
-        "path": "/service-catalog/v1beta1/service-offers/{id}",
+        "name": "get_service_manager_provisions_v1",
+        "path": "/service-catalog/v1/service-manager-provisions",
         "method": "get",
         "parameters": [
             {
-                "name": "id",
-                "required": True,
-                "type": "str",
-                "env": "MCP_TEST_SERVICE_CATALOG_GETSERVICEOFFER_ID",
+                "name": "offset",
+                "required": False,
+                "type": "int",
+                "env": "MCP_TEST_SERVICE_CATALOG_GET_SERVICE_MANAGER_PROVISIONS_V1_OFFSET",
                 "default": None,
             },
-        ],
-    },
-    {
-        "name": "get_service_manager_v1",
-        "path": "/service-catalog/v1/service-managers/{id}",
-        "method": "get",
-        "parameters": [
             {
-                "name": "id",
-                "required": True,
+                "name": "limit",
+                "required": False,
+                "type": "int",
+                "env": "MCP_TEST_SERVICE_CATALOG_GET_SERVICE_MANAGER_PROVISIONS_V1_LIMIT",
+                "default": 2000,
+            },
+            {
+                "name": "filter",
+                "required": False,
                 "type": "str",
-                "env": "MCP_TEST_SERVICE_CATALOG_GET_SERVICE_MANAGER_V1_ID",
+                "env": "MCP_TEST_SERVICE_CATALOG_GET_SERVICE_MANAGER_PROVISIONS_V1_FILTER",
                 "default": None,
             },
         ],

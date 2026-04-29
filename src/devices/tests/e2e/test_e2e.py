@@ -43,7 +43,9 @@ class TestDevicesMCPServerE2E:
 
         try:
             # Create a session for this test
-            session, session_cm, stdio_transport, stdio_client_cm, process = await create_mcp_session("server.app")
+            session, session_cm, stdio_transport, stdio_client_cm, process = await create_mcp_session(
+                "greenlake_devices_mcp.server.app"
+            )
             print("MCP session initialized successfully")
 
             # If we got this far, the session was initialized successfully
@@ -67,7 +69,9 @@ class TestDevicesMCPServerE2E:
 
         try:
             # Create a session for this test
-            session, session_cm, stdio_transport, stdio_client_cm, process = await create_mcp_session("server.app")
+            session, session_cm, stdio_transport, stdio_client_cm, process = await create_mcp_session(
+                "greenlake_devices_mcp.server.app"
+            )
             print("MCP session initialized successfully")
 
             # Get available tools with a timeout

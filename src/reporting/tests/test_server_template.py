@@ -7,7 +7,7 @@ import time
 import pytest
 from unittest.mock import AsyncMock, Mock, patch
 
-from server.mcp_server import MCPServer
+from greenlake_reporting_mcp.server.mcp_server import MCPServer
 
 
 class TestMCPServer:
@@ -39,7 +39,7 @@ class TestMCPServer:
         # Check that server instance is properly created
         assert mcp_server.server is not None
 
-    @patch("server.mcp_server.get_http_client")
+    @patch("greenlake_reporting_mcp.server.mcp_server.get_http_client")
     def test_http_client_initialization(self, mock_get_http_client):
         """Test HTTP client is properly initialized lazily."""
         mock_http_client = AsyncMock()
@@ -56,8 +56,8 @@ class TestMCPServer:
         mock_http_client = AsyncMock()
 
         with (
-            patch("server.mcp_server.get_http_client", return_value=mock_http_client),
-            patch("server.mcp_server.get_tool_classes", return_value=[]),
+            patch("greenlake_reporting_mcp.server.mcp_server.get_http_client", return_value=mock_http_client),
+            patch("greenlake_reporting_mcp.server.mcp_server.get_tool_classes", return_value=[]),
         ):
             server = MCPServer()
             await server.initialize()
@@ -81,7 +81,7 @@ class TestMCPServer:
         assert isinstance(mcp_server.tools, dict)
 
     @pytest.mark.asyncio
-    @patch("server.mcp_server.get_tool_classes", return_value=[])
+    @patch("greenlake_reporting_mcp.server.mcp_server.get_tool_classes", return_value=[])
     async def test_initialize_populates_tools(self, mock_get_tool_classes, mcp_server):
         """Test that initialize() populates the tools dict from FastMCP."""
         mcp_server.http_client = AsyncMock()
@@ -116,20 +116,20 @@ class TestApp:
 
     def test_main_is_callable(self):
         """Test main function is importable and callable."""
-        from server.app import main
+        from greenlake_reporting_mcp.server.app import main
 
         assert callable(main)
 
     def test_app_module_structure(self):
         """Test app module has expected structure."""
-        import server.app as app_module
+        import greenlake_reporting_mcp.server.app as app_module
 
         assert hasattr(app_module, "main") or hasattr(app_module, "run") or hasattr(app_module, "start")
 
-    @patch("server.app.mcp")
+    @patch("greenlake_reporting_mcp.server.app.mcp")
     def test_main_calls_mcp_run(self, mock_mcp):
         """Test that main() delegates to mcp.run() with stdio transport."""
-        from server.app import main
+        from greenlake_reporting_mcp.server.app import main
 
         main()
         mock_mcp.run.assert_called_once_with(transport="stdio")
@@ -138,7 +138,7 @@ class TestApp:
 class TestServerIntegration:
     """Integration tests for server components."""
 
-    @patch("server.mcp_server.get_http_client")
+    @patch("greenlake_reporting_mcp.server.mcp_server.get_http_client")
     def test_server_component_integration(self, mock_get_http_client):
         """Test integration between server components."""
         mock_http_client = AsyncMock()
@@ -156,7 +156,7 @@ class TestServerIntegration:
         """Test that all server dependencies can be imported."""
         # Test core server imports
         try:
-            from server.mcp_server import MCPServer
+            from greenlake_reporting_mcp.server.mcp_server import MCPServer
 
             assert MCPServer is not None
         except ImportError as e:
@@ -164,9 +164,9 @@ class TestServerIntegration:
 
         # Test app imports
         try:
-            import server.app
+            import greenlake_reporting_mcp.server.app as _app_mod
 
-            assert server.app is not None
+            assert _app_mod is not None
         except ImportError as e:
             pytest.fail(f"Failed to import server.app: {e}")
 
@@ -181,7 +181,7 @@ class TestServerErrorHandling:
         assert server is not None
         assert server.mcp is not None
 
-    @patch("server.mcp_server.get_http_client")
+    @patch("greenlake_reporting_mcp.server.mcp_server.get_http_client")
     def test_server_handles_http_client_error(self, mock_get_http_client):
         """Test server handles HTTP client initialization errors."""
         mock_get_http_client.side_effect = Exception("HTTP client failed")

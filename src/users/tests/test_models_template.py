@@ -9,27 +9,27 @@ from typing import Any, Dict
 from pydantic import ValidationError as PydanticValidationError
 
 
-from models.base import StandardErrorResponse
+from greenlake_users_mcp.models.base import StandardErrorResponse
 
-from models.base import UserLanguages
+from greenlake_users_mcp.models.base import UserLanguages
 
-from models.base import UserStatus
+from greenlake_users_mcp.models.base import UserStatus
 
-from models.base import Body_invite_user_to_account_identity_v1_users_post
+from greenlake_users_mcp.models.base import Body_invite_user_to_account_identity_v1_users_post
 
-from models.base import Message
+from greenlake_users_mcp.models.base import Message
 
-from models.base import NBUser
+from greenlake_users_mcp.models.base import NBUser
 
-from models.base import NBUserPaginate
+from greenlake_users_mcp.models.base import NBUserPaginate
 
-from models.base import NBUserPreferences
+from greenlake_users_mcp.models.base import NBUserPreferences
 
 
 class TestModels:
     """Test suite for all generated data models."""
 
-    def test_standarderrorresponse_model_creation(self):
+    def test_standard_error_response_model_creation(self):
         """Test StandardErrorResponse model creation with valid data."""
         # Valid test data for StandardErrorResponse
         valid_data = {
@@ -49,7 +49,7 @@ class TestModels:
         assert model.debugId == valid_data["debugId"]
         assert model.errorCode == valid_data["errorCode"]
 
-    def test_standarderrorresponse_model_validation(self):
+    def test_standard_error_response_model_validation(self):
         """Test StandardErrorResponse model field validation."""
         # Test with minimal required data
         minimal_data = {
@@ -66,7 +66,7 @@ class TestModels:
         assert model.debugId == minimal_data["debugId"]
         assert model.errorCode == minimal_data["errorCode"]
 
-    def test_standarderrorresponse_model_required_fields(self):
+    def test_standard_error_response_model_required_fields(self):
         """Test StandardErrorResponse model required field validation."""
         # Check if this model has any required fields
         required_fields = [
@@ -98,7 +98,7 @@ class TestModels:
             model = StandardErrorResponse()
             assert isinstance(model, StandardErrorResponse)
 
-    def test_standarderrorresponse_model_optional_fields(self):
+    def test_standard_error_response_model_optional_fields(self):
         """Test StandardErrorResponse model optional field handling."""
         # Create with minimal required data
         minimal_data = {
@@ -114,7 +114,7 @@ class TestModels:
         assert model is not None
         # Verify optional fields have default values
 
-    def test_standarderrorresponse_model_serialization(self):
+    def test_standard_error_response_model_serialization(self):
         """Test StandardErrorResponse model serialization to dict."""
         test_data = {
             "httpStatusCode": 99,
@@ -139,7 +139,7 @@ class TestModels:
         assert serialized["debugId"] == test_data["debugId"]
         assert serialized["errorCode"] == test_data["errorCode"]
 
-    def test_standarderrorresponse_model_json_schema(self):
+    def test_standard_error_response_model_json_schema(self):
         """Test StandardErrorResponse model JSON schema generation."""
         schema = StandardErrorResponse.model_json_schema()
 
@@ -174,7 +174,7 @@ class TestModels:
             expected_required = set(required_fields)
             assert expected_required.issubset(required_in_schema)
 
-    def test_userlanguages_model_creation(self):
+    def test_user_languages_model_creation(self):
         """Test UserLanguages model creation with valid data."""
         # Valid test data for UserLanguages
         valid_data = {}
@@ -185,7 +185,7 @@ class TestModels:
         # Verify model creation
         assert isinstance(model, UserLanguages)
 
-    def test_userlanguages_model_validation(self):
+    def test_user_languages_model_validation(self):
         """Test UserLanguages model field validation."""
         # Test with minimal required data
         minimal_data = {}
@@ -193,7 +193,7 @@ class TestModels:
         model = UserLanguages(**minimal_data)
         assert isinstance(model, UserLanguages)
 
-    def test_userlanguages_model_required_fields(self):
+    def test_user_languages_model_required_fields(self):
         """Test UserLanguages model required field validation."""
         # Check if this model has any required fields
         required_fields = []
@@ -215,7 +215,7 @@ class TestModels:
             model = UserLanguages()
             assert isinstance(model, UserLanguages)
 
-    def test_userlanguages_model_optional_fields(self):
+    def test_user_languages_model_optional_fields(self):
         """Test UserLanguages model optional field handling."""
         # Create with minimal required data
         minimal_data = {}
@@ -226,7 +226,7 @@ class TestModels:
         assert model is not None
         # Verify optional fields have default values
 
-    def test_userlanguages_model_serialization(self):
+    def test_user_languages_model_serialization(self):
         """Test UserLanguages model serialization to dict."""
         test_data = {}
 
@@ -238,7 +238,7 @@ class TestModels:
 
         # Verify values are preserved
 
-    def test_userlanguages_model_json_schema(self):
+    def test_user_languages_model_json_schema(self):
         """Test UserLanguages model JSON schema generation."""
         schema = UserLanguages.model_json_schema()
 
@@ -263,7 +263,7 @@ class TestModels:
             expected_required = set(required_fields)
             assert expected_required.issubset(required_in_schema)
 
-    def test_userstatus_model_creation(self):
+    def test_user_status_model_creation(self):
         """Test UserStatus model creation with valid data."""
         # Valid test data for UserStatus
         valid_data = {}
@@ -274,7 +274,7 @@ class TestModels:
         # Verify model creation
         assert isinstance(model, UserStatus)
 
-    def test_userstatus_model_validation(self):
+    def test_user_status_model_validation(self):
         """Test UserStatus model field validation."""
         # Test with minimal required data
         minimal_data = {}
@@ -282,7 +282,7 @@ class TestModels:
         model = UserStatus(**minimal_data)
         assert isinstance(model, UserStatus)
 
-    def test_userstatus_model_required_fields(self):
+    def test_user_status_model_required_fields(self):
         """Test UserStatus model required field validation."""
         # Check if this model has any required fields
         required_fields = []
@@ -304,7 +304,7 @@ class TestModels:
             model = UserStatus()
             assert isinstance(model, UserStatus)
 
-    def test_userstatus_model_optional_fields(self):
+    def test_user_status_model_optional_fields(self):
         """Test UserStatus model optional field handling."""
         # Create with minimal required data
         minimal_data = {}
@@ -315,7 +315,7 @@ class TestModels:
         assert model is not None
         # Verify optional fields have default values
 
-    def test_userstatus_model_serialization(self):
+    def test_user_status_model_serialization(self):
         """Test UserStatus model serialization to dict."""
         test_data = {}
 
@@ -327,7 +327,7 @@ class TestModels:
 
         # Verify values are preserved
 
-    def test_userstatus_model_json_schema(self):
+    def test_user_status_model_json_schema(self):
         """Test UserStatus model JSON schema generation."""
         schema = UserStatus.model_json_schema()
 
@@ -571,19 +571,19 @@ class TestModels:
             expected_required = set(required_fields)
             assert expected_required.issubset(required_in_schema)
 
-    def test_nbuser_model_creation(self):
+    def test_n_b_user_model_creation(self):
         """Test NBUser model creation with valid data."""
         # Valid test data for NBUser
         valid_data = {
-            "createdAt": "test_createdAt",
-            "id": "test_id",
-            "lastLogin": "test_lastLogin",
-            "username": "test_username",
-            "resourceUri": "test_resourceUri",
-            "type": "test_type",
-            "userStatus": "test_userStatus",
             "generation": 42,
+            "lastLogin": "test_lastLogin",
+            "id": "test_id",
+            "resourceUri": "test_resourceUri",
+            "userStatus": "test_userStatus",
             "updatedAt": "test_updatedAt",
+            "createdAt": "test_createdAt",
+            "type": "test_type",
+            "username": "test_username",
         }
 
         # Create model instance
@@ -591,38 +591,38 @@ class TestModels:
 
         # Verify model creation
         assert isinstance(model, NBUser)
-        assert model.createdAt == valid_data["createdAt"]
-        assert model.id == valid_data["id"]
-        assert model.lastLogin == valid_data["lastLogin"]
-        assert model.username == valid_data["username"]
-        assert model.resourceUri == valid_data["resourceUri"]
-        assert model.type == valid_data["type"]
-        assert model.userStatus == valid_data["userStatus"]
         assert model.generation == valid_data["generation"]
+        assert model.lastLogin == valid_data["lastLogin"]
+        assert model.id == valid_data["id"]
+        assert model.resourceUri == valid_data["resourceUri"]
+        assert model.userStatus == valid_data["userStatus"]
         assert model.updatedAt == valid_data["updatedAt"]
+        assert model.createdAt == valid_data["createdAt"]
+        assert model.type == valid_data["type"]
+        assert model.username == valid_data["username"]
 
-    def test_nbuser_model_validation(self):
+    def test_n_b_user_model_validation(self):
         """Test NBUser model field validation."""
         # Test with minimal required data
         minimal_data = {
             "id": "required_id",
-            "username": "required_username",
             "type": "required_type",
+            "username": "required_username",
         }
 
         model = NBUser(**minimal_data)
         assert isinstance(model, NBUser)
         assert model.id == minimal_data["id"]
-        assert model.username == minimal_data["username"]
         assert model.type == minimal_data["type"]
+        assert model.username == minimal_data["username"]
 
-    def test_nbuser_model_required_fields(self):
+    def test_n_b_user_model_required_fields(self):
         """Test NBUser model required field validation."""
         # Check if this model has any required fields
         required_fields = [
             "id",
-            "username",
             "type",
+            "username",
         ]
 
         if required_fields:
@@ -634,8 +634,8 @@ class TestModels:
             error_details = exc_info.value.errors()
             required_fields_set = {
                 "id",
-                "username",
                 "type",
+                "username",
             }
 
             # Check that at least one required field is mentioned in the error
@@ -646,13 +646,13 @@ class TestModels:
             model = NBUser()
             assert isinstance(model, NBUser)
 
-    def test_nbuser_model_optional_fields(self):
+    def test_n_b_user_model_optional_fields(self):
         """Test NBUser model optional field handling."""
         # Create with minimal required data
         minimal_data = {
             "id": "required_id",
-            "username": "required_username",
             "type": "required_type",
+            "username": "required_username",
         }
 
         model = NBUser(**minimal_data)
@@ -660,9 +660,9 @@ class TestModels:
         # Verify model created with minimal required fields
         assert model is not None
         # Verify optional fields have default values
-        assert hasattr(model, "createdAt")
-        # Optional field createdAt should be None or have a default value
-        assert model.createdAt is None or model.createdAt is not None
+        assert hasattr(model, "generation")
+        # Optional field generation should be None or have a default value
+        assert model.generation is None or model.generation is not None
         assert hasattr(model, "lastLogin")
         # Optional field lastLogin should be None or have a default value
         assert model.lastLogin is None or model.lastLogin is not None
@@ -672,25 +672,25 @@ class TestModels:
         assert hasattr(model, "userStatus")
         # Optional field userStatus should be None or have a default value
         assert model.userStatus is None or model.userStatus is not None
-        assert hasattr(model, "generation")
-        # Optional field generation should be None or have a default value
-        assert model.generation is None or model.generation is not None
         assert hasattr(model, "updatedAt")
         # Optional field updatedAt should be None or have a default value
         assert model.updatedAt is None or model.updatedAt is not None
+        assert hasattr(model, "createdAt")
+        # Optional field createdAt should be None or have a default value
+        assert model.createdAt is None or model.createdAt is not None
 
-    def test_nbuser_model_serialization(self):
+    def test_n_b_user_model_serialization(self):
         """Test NBUser model serialization to dict."""
         test_data = {
-            "createdAt": "serialize_value",
-            "id": "serialize_value",
-            "lastLogin": "serialize_value",
-            "username": "serialize_value",
-            "resourceUri": "serialize_value",
-            "type": "serialize_value",
-            "userStatus": "serialize_value",
             "generation": 99,
+            "lastLogin": "serialize_value",
+            "id": "serialize_value",
+            "resourceUri": "serialize_value",
+            "userStatus": "serialize_value",
             "updatedAt": "serialize_value",
+            "createdAt": "serialize_value",
+            "type": "serialize_value",
+            "username": "serialize_value",
         }
 
         model = NBUser(**test_data)
@@ -698,28 +698,28 @@ class TestModels:
 
         # Verify serialization
         assert isinstance(serialized, dict)
-        assert "createdAt" in serialized
-        assert "id" in serialized
-        assert "lastLogin" in serialized
-        assert "username" in serialized
-        assert "resourceUri" in serialized
-        assert "type" in serialized
-        assert "userStatus" in serialized
         assert "generation" in serialized
+        assert "lastLogin" in serialized
+        assert "id" in serialized
+        assert "resourceUri" in serialized
+        assert "userStatus" in serialized
         assert "updatedAt" in serialized
+        assert "createdAt" in serialized
+        assert "type" in serialized
+        assert "username" in serialized
 
         # Verify values are preserved
-        assert serialized["createdAt"] == test_data["createdAt"]
-        assert serialized["id"] == test_data["id"]
-        assert serialized["lastLogin"] == test_data["lastLogin"]
-        assert serialized["username"] == test_data["username"]
-        assert serialized["resourceUri"] == test_data["resourceUri"]
-        assert serialized["type"] == test_data["type"]
-        assert serialized["userStatus"] == test_data["userStatus"]
         assert serialized["generation"] == test_data["generation"]
+        assert serialized["lastLogin"] == test_data["lastLogin"]
+        assert serialized["id"] == test_data["id"]
+        assert serialized["resourceUri"] == test_data["resourceUri"]
+        assert serialized["userStatus"] == test_data["userStatus"]
         assert serialized["updatedAt"] == test_data["updatedAt"]
+        assert serialized["createdAt"] == test_data["createdAt"]
+        assert serialized["type"] == test_data["type"]
+        assert serialized["username"] == test_data["username"]
 
-    def test_nbuser_model_json_schema(self):
+    def test_n_b_user_model_json_schema(self):
         """Test NBUser model JSON schema generation."""
         schema = NBUser.model_json_schema()
 
@@ -731,15 +731,15 @@ class TestModels:
 
         # Verify all properties are in schema
         expected_properties = {
-            "createdAt",
-            "id",
-            "lastLogin",
-            "username",
-            "resourceUri",
-            "type",
-            "userStatus",
             "generation",
+            "lastLogin",
+            "id",
+            "resourceUri",
+            "userStatus",
             "updatedAt",
+            "createdAt",
+            "type",
+            "username",
         }
 
         schema_properties = set(schema["properties"].keys())
@@ -749,8 +749,8 @@ class TestModels:
         # Verify required fields in schema (if any)
         required_fields = [
             "id",
-            "username",
             "type",
+            "username",
         ]
         if required_fields:
             assert "required" in schema
@@ -758,14 +758,14 @@ class TestModels:
             expected_required = set(required_fields)
             assert expected_required.issubset(required_in_schema)
 
-    def test_nbuserpaginate_model_creation(self):
+    def test_n_b_user_paginate_model_creation(self):
         """Test NBUserPaginate model creation with valid data."""
         # Valid test data for NBUserPaginate
         valid_data = {
+            "total": 42,
             "count": 42,
             "items": [],
             "offset": 42,
-            "total": 42,
         }
 
         # Create model instance
@@ -773,36 +773,36 @@ class TestModels:
 
         # Verify model creation
         assert isinstance(model, NBUserPaginate)
+        assert model.total == valid_data["total"]
         assert model.count == valid_data["count"]
         assert model.items == valid_data["items"]
         assert model.offset == valid_data["offset"]
-        assert model.total == valid_data["total"]
 
-    def test_nbuserpaginate_model_validation(self):
+    def test_n_b_user_paginate_model_validation(self):
         """Test NBUserPaginate model field validation."""
         # Test with minimal required data
         minimal_data = {
+            "total": 1,
             "count": 1,
             "items": [],
             "offset": 1,
-            "total": 1,
         }
 
         model = NBUserPaginate(**minimal_data)
         assert isinstance(model, NBUserPaginate)
+        assert model.total == minimal_data["total"]
         assert model.count == minimal_data["count"]
         assert model.items == minimal_data["items"]
         assert model.offset == minimal_data["offset"]
-        assert model.total == minimal_data["total"]
 
-    def test_nbuserpaginate_model_required_fields(self):
+    def test_n_b_user_paginate_model_required_fields(self):
         """Test NBUserPaginate model required field validation."""
         # Check if this model has any required fields
         required_fields = [
+            "total",
             "count",
             "items",
             "offset",
-            "total",
         ]
 
         if required_fields:
@@ -813,10 +813,10 @@ class TestModels:
             # Verify validation error contains required field information
             error_details = exc_info.value.errors()
             required_fields_set = {
+                "total",
                 "count",
                 "items",
                 "offset",
-                "total",
             }
 
             # Check that at least one required field is mentioned in the error
@@ -827,14 +827,14 @@ class TestModels:
             model = NBUserPaginate()
             assert isinstance(model, NBUserPaginate)
 
-    def test_nbuserpaginate_model_optional_fields(self):
+    def test_n_b_user_paginate_model_optional_fields(self):
         """Test NBUserPaginate model optional field handling."""
         # Create with minimal required data
         minimal_data = {
+            "total": 1,
             "count": 1,
             "items": [],
             "offset": 1,
-            "total": 1,
         }
 
         model = NBUserPaginate(**minimal_data)
@@ -843,13 +843,13 @@ class TestModels:
         assert model is not None
         # Verify optional fields have default values
 
-    def test_nbuserpaginate_model_serialization(self):
+    def test_n_b_user_paginate_model_serialization(self):
         """Test NBUserPaginate model serialization to dict."""
         test_data = {
+            "total": 99,
             "count": 99,
             "items": [],
             "offset": 99,
-            "total": 99,
         }
 
         model = NBUserPaginate(**test_data)
@@ -857,18 +857,18 @@ class TestModels:
 
         # Verify serialization
         assert isinstance(serialized, dict)
+        assert "total" in serialized
         assert "count" in serialized
         assert "items" in serialized
         assert "offset" in serialized
-        assert "total" in serialized
 
         # Verify values are preserved
+        assert serialized["total"] == test_data["total"]
         assert serialized["count"] == test_data["count"]
         assert serialized["items"] == test_data["items"]
         assert serialized["offset"] == test_data["offset"]
-        assert serialized["total"] == test_data["total"]
 
-    def test_nbuserpaginate_model_json_schema(self):
+    def test_n_b_user_paginate_model_json_schema(self):
         """Test NBUserPaginate model JSON schema generation."""
         schema = NBUserPaginate.model_json_schema()
 
@@ -880,10 +880,10 @@ class TestModels:
 
         # Verify all properties are in schema
         expected_properties = {
+            "total",
             "count",
             "items",
             "offset",
-            "total",
         }
 
         schema_properties = set(schema["properties"].keys())
@@ -892,10 +892,10 @@ class TestModels:
 
         # Verify required fields in schema (if any)
         required_fields = [
+            "total",
             "count",
             "items",
             "offset",
-            "total",
         ]
         if required_fields:
             assert "required" in schema
@@ -903,12 +903,12 @@ class TestModels:
             expected_required = set(required_fields)
             assert expected_required.issubset(required_in_schema)
 
-    def test_nbuserpreferences_model_creation(self):
+    def test_n_b_user_preferences_model_creation(self):
         """Test NBUserPreferences model creation with valid data."""
         # Valid test data for NBUserPreferences
         valid_data = {
-            "idleTimeout": 42,
             "language": "test_language",
+            "idleTimeout": 42,
         }
 
         # Create model instance
@@ -916,10 +916,10 @@ class TestModels:
 
         # Verify model creation
         assert isinstance(model, NBUserPreferences)
-        assert model.idleTimeout == valid_data["idleTimeout"]
         assert model.language == valid_data["language"]
+        assert model.idleTimeout == valid_data["idleTimeout"]
 
-    def test_nbuserpreferences_model_validation(self):
+    def test_n_b_user_preferences_model_validation(self):
         """Test NBUserPreferences model field validation."""
         # Test with minimal required data
         minimal_data = {}
@@ -927,7 +927,7 @@ class TestModels:
         model = NBUserPreferences(**minimal_data)
         assert isinstance(model, NBUserPreferences)
 
-    def test_nbuserpreferences_model_required_fields(self):
+    def test_n_b_user_preferences_model_required_fields(self):
         """Test NBUserPreferences model required field validation."""
         # Check if this model has any required fields
         required_fields = []
@@ -949,7 +949,7 @@ class TestModels:
             model = NBUserPreferences()
             assert isinstance(model, NBUserPreferences)
 
-    def test_nbuserpreferences_model_optional_fields(self):
+    def test_n_b_user_preferences_model_optional_fields(self):
         """Test NBUserPreferences model optional field handling."""
         # Create with minimal required data
         minimal_data = {}
@@ -959,18 +959,18 @@ class TestModels:
         # Verify model created with minimal required fields
         assert model is not None
         # Verify optional fields have default values
-        assert hasattr(model, "idleTimeout")
-        # Optional field idleTimeout should be None or have a default value
-        assert model.idleTimeout is None or model.idleTimeout is not None
         assert hasattr(model, "language")
         # Optional field language should be None or have a default value
         assert model.language is None or model.language is not None
+        assert hasattr(model, "idleTimeout")
+        # Optional field idleTimeout should be None or have a default value
+        assert model.idleTimeout is None or model.idleTimeout is not None
 
-    def test_nbuserpreferences_model_serialization(self):
+    def test_n_b_user_preferences_model_serialization(self):
         """Test NBUserPreferences model serialization to dict."""
         test_data = {
-            "idleTimeout": 99,
             "language": "serialize_value",
+            "idleTimeout": 99,
         }
 
         model = NBUserPreferences(**test_data)
@@ -978,14 +978,14 @@ class TestModels:
 
         # Verify serialization
         assert isinstance(serialized, dict)
-        assert "idleTimeout" in serialized
         assert "language" in serialized
+        assert "idleTimeout" in serialized
 
         # Verify values are preserved
-        assert serialized["idleTimeout"] == test_data["idleTimeout"]
         assert serialized["language"] == test_data["language"]
+        assert serialized["idleTimeout"] == test_data["idleTimeout"]
 
-    def test_nbuserpreferences_model_json_schema(self):
+    def test_n_b_user_preferences_model_json_schema(self):
         """Test NBUserPreferences model JSON schema generation."""
         schema = NBUserPreferences.model_json_schema()
 
@@ -997,8 +997,8 @@ class TestModels:
 
         # Verify all properties are in schema
         expected_properties = {
-            "idleTimeout",
             "language",
+            "idleTimeout",
         }
 
         schema_properties = set(schema["properties"].keys())

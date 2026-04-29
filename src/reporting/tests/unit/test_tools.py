@@ -7,23 +7,21 @@ from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from tools.implementations.get_reporting_v1_report_exports_metadata import get_reporting_v1_report_exports_metadata
-from tools.implementations.getreportingstatuses import getreportingstatuses
-from tools.implementations.getreportingstatusbyid import getreportingstatusbyid
+from greenlake_reporting_mcp.tools.implementations.getreportingstatuses import (
+    getreportingstatuses as _impl_getreportingstatuses,
+)
+from greenlake_reporting_mcp.tools.implementations.getreportingstatusbyid import (
+    getreportingstatusbyid as _impl_getreportingstatusbyid,
+)
 
 _TOOL_TEST_MATRIX: list[dict[str, Any]] = [
     {
-        "func": get_reporting_v1_report_exports_metadata,
-        "name": "get_reporting_v1_report_exports_metadata",
-        "method": "get",
-    },
-    {
-        "func": getreportingstatuses,
+        "func": _impl_getreportingstatuses,
         "name": "getreportingstatuses",
         "method": "get",
     },
     {
-        "func": getreportingstatusbyid,
+        "func": _impl_getreportingstatusbyid,
         "name": "getreportingstatusbyid",
         "method": "get",
     },

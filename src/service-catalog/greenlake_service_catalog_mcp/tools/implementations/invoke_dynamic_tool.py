@@ -86,24 +86,6 @@ async def invoke_dynamic_tool(
 
     # Get endpoint schema for validation
     endpoint_schemas: dict[str, Any] = {
-        "GET:/service-catalog/v1beta1/service-offer-regions": {
-            "path": "/service-catalog/v1beta1/service-offer-regions",
-            "method": "GET",
-            "summary": "getserviceofferregions",
-            "description": "getserviceofferregions",
-            "parameters": [
-                {"name": "next", "type": "str", "description": "next", "required": False, "location": "query"},
-                {
-                    "name": "limit",
-                    "type": "int",
-                    "description": "limit",
-                    "required": False,
-                    "location": "query",
-                    "default": "2000",
-                },
-                {"name": "filter", "type": "str", "description": "filter", "required": False, "location": "query"},
-            ],
-        },
         "GET:/service-catalog/v1beta1/service-provisions": {
             "path": "/service-catalog/v1beta1/service-provisions",
             "method": "GET",
@@ -138,60 +120,6 @@ async def invoke_dynamic_tool(
                 {"name": "all", "type": "bool", "description": "all", "required": False, "location": "query"},
             ],
         },
-        "GET:/service-catalog/v1beta1/service-offers": {
-            "path": "/service-catalog/v1beta1/service-offers",
-            "method": "GET",
-            "summary": "getserviceoffers",
-            "description": "getserviceoffers",
-            "parameters": [
-                {"name": "next", "type": "str", "description": "next", "required": False, "location": "query"},
-                {
-                    "name": "limit",
-                    "type": "int",
-                    "description": "limit",
-                    "required": False,
-                    "location": "query",
-                    "default": "2000",
-                },
-                {"name": "filter", "type": "str", "description": "filter", "required": False, "location": "query"},
-            ],
-        },
-        "GET:/service-catalog/v1beta1/service-offer-regions/{id}": {
-            "path": "/service-catalog/v1beta1/service-offer-regions/{id}",
-            "method": "GET",
-            "summary": "getserviceofferregion",
-            "description": "getserviceofferregion",
-            "parameters": [
-                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
-            ],
-        },
-        "GET:/service-catalog/v1/per-region-service-managers/{id}": {
-            "path": "/service-catalog/v1/per-region-service-managers/{id}",
-            "method": "GET",
-            "summary": "service_managers_for_a_region_v1",
-            "description": "service_managers_for_a_region_v1",
-            "parameters": [
-                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
-            ],
-        },
-        "GET:/service-catalog/v1/service-manager-provisions": {
-            "path": "/service-catalog/v1/service-manager-provisions",
-            "method": "GET",
-            "summary": "get_service_manager_provisions_v1",
-            "description": "get_service_manager_provisions_v1",
-            "parameters": [
-                {"name": "offset", "type": "int", "description": "offset", "required": False, "location": "query"},
-                {
-                    "name": "limit",
-                    "type": "int",
-                    "description": "limit",
-                    "required": False,
-                    "location": "query",
-                    "default": "2000",
-                },
-                {"name": "filter", "type": "str", "description": "filter", "required": False, "location": "query"},
-            ],
-        },
         "GET:/service-catalog/v1/service-managers": {
             "path": "/service-catalog/v1/service-managers",
             "method": "GET",
@@ -209,6 +137,15 @@ async def invoke_dynamic_tool(
                 },
             ],
         },
+        "GET:/service-catalog/v1/service-managers/{id}": {
+            "path": "/service-catalog/v1/service-managers/{id}",
+            "method": "GET",
+            "summary": "get_service_manager_v1",
+            "description": "get_service_manager_v1",
+            "parameters": [
+                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
+            ],
+        },
         "GET:/service-catalog/v1/service-manager-provisions/{id}": {
             "path": "/service-catalog/v1/service-manager-provisions/{id}",
             "method": "GET",
@@ -216,6 +153,24 @@ async def invoke_dynamic_tool(
             "description": "get_service_manager_provision_v1",
             "parameters": [
                 {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
+            ],
+        },
+        "GET:/service-catalog/v1beta1/service-offers": {
+            "path": "/service-catalog/v1beta1/service-offers",
+            "method": "GET",
+            "summary": "getserviceoffers",
+            "description": "getserviceoffers",
+            "parameters": [
+                {"name": "next", "type": "str", "description": "next", "required": False, "location": "query"},
+                {
+                    "name": "limit",
+                    "type": "int",
+                    "description": "limit",
+                    "required": False,
+                    "location": "query",
+                    "default": "2000",
+                },
+                {"name": "filter", "type": "str", "description": "filter", "required": False, "location": "query"},
             ],
         },
         "GET:/service-catalog/v1/per-region-service-managers": {
@@ -236,6 +191,51 @@ async def invoke_dynamic_tool(
                 {"name": "filter", "type": "str", "description": "filter", "required": False, "location": "query"},
             ],
         },
+        "GET:/service-catalog/v1/per-region-service-managers/{id}": {
+            "path": "/service-catalog/v1/per-region-service-managers/{id}",
+            "method": "GET",
+            "summary": "service_managers_for_a_region_v1",
+            "description": "service_managers_for_a_region_v1",
+            "parameters": [
+                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
+            ],
+        },
+        "GET:/service-catalog/v1beta1/service-offer-regions": {
+            "path": "/service-catalog/v1beta1/service-offer-regions",
+            "method": "GET",
+            "summary": "getserviceofferregions",
+            "description": "getserviceofferregions",
+            "parameters": [
+                {"name": "next", "type": "str", "description": "next", "required": False, "location": "query"},
+                {
+                    "name": "limit",
+                    "type": "int",
+                    "description": "limit",
+                    "required": False,
+                    "location": "query",
+                    "default": "2000",
+                },
+                {"name": "filter", "type": "str", "description": "filter", "required": False, "location": "query"},
+            ],
+        },
+        "GET:/service-catalog/v1beta1/service-offers/{id}": {
+            "path": "/service-catalog/v1beta1/service-offers/{id}",
+            "method": "GET",
+            "summary": "getserviceoffer",
+            "description": "getserviceoffer",
+            "parameters": [
+                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
+            ],
+        },
+        "GET:/service-catalog/v1beta1/service-offer-regions/{id}": {
+            "path": "/service-catalog/v1beta1/service-offer-regions/{id}",
+            "method": "GET",
+            "summary": "getserviceofferregion",
+            "description": "getserviceofferregion",
+            "parameters": [
+                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
+            ],
+        },
         "GET:/service-catalog/v1beta1/service-provisions/{id}": {
             "path": "/service-catalog/v1beta1/service-provisions/{id}",
             "method": "GET",
@@ -252,22 +252,22 @@ async def invoke_dynamic_tool(
                 },
             ],
         },
-        "GET:/service-catalog/v1beta1/service-offers/{id}": {
-            "path": "/service-catalog/v1beta1/service-offers/{id}",
+        "GET:/service-catalog/v1/service-manager-provisions": {
+            "path": "/service-catalog/v1/service-manager-provisions",
             "method": "GET",
-            "summary": "getserviceoffer",
-            "description": "getserviceoffer",
+            "summary": "get_service_manager_provisions_v1",
+            "description": "get_service_manager_provisions_v1",
             "parameters": [
-                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
-            ],
-        },
-        "GET:/service-catalog/v1/service-managers/{id}": {
-            "path": "/service-catalog/v1/service-managers/{id}",
-            "method": "GET",
-            "summary": "get_service_manager_v1",
-            "description": "get_service_manager_v1",
-            "parameters": [
-                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
+                {"name": "offset", "type": "int", "description": "offset", "required": False, "location": "query"},
+                {
+                    "name": "limit",
+                    "type": "int",
+                    "description": "limit",
+                    "required": False,
+                    "location": "query",
+                    "default": "2000",
+                },
+                {"name": "filter", "type": "str", "description": "filter", "required": False, "location": "query"},
             ],
         },
     }

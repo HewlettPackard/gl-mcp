@@ -1,6 +1,6 @@
 [project]
-name = "subscriptions-mcp"
-version = "1.0.2"
+name = "greenlake-subscriptions-mcp"
+version = "1.1.0"
 description = "HPE GreenLake subscriptions MCP Server"
 authors = [
     {name = "HPE GreenLake Platform Team", email = "greenlake-platform@hpe.com"}
@@ -8,12 +8,24 @@ authors = [
 license = {text = "Apache-2.0"}
 readme = "README.md"
 requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = [
-    "mcp>=1.20.0",
+    "mcp>=1.23.0",
     "pydantic>=2.12.0",
     "pydantic-settings>=2.11.0",
     "httpx>=0.28.0",
-    "python-dotenv>=1.2.0",
+    "python-dotenv>=1.2.2",
     "loguru>=0.7.3",
 ]
 
@@ -28,12 +40,29 @@ dev = [
     "ruff>=0.14.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/HewlettPackard/gl-mcp"
+Repository = "https://github.com/HewlettPackard/gl-mcp"
+Documentation = "https://github.com/HewlettPackard/gl-mcp/tree/main/src/subscriptions"
+"Bug Tracker" = "https://github.com/HewlettPackard/gl-mcp/issues"
+
+[project.scripts]
+greenlake-subscriptions-mcp = "greenlake_subscriptions_mcp.server.app:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["."]
+packages = ["greenlake_subscriptions_mcp"]
+exclude = [
+    "tests/",
+    "**/__pycache__/",
+    "**/*.pyc",
+    ".gitignore",
+    "Makefile",
+    "uv.lock",
+]
 
 [tool.black]
 line-length = 120
@@ -61,6 +90,6 @@ target-version = "py310"
 
 [dependency-groups]
 dev = [
-    "pytest>=9.0.2",
+    "pytest>=9.0.3",
     "pytest-asyncio>=1.3.0",
 ]

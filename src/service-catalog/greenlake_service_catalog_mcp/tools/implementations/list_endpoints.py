@@ -48,20 +48,26 @@ async def list_endpoints(
 
     all_endpoints: list[dict[str, str]] = [
         {
-            "endpoint": "GET:/service-catalog/v1beta1/service-offer-regions",
-            "summary": "getserviceofferregions",
-            "type": "list",
-        },
-        {
             "endpoint": "GET:/service-catalog/v1beta1/service-provisions",
             "summary": "getserviceprovisions",
             "type": "list",
         },
+        {"endpoint": "GET:/service-catalog/v1/service-managers", "summary": "get_service_managers_v1", "type": "list"},
+        {
+            "endpoint": "GET:/service-catalog/v1/service-managers/{id}",
+            "summary": "get_service_manager_v1",
+            "type": "detail",
+        },
+        {
+            "endpoint": "GET:/service-catalog/v1/service-manager-provisions/{id}",
+            "summary": "get_service_manager_provision_v1",
+            "type": "detail",
+        },
         {"endpoint": "GET:/service-catalog/v1beta1/service-offers", "summary": "getserviceoffers", "type": "list"},
         {
-            "endpoint": "GET:/service-catalog/v1beta1/service-offer-regions/{id}",
-            "summary": "getserviceofferregion",
-            "type": "detail",
+            "endpoint": "GET:/service-catalog/v1/per-region-service-managers",
+            "summary": "per_region_service_managers_v1",
+            "type": "list",
         },
         {
             "endpoint": "GET:/service-catalog/v1/per-region-service-managers/{id}",
@@ -69,25 +75,9 @@ async def list_endpoints(
             "type": "detail",
         },
         {
-            "endpoint": "GET:/service-catalog/v1/service-manager-provisions",
-            "summary": "get_service_manager_provisions_v1",
+            "endpoint": "GET:/service-catalog/v1beta1/service-offer-regions",
+            "summary": "getserviceofferregions",
             "type": "list",
-        },
-        {"endpoint": "GET:/service-catalog/v1/service-managers", "summary": "get_service_managers_v1", "type": "list"},
-        {
-            "endpoint": "GET:/service-catalog/v1/service-manager-provisions/{id}",
-            "summary": "get_service_manager_provision_v1",
-            "type": "detail",
-        },
-        {
-            "endpoint": "GET:/service-catalog/v1/per-region-service-managers",
-            "summary": "per_region_service_managers_v1",
-            "type": "list",
-        },
-        {
-            "endpoint": "GET:/service-catalog/v1beta1/service-provisions/{id}",
-            "summary": "getserviceprovision",
-            "type": "detail",
         },
         {
             "endpoint": "GET:/service-catalog/v1beta1/service-offers/{id}",
@@ -95,9 +85,19 @@ async def list_endpoints(
             "type": "detail",
         },
         {
-            "endpoint": "GET:/service-catalog/v1/service-managers/{id}",
-            "summary": "get_service_manager_v1",
+            "endpoint": "GET:/service-catalog/v1beta1/service-offer-regions/{id}",
+            "summary": "getserviceofferregion",
             "type": "detail",
+        },
+        {
+            "endpoint": "GET:/service-catalog/v1beta1/service-provisions/{id}",
+            "summary": "getserviceprovision",
+            "type": "detail",
+        },
+        {
+            "endpoint": "GET:/service-catalog/v1/service-manager-provisions",
+            "summary": "get_service_manager_provisions_v1",
+            "type": "list",
         },
     ]
 

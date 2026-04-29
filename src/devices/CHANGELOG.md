@@ -5,20 +5,31 @@ All notable changes to the HPE GreenLake Devices MCP Server will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.2] - 2026-03-09
+## [1.1.0] - 2026-04-29
 
 ### Changed
 
-  - Path parameters in generated tools now use URL encoding for proper handling of special characters
-  - Static tools (example_tool.py template) use urllib.parse.quote(value, safe="")
-  - Dynamic tools (invoke_dynamic_tool.py template) use urllib.parse.quote(value, safe="")
+- Renamed PyPI package from `devices-mcp` to `greenlake-devices-mcp` for consistent HPE GreenLake branding
+- Moved source code into `greenlake_devices_mcp/` package folder to resolve namespace collisions when multiple MCP servers are installed in the same Python environment
+
+### Added
+
+- Added `server.json` MCP Registry manifest to support publishing to the MCP Registry (`registry.modelcontextprotocol.io`)
+
+## [1.0.2] - 2026-03-02
+
+### Changed
+
+- Path parameters in generated tools now use URL encoding for proper handling of special characters
+- Static tools (example_tool.py template) use urllib.parse.quote(value, safe="")
+- Dynamic tools (invoke_dynamic_tool.py template) use urllib.parse.quote(value, safe="")
 
 ### Security
 
-  - Dynamic tools now sanitize user-provided headers to prevent injection attacks
-  - Added FORBIDDEN_HEADERS constant listing security-sensitive headers
-  - Added _sanitize_headers() method to strip Authorization, Host, Cookie, X-Forwarded-* headers
-  - Prevents callers from overriding security-critical headers in API requests
+- Dynamic tools now sanitize user-provided headers to prevent injection attacks
+- Added FORBIDDEN_HEADERS constant listing security-sensitive headers
+- Added _sanitize_headers() method to strip Authorization, Host, Cookie, X-Forwarded-* headers
+- Prevents callers from overriding security-critical headers in API requests
 
 ## [1.0.1] - 2026-01-07
 

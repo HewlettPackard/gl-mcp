@@ -12,8 +12,8 @@ import stat
 import tempfile
 from loguru import logger as loguru_logger
 
-from config.settings import settings, Settings
-from config.logging import setup_logging, get_logger
+from greenlake_reporting_mcp.config.settings import settings, Settings
+from greenlake_reporting_mcp.config.logging import setup_logging, get_logger
 
 
 class TestSettings:

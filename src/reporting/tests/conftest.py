@@ -9,8 +9,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from config.settings import Settings
-from utils.http_client import ReportingHttpClient
+from greenlake_reporting_mcp.config.settings import Settings
+from greenlake_reporting_mcp.utils.http_client import ReportingHttpClient
 from tests.shared.http import make_json_response
 
 
@@ -61,8 +61,8 @@ def reset_singletons(request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyP
     integration tests so TokenManager performs real OAuth instead of returning
     the fake 'test_token_12345' token.
     """
-    import config.settings as settings_module
-    import utils.http_client as http_client_module
+    import greenlake_reporting_mcp.config.settings as settings_module
+    import greenlake_reporting_mcp.utils.http_client as http_client_module
 
     if request.node.get_closest_marker("integration"):
         # Prevent is_testing=True caused by PYTEST_CURRENT_TEST env var

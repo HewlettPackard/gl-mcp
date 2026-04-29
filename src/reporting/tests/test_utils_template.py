@@ -9,14 +9,14 @@ import pytest
 from unittest.mock import Mock, patch
 import httpx
 
-from utils.http_client import ReportingHttpClient, get_http_client
+from greenlake_reporting_mcp.utils.http_client import ReportingHttpClient, get_http_client
 from contextlib import contextmanager as _cm
 
 
 @_cm
 def _maybe_patch_token_manager(manager_mock):
     """Patch TokenManager with the given mock (OAuth2 mode)."""
-    with patch("utils.http_client.TokenManager", return_value=manager_mock):
+    with patch("greenlake_reporting_mcp.utils.http_client.TokenManager", return_value=manager_mock):
         yield
 
 
@@ -220,7 +220,7 @@ class TestHttpClientFactory:
 
     def test_get_http_client(self):
         """Test getting HTTP client instance."""
-        with patch("utils.http_client.ReportingHttpClient") as mock_client_class:
+        with patch("greenlake_reporting_mcp.utils.http_client.ReportingHttpClient") as mock_client_class:
             mock_client = Mock()
             mock_client_class.return_value = mock_client
 
@@ -232,11 +232,11 @@ class TestHttpClientFactory:
     def test_get_http_client_multiple_calls(self):
         """Test that multiple calls return the same instance."""
         # Reset the global client first
-        import utils.http_client
+        import greenlake_reporting_mcp.utils.http_client as _http_mod
 
-        utils.http_client._http_client = None
+        _http_mod._http_client = None
         # Mock TokenManager to avoid real authentication
-        with patch("utils.http_client.TokenManager") as mock_token_manager_class:
+        with patch("greenlake_reporting_mcp.utils.http_client.TokenManager") as mock_token_manager_class:
             mock_token_manager = Mock()
             mock_token_manager.get_auth_headers.return_value = {
                 "Authorization": "Bearer test-token",

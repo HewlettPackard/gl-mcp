@@ -8,7 +8,7 @@ from typing import Any
 import pytest
 from pydantic import ValidationError as PydanticValidationError
 
-from models import (
+from greenlake_users_mcp.models import (
     BaseModel,
     StandardErrorResponse,
     UserLanguages,
@@ -96,8 +96,14 @@ MODEL_TEST_MATRIX = [
         "name": "NBUser",
         "fields": [
             {
-                "name": "createdAt",
-                "sanitized": "createdAt",
+                "name": "generation",
+                "sanitized": "generation",
+                "type": r"integer",
+                "required": False,
+            },
+            {
+                "name": "lastLogin",
+                "sanitized": "lastLogin",
                 "type": r"string",
                 "required": False,
             },
@@ -108,20 +114,26 @@ MODEL_TEST_MATRIX = [
                 "required": True,
             },
             {
-                "name": "lastLogin",
-                "sanitized": "lastLogin",
+                "name": "resourceUri",
+                "sanitized": "resourceUri",
                 "type": r"string",
                 "required": False,
             },
             {
-                "name": "username",
-                "sanitized": "username",
+                "name": "userStatus",
+                "sanitized": "userStatus",
                 "type": r"string",
-                "required": True,
+                "required": False,
             },
             {
-                "name": "resourceUri",
-                "sanitized": "resourceUri",
+                "name": "updatedAt",
+                "sanitized": "updatedAt",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "createdAt",
+                "sanitized": "createdAt",
                 "type": r"string",
                 "required": False,
             },
@@ -132,22 +144,10 @@ MODEL_TEST_MATRIX = [
                 "required": True,
             },
             {
-                "name": "userStatus",
-                "sanitized": "userStatus",
+                "name": "username",
+                "sanitized": "username",
                 "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "generation",
-                "sanitized": "generation",
-                "type": r"integer",
-                "required": False,
-            },
-            {
-                "name": "updatedAt",
-                "sanitized": "updatedAt",
-                "type": r"string",
-                "required": False,
+                "required": True,
             },
         ],
     },
@@ -155,6 +155,12 @@ MODEL_TEST_MATRIX = [
         "model": NBUserPaginate,
         "name": "NBUserPaginate",
         "fields": [
+            {
+                "name": "total",
+                "sanitized": "total",
+                "type": r"integer",
+                "required": True,
+            },
             {
                 "name": "count",
                 "sanitized": "count",
@@ -173,12 +179,6 @@ MODEL_TEST_MATRIX = [
                 "type": r"integer",
                 "required": True,
             },
-            {
-                "name": "total",
-                "sanitized": "total",
-                "type": r"integer",
-                "required": True,
-            },
         ],
     },
     {
@@ -186,15 +186,15 @@ MODEL_TEST_MATRIX = [
         "name": "NBUserPreferences",
         "fields": [
             {
-                "name": "idleTimeout",
-                "sanitized": "idleTimeout",
-                "type": r"integer",
-                "required": False,
-            },
-            {
                 "name": "language",
                 "sanitized": "language",
                 "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "idleTimeout",
+                "sanitized": "idleTimeout",
+                "type": r"integer",
                 "required": False,
             },
         ],

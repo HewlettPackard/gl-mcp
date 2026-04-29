@@ -1,5 +1,7 @@
 # users MCP Server
 
+<!-- mcp-name: io.github.HewlettPackard/greenlake-users-mcp -->
+
 HPE GreenLake users MCP Server provides read-only access to the HPE GreenLake users APIs through the Model Context Protocol.
 
 ## Overview
@@ -24,6 +26,24 @@ This MCP server enables AI assistants and development tools to interact with HPE
 
 ### Installation
 
+<!-- @begin:pypi -->
+**From PyPI (recommended):**
+
+```bash
+pip install greenlake-users-mcp
+```
+
+After installation, run the server with:
+
+```bash
+python -m greenlake_users_mcp
+```
+
+<!-- @end -->
+
+<!-- @begin:source -->
+**From source (development):**
+
 1. Navigate to the service directory:
 
    ```bash
@@ -39,6 +59,8 @@ This MCP server enables AI assistants and development tools to interact with HPE
 3. Configure environment variables (see Configuration section)
 
 4. Configure in your MCP client (see MCP Client Configuration section below)
+
+<!-- @end -->
 
 ## Configuration
 
@@ -157,14 +179,16 @@ Configure the `MCP_TOOL_MODE` environment variable in your MCP client configurat
 
 Add to your `.vscode/mcp.json`:
 
+<!-- @begin:pypi -->
+**Using PyPI package:**
+
 ```json
 {
   "servers": {
     "users": {
       "type": "stdio",
-      "command": "uv",
-      "args": ["run", "python", "__main__.py"],
-      "cwd": "/path/to/mcp-generator/mcps/users",
+      "command": "python",
+      "args": ["-m", "greenlake_users_mcp"],
       "env": {
         "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
         "GREENLAKE_CLIENT_ID": "your-client-id",
@@ -179,22 +203,23 @@ Add to your `.vscode/mcp.json`:
 }
 ```
 
-### Claude Desktop
+<!-- @end -->
 
-Add to your `claude_desktop_config.json`:
+<!-- @begin:source -->
+**Using uv (from source):**
 
 ```json
 {
   "servers": {
     "users": {
-      "type": "stdio", 
+      "type": "stdio",
       "command": "uv",
       "args": ["run", "python", "__main__.py"],
-      "cwd": "/path/to/mcp-generator/mcps/users",
+      "cwd": "/path/to/gl-mcp/src/users",
       "env": {
         "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
         "GREENLAKE_CLIENT_ID": "your-client-id",
-        "GREENLAKE_CLIENT_SECRET": "your-client-secret", 
+        "GREENLAKE_CLIENT_SECRET": "your-client-secret",
         "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
         "MCP_TOOL_MODE": "static",
         "GREENLAKE_LOG_LEVEL": "INFO",
@@ -204,6 +229,63 @@ Add to your `claude_desktop_config.json`:
   }
 }
 ```
+
+<!-- @end -->
+
+### Claude Desktop
+
+Add to your `claude_desktop_config.json`:
+
+<!-- @begin:pypi -->
+**Using PyPI package:**
+
+```json
+{
+  "mcpServers": {
+    "users": {
+      "command": "python",
+      "args": ["-m", "greenlake_users_mcp"],
+      "env": {
+        "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
+        "GREENLAKE_CLIENT_ID": "your-client-id",
+        "GREENLAKE_CLIENT_SECRET": "your-client-secret",
+        "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
+        "MCP_TOOL_MODE": "static",
+        "GREENLAKE_LOG_LEVEL": "INFO",
+        "GREENLAKE_FILE_LOGGING": "false"
+      }
+    }
+  }
+}
+```
+
+<!-- @end -->
+
+<!-- @begin:source -->
+**Using uv (from source):**
+
+```json
+{
+  "mcpServers": {
+    "users": {
+      "command": "uv",
+      "args": ["run", "python", "__main__.py"],
+      "cwd": "/path/to/gl-mcp/src/users",
+      "env": {
+        "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
+        "GREENLAKE_CLIENT_ID": "your-client-id",
+        "GREENLAKE_CLIENT_SECRET": "your-client-secret",
+        "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
+        "MCP_TOOL_MODE": "static",
+        "GREENLAKE_LOG_LEVEL": "INFO",
+        "GREENLAKE_FILE_LOGGING": "false"
+      }
+    }
+  }
+}
+```
+
+<!-- @end -->
 
 ## Available Tools
 
@@ -220,8 +302,8 @@ Rate limit: 300 requests per minute per workspace, resulting in a `429` error if
 
   - `filter` (str, optional):  
     Filter data using a subset of OData 4.0 and return only the subset of resources that match the filter. Supported classes and examples include: - **Types**: timestamp, string - **Comparison**: eq, ne, gt, ge, lt - **Logical Expressions**: and, or, not The Get users API can be filtered by: - id - username - userStatus - createdAt - updatedAt - lastLogin userStatus can be one of the following: - UNVERIFIED - VERIFIED - BLOCKED - DELETE_IN_PROGRESS - DELETED - SUSPENDED **Note**:
-    The userStatus filter is case-sensitive. Examples: - updatedAt gt '2020-09-21T14:19:09.769747' Returns users updated after 2020-09-21T14:19:09.769747 - userStatus ne 'UNVERIFIED' Returns users that are not unverified. - username eq '<user@example.com>' Returns the user with a specific username. - createdAt gt '2020-09-21T14:19:09.769747' Returns users created after 2020-09-21T14:19:09.769747 - username eq '<user@example.com>' Returns the user with a specific email. - id eq
-    '7600415a-8876-5722-9f3c-b0fd11112283' Returns the user with a specific ID. - lastLogin lt '2020-09-21T14:19:09.769747' Returns users that logged in before 2020-09-21T14:19:09.769747 **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: createdAt, generation, id, lastLogin, resourceUri, type, updatedAt, userStatus, username
+    The userStatus filter is case-sensitive. Examples: - username eq '<user@example.com>' Returns the user with a specific username. - createdAt gt '2020-09-21T14:19:09.769747' Returns users created after 2020-09-21T14:19:09.769747 - username eq '<user@example.com>' Returns the user with a specific email. - id eq '7600415a-8876-5722-9f3c-b0fd11112283' Returns the user with a specific ID. - lastLogin lt '2020-09-21T14:19:09.769747' Returns users that logged in before
+    2020-09-21T14:19:09.769747 - updatedAt gt '2020-09-21T14:19:09.769747' Returns users updated after 2020-09-21T14:19:09.769747 - userStatus ne 'UNVERIFIED' Returns users that are not unverified. **Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
   - `offset` (int, optional):  
     Specify pagination offset. An offset argument defines how many pages to skip before returning results.
   - `limit` (int, optional):  
@@ -276,46 +358,46 @@ make clean         # Clean build artifacts
 
 ```text
 users/
-├── __main__.py             # Entry point
 ├── pyproject.toml          # Dependencies and configuration
 ├── README.md               # This file
 ├── Makefile                # Development commands
-├── auth/                   # Authentication components
+├── greenlake_users_mcp/           # Python package
 │   ├── __init__.py
-│   ├── oauth2_provider.py  # OAuth2 client credentials
-│   └── token_manager.py    # Token lifecycle management
-├── config/                 # Configuration management
-│   ├── __init__.py
-│   ├── logging.py          # Logging configuration
-│   └── settings.py         # Application settings
-├── models/                 # Data models
-│   ├── __init__.py
-│   └── base.py             # Base model classes
-├── server/                 # MCP server implementation
-│   ├── __init__.py
-│   ├── app.py              # Application factory
-│   └── mcp_server.py       # MCP server core
-├── tools/                  # MCP tools
-│   ├── __init__.py
-│   ├── base.py             # Base tool class
-│   ├── registry.py         # Tool registration
-│   └── implementations/    # Tool implementations
-│       ├── __init__.py
-│       └── example_tool.py # Example tool template
-├── tests/                  # Test suite
-│   ├── __init__.py
-│   ├── conftest.py         # Shared fixtures
-│   ├── shared/
-│   │   └── http.py        # Testing helpers
-│   ├── unit/
+│   ├── __main__.py         # Entry point
+│   ├── _version.py         # Version constants
+│   ├── auth/               # Authentication components
 │   │   ├── __init__.py
-│   │   └── test_*.py      # Unit tests
-│   └── integration/
+│   │   ├── oauth2_provider.py  # OAuth2 client credentials
+│   │   └── token_manager.py    # Token lifecycle management
+│   ├── config/             # Configuration management
+│   │   ├── __init__.py
+│   │   ├── logging.py      # Logging configuration
+│   │   └── settings.py     # Application settings
+│   ├── models/             # Data models
+│   │   ├── __init__.py
+│   │   └── base.py         # Base model classes
+│   ├── server/             # MCP server implementation
+│   │   ├── __init__.py
+│   │   ├── app.py          # Application factory
+│   │   ├── fastmcp_instance.py # FastMCP singleton
+│   │   └── mcp_server.py   # MCP server core
+│   ├── tools/              # MCP tools
+│   │   ├── __init__.py
+│   │   ├── base.py         # Base tool class
+│   │   ├── registry.py     # Tool registration
+│   │   └── implementations/
+│   │       └── *.py        # Tool implementations
+│   └── utils/              # Utility modules
 │       ├── __init__.py
-│       └── test_live_tools.py
-└── utils/                  # Utility modules
-    ├── __init__.py
-    └── http_client.py      # HTTP client utilities
+│       └── http_client.py  # HTTP client utilities
+└── tests/                  # Test suite
+    ├── conftest.py         # Shared fixtures
+    ├── shared/
+    │   └── http.py         # Testing helpers
+    ├── unit/
+    │   └── test_*.py       # Unit tests
+    └── integration/
+        └── test_live_tools.py
 ```
 
 ### Adding New Tools
@@ -369,7 +451,12 @@ The generated suite provides:
 **Server won't start:**
 
 - Verify environment variables are set
+<!-- @begin:source -->
 - Check uv dependencies are installed
+<!-- @end -->
+<!-- @begin:pypi -->
+- Check that the package is installed: `pip show greenlake-users-mcp`
+<!-- @end -->
 - Review log output for specific errors
 
 **Authentication failures:**

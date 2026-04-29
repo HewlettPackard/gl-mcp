@@ -1,0 +1,41 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.HewlettPackard/greenlake-workspaces-mcp",
+  "description": "HPE GreenLake workspaces MCP Server",
+  "version": "1.1.0",
+  "author": "HPE GreenLake Platform Team",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/HewlettPackard/gl-mcp/tree/main/src/workspaces",
+  "repository": {
+    "url": "https://github.com/HewlettPackard/gl-mcp",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "greenlake-workspaces-mcp",
+      "version": "1.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "capabilities": {
+    "tools": [
+      {
+        "name": "get_workspace_workspaces_v1_workspaces_workspaceid_get",
+        "description": "Retrieve basic workspace information for a provided workspace identifier."
+      },
+      {
+        "name": "get_workspace_detailed_info_workspaces_v1_workspaces_wo_5c14f2bc",
+        "description": "Retrieve detailed workspace information."
+      }
+    ]
+  },
+  "tags": [
+    "hpe",
+    "greenlake",
+    "mcp",
+    "workspaces"
+  ]
+}

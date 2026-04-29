@@ -28,19 +28,19 @@ install:
 test: install
 	@if command -v uv >/dev/null 2>&1; then \
 		echo "Running full test suite with uv..."; \
-		uv run pytest --cov=. --cov-report=term-missing; \
+		uv run pytest --cov=greenlake_users_mcp --cov-report=term-missing; \
 	else \
 		echo "Running full test suite with python3..."; \
-		python3 -m pytest --cov=. --cov-report=term-missing; \
+		python3 -m pytest --cov=greenlake_users_mcp --cov-report=term-missing; \
 	fi
 
 test-unit: install
 	@if command -v uv >/dev/null 2>&1; then \
 		echo "Running unit tests with uv..."; \
-		uv run pytest -m "not integration" --cov=. --cov-report=term-missing; \
+		uv run pytest -m "not integration" --cov=greenlake_users_mcp --cov-report=term-missing; \
 	else \
 		echo "Running unit tests with python3..."; \
-		python3 -m pytest -m "not integration" --cov=. --cov-report=term-missing; \
+		python3 -m pytest -m "not integration" --cov=greenlake_users_mcp --cov-report=term-missing; \
 	fi
 
 test-integration: install

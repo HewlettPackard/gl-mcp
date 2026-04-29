@@ -8,7 +8,7 @@ This file contains tests for version constants and User-Agent string generation.
 
 def test_version_module_imports():
     """Test that version module can be imported and has required constants."""
-    from _version import SERVER_NAME, SERVER_VERSION, USER_AGENT
+    from greenlake_workspaces_mcp._version import SERVER_NAME, SERVER_VERSION, USER_AGENT
 
     assert SERVER_NAME is not None
     assert SERVER_VERSION is not None
@@ -17,7 +17,7 @@ def test_version_module_imports():
 
 def test_server_name_format():
     """Test that server name is in kebab-case format."""
-    from _version import SERVER_NAME
+    from greenlake_workspaces_mcp._version import SERVER_NAME
 
     # Server name should be a non-empty string
     assert isinstance(SERVER_NAME, str)
@@ -31,7 +31,7 @@ def test_server_name_format():
 
 def test_server_version_format():
     """Test that server version is a valid version string."""
-    from _version import SERVER_VERSION
+    from greenlake_workspaces_mcp._version import SERVER_VERSION
 
     # Version should be a non-empty string
     assert isinstance(SERVER_VERSION, str)
@@ -50,7 +50,7 @@ def test_server_version_format():
 
 def test_user_agent_format():
     """Test that User-Agent string follows the expected format."""
-    from _version import USER_AGENT, SERVER_NAME, SERVER_VERSION
+    from greenlake_workspaces_mcp._version import USER_AGENT, SERVER_NAME, SERVER_VERSION
 
     # User-Agent should follow format: HPE-GreenLake-MCP/{server-name}-{version}
     assert isinstance(USER_AGENT, str)
@@ -71,14 +71,14 @@ def test_user_agent_format():
 
 def test_user_agent_no_spaces():
     """Test that User-Agent string contains no spaces."""
-    from _version import USER_AGENT
+    from greenlake_workspaces_mcp._version import USER_AGENT
 
     assert " " not in USER_AGENT, "User-Agent should not contain spaces"
 
 
 def test_user_agent_immutable():
     """Test that version constants are strings (immutable)."""
-    from _version import SERVER_NAME, SERVER_VERSION, USER_AGENT
+    from greenlake_workspaces_mcp._version import SERVER_NAME, SERVER_VERSION, USER_AGENT
 
     assert isinstance(SERVER_NAME, str)
     assert isinstance(SERVER_VERSION, str)
@@ -87,7 +87,7 @@ def test_user_agent_immutable():
 
 def test_user_agent_construction():
     """Test that User-Agent is constructed correctly from components."""
-    from _version import SERVER_NAME, SERVER_VERSION, USER_AGENT
+    from greenlake_workspaces_mcp._version import SERVER_NAME, SERVER_VERSION, USER_AGENT
 
     # Manually construct what the User-Agent should be
     expected_user_agent = f"HPE-GreenLake-MCP/{SERVER_NAME}-{SERVER_VERSION}"

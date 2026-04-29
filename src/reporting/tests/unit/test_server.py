@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from mcp.types import Tool
-from server.mcp_server import MCPServer
+from greenlake_reporting_mcp.server.mcp_server import MCPServer
 
 
 # ---------------------------------------------------------------------------
@@ -42,8 +42,8 @@ async def test_initialize_populates_tools_from_fastmcp(mock_http_client):
     dummy_tool = _make_fastmcp_tool("dummy")
 
     with (
-        patch("server.mcp_server.get_http_client", return_value=mock_http_client),
-        patch("server.mcp_server.get_tool_classes", return_value=[]),
+        patch("greenlake_reporting_mcp.server.mcp_server.get_http_client", return_value=mock_http_client),
+        patch("greenlake_reporting_mcp.server.mcp_server.get_tool_classes", return_value=[]),
     ):
         # Pre-seed FastMCP's tool manager so initialize() can read it back
         server.mcp._tool_manager._tools = {"dummy": dummy_tool}

@@ -9,7 +9,15 @@ import pytest
 from unittest.mock import Mock, patch
 import httpx
 
-from utils.http_client import WorkspacesHttpClient, get_http_client
+from greenlake_workspaces_mcp.utils.http_client import WorkspacesHttpClient, get_http_client
+from contextlib import contextmanager as _cm
+
+
+@_cm
+def _maybe_patch_token_manager(manager_mock):
+    """Patch TokenManager with the given mock (OAuth2 mode)."""
+    with patch("greenlake_workspaces_mcp.utils.http_client.TokenManager", return_value=manager_mock):
+        yield
 
 
 class TestWorkspacesHttpClient:
@@ -28,7 +36,7 @@ class TestWorkspacesHttpClient:
     @pytest.fixture
     def http_client(self, mock_token_manager):
         """Create HTTP client instance for testing."""
-        with patch("utils.http_client.TokenManager", return_value=mock_token_manager):
+        with _maybe_patch_token_manager(mock_token_manager):
             return WorkspacesHttpClient()
 
     def test_http_client_initialization(self, http_client):
@@ -62,14 +70,16 @@ class TestWorkspacesHttpClient:
         """Test that authentication headers include User-Agent."""
         headers = await http_client._get_auth_headers()
 
-        # Verify all required headers are present
-        assert "Authorization" in headers
+        # Verify required headers are always present
         assert "Accept" in headers
         assert "User-Agent" in headers
 
-        # Verify User-Agent format
+        # Verify header values
         assert headers["User-Agent"].startswith("HPE-GreenLake-MCP/")
         assert headers["Accept"] == "application/json"
+        # OAuth2 mode: verify authentication and GLP tracking headers
+        assert "Authorization" in headers
+        assert headers["HPE-AI-Origin"] == "mcp"
 
     @pytest.mark.asyncio
     async def test_get_request_with_additional_headers(self, http_client):
@@ -91,6 +101,7 @@ class TestWorkspacesHttpClient:
             assert headers["Authorization"] == "Bearer test-access-token"
             assert headers["X-Custom-Header"] == "custom-value"
             assert headers["User-Agent"].startswith("HPE-GreenLake-MCP/")
+            assert headers["HPE-AI-Origin"] == "mcp"
 
     @pytest.mark.asyncio
     async def test_post_request_success(self, http_client, mock_token_manager):
@@ -209,7 +220,7 @@ class TestHttpClientFactory:
 
     def test_get_http_client(self):
         """Test getting HTTP client instance."""
-        with patch("utils.http_client.WorkspacesHttpClient") as mock_client_class:
+        with patch("greenlake_workspaces_mcp.utils.http_client.WorkspacesHttpClient") as mock_client_class:
             mock_client = Mock()
             mock_client_class.return_value = mock_client
 
@@ -221,12 +232,11 @@ class TestHttpClientFactory:
     def test_get_http_client_multiple_calls(self):
         """Test that multiple calls return the same instance."""
         # Reset the global client first
-        import utils.http_client
+        import greenlake_workspaces_mcp.utils.http_client as _http_mod
 
-        utils.http_client._http_client = None
-
+        _http_mod._http_client = None
         # Mock TokenManager to avoid real authentication
-        with patch("utils.http_client.TokenManager") as mock_token_manager_class:
+        with patch("greenlake_workspaces_mcp.utils.http_client.TokenManager") as mock_token_manager_class:
             mock_token_manager = Mock()
             mock_token_manager.get_auth_headers.return_value = {
                 "Authorization": "Bearer test-token",
@@ -257,7 +267,7 @@ class TestHttpClientIntegration:
     @pytest.mark.asyncio
     async def test_full_request_cycle(self, integration_token_manager):
         """Test full request cycle with authentication."""
-        with patch("utils.http_client.TokenManager", return_value=integration_token_manager):
+        with _maybe_patch_token_manager(integration_token_manager):
             http_client = WorkspacesHttpClient()
 
             with patch.object(http_client.client, "get") as mock_get:
@@ -273,7 +283,6 @@ class TestHttpClientIntegration:
                 # Verify result
                 assert result["service"] == "workspaces"
                 assert result["status"] == "healthy"
-
                 # Verify authentication was included
                 call_args = mock_get.call_args
                 headers = call_args.kwargs.get("headers", {})
@@ -282,7 +291,7 @@ class TestHttpClientIntegration:
     @pytest.mark.asyncio
     async def test_error_recovery_flow(self, integration_token_manager):
         """Test error recovery flow."""
-        with patch("utils.http_client.TokenManager", return_value=integration_token_manager):
+        with _maybe_patch_token_manager(integration_token_manager):
             http_client = WorkspacesHttpClient()
 
             # First request fails, second succeeds
@@ -321,7 +330,7 @@ class TestHttpClientErrorHandling:
             "Content-Type": "application/json",
         }
 
-        with patch("utils.http_client.TokenManager", return_value=mock_token_manager):
+        with _maybe_patch_token_manager(mock_token_manager):
             return WorkspacesHttpClient()
 
     @pytest.mark.asyncio
@@ -384,7 +393,7 @@ class TestHttpClientPerformance:
             "Content-Type": "application/json",
         }
 
-        with patch("utils.http_client.TokenManager", return_value=mock_token_manager):
+        with _maybe_patch_token_manager(mock_token_manager):
             http_client = WorkspacesHttpClient()
 
             # Mock multiple successful requests
@@ -413,7 +422,7 @@ class TestHttpClientPerformance:
             "Content-Type": "application/json",
         }
 
-        with patch("utils.http_client.TokenManager", return_value=mock_token_manager):
+        with _maybe_patch_token_manager(mock_token_manager):
             http_client = WorkspacesHttpClient()
 
             with patch.object(http_client.client, "get") as mock_get:

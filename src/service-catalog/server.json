@@ -1,0 +1,81 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.HewlettPackard/greenlake-service-catalog-mcp",
+  "description": "HPE GreenLake service-catalog MCP Server",
+  "version": "1.0.1",
+  "author": "HPE GreenLake Platform Team",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/HewlettPackard/gl-mcp/tree/main/src/service-catalog",
+  "repository": {
+    "url": "https://github.com/HewlettPackard/gl-mcp",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "greenlake-service-catalog-mcp",
+      "version": "1.0.1",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "capabilities": {
+    "tools": [
+      {
+        "name": "getserviceprovisions",
+        "description": "Retrieve a list of service provisions by applying filters.\nA service offer provides a distinct set of functionalities that can be independently identified and assigned access. Service offers are typically associated with roles and permissions, commerce, metering, quote-to-cash, and trial evaluations.\nA service provision occurs when a service offer is provisioned (added) to a workspace.\n<br><br>**Pagination**: This endpoint supports cursor-based pagination using the `next` query parameter. Provide the cursor in the `next` query parameter to retrieve the next page. \n"
+      },
+      {
+        "name": "get_service_managers_v1",
+        "description": "Get a list of available service managers."
+      },
+      {
+        "name": "get_service_manager_v1",
+        "description": "Retrieve details for a specific service manager by passing the service manager ID."
+      },
+      {
+        "name": "get_service_manager_provision_v1",
+        "description": "Retrieve details for a specific service manager provision entry using the ID for the entry."
+      },
+      {
+        "name": "getserviceoffers",
+        "description": "Retrieve a list of service offers by applying filters. \nA service offer provides a distinct set of functionality that can be independently identified and assigned access.\n<br><br>**Pagination:** This API supports cursor-based pagination. Provide the cursor in the `next` query parameter to retrieve the next page.\n"
+      },
+      {
+        "name": "per_region_service_managers_v1",
+        "description": "Retrieve a list of available service managers categorized by region."
+      },
+      {
+        "name": "service_managers_for_a_region_v1",
+        "description": "Retrieve a list of service managers deployed to a particular region."
+      },
+      {
+        "name": "getserviceofferregions",
+        "description": "Retrieve a list of service offer regions by applying filters.\nEach service offer region represents a service offer provisioned in a specific region.\n<br><br>**Pagination:** This API supports cursor-based pagination. Provide the cursor in the `next` query parameter to retrieve the next page.\n"
+      },
+      {
+        "name": "getserviceoffer",
+        "description": "Retrieve detailed information about a specific service offer by supplying its unique identifier in the request path.\nTo obtain valid service offer IDs, use the `Get service offers` endpoint to list available offers.\n"
+      },
+      {
+        "name": "getserviceofferregion",
+        "description": "Retrieve detailed information about a specific service offer region by providing its unique identifier in the request path.\nTo obtain valid service offer region IDs, use the `Get service offer regions` endpoint to list available regions.\n"
+      },
+      {
+        "name": "getserviceprovision",
+        "description": "Fetch service provision details for an ID."
+      },
+      {
+        "name": "get_service_manager_provisions_v1",
+        "description": "Retrieve a list of all service manager provision entries."
+      }
+    ]
+  },
+  "tags": [
+    "hpe",
+    "greenlake",
+    "mcp",
+    "service-catalog"
+  ]
+}

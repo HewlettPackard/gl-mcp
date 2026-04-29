@@ -5,6 +5,17 @@ All notable changes to the HPE GreenLake Service Catalog MCP Server will be docu
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-04-28
+
+### Changed
+
+- Renamed PyPI package from `service-catalog-mcp` to `greenlake-service-catalog-mcp` for consistent HPE GreenLake branding
+- Moved source code into `greenlake_service_catalog_mcp/` package folder to resolve namespace collisions when multiple MCP servers are installed in the same Python environment
+
+### Added
+
+- Added `server.json` MCP Registry manifest to support publishing to the MCP Registry (`registry.modelcontextprotocol.io`)
+
 ## [1.0.0] - 2026-04-22
 
 ### Added

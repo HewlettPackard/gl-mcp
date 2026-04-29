@@ -10,8 +10,8 @@ from unittest.mock import Mock, patch
 import time
 import httpx
 
-from auth.oauth2_provider import OAuth2Provider, OAuth2TokenResponse
-from auth.token_manager import TokenManager, TokenInfo
+from greenlake_audit_logs_mcp.auth.oauth2_provider import OAuth2Provider, OAuth2TokenResponse
+from greenlake_audit_logs_mcp.auth.token_manager import TokenManager, TokenInfo
 
 
 class TestTokenInfo:
@@ -101,7 +101,7 @@ class TestOAuth2Provider:
         assert "audit-logs" in oauth2_provider.token_url
         assert oauth2_provider.workspace_id == "test-workspace-id"
 
-    @patch("auth.oauth2_provider.httpx.Client")
+    @patch("greenlake_audit_logs_mcp.auth.oauth2_provider.httpx.Client")
     def test_get_token_success(self, mock_client_class, mock_token_response):
         """Test successful token acquisition for audit-logs."""
         # Setup mock client instance and response
@@ -136,7 +136,7 @@ class TestOAuth2Provider:
         mock_client_class.assert_called_once_with(timeout=30.0)
         mock_client_instance.post.assert_called_once_with(
             "https://audit-logs.example.com/oauth2/token",
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            headers={"Content-Type": "application/x-www-form-urlencoded", "HPE-AI-Origin": "mcp"},
             data={
                 "grant_type": "client_credentials",
                 "client_id": "test-client-id",
@@ -144,7 +144,7 @@ class TestOAuth2Provider:
             },
         )
 
-    @patch("auth.oauth2_provider.httpx.Client")
+    @patch("greenlake_audit_logs_mcp.auth.oauth2_provider.httpx.Client")
     def test_get_token_failure(self, mock_client_class):
         """Test failed token acquisition for audit-logs."""
         # Setup mock client to return error response
@@ -215,7 +215,7 @@ class TestOAuth2Provider:
         # Test whitespace-only token
         assert oauth2_provider.validate_token("   ") is False
 
-    @patch("auth.oauth2_provider.httpx.Client")
+    @patch("greenlake_audit_logs_mcp.auth.oauth2_provider.httpx.Client")
     def test_get_token_http_exception(self, mock_client_class):
         """Test handling of HTTP client exceptions during token acquisition."""
         # Setup mock client to raise an exception
@@ -238,8 +238,8 @@ class TestOAuth2Provider:
 
         assert "Network error" in str(exc_info.value)
 
-    @patch("auth.oauth2_provider.httpx.Client")
-    @patch("auth.oauth2_provider.time.sleep")
+    @patch("greenlake_audit_logs_mcp.auth.oauth2_provider.httpx.Client")
+    @patch("greenlake_audit_logs_mcp.auth.oauth2_provider.time.sleep")
     def test_get_token_retries_on_429(self, mock_sleep, mock_client_class):
         """Test that get_token retries on 429 rate limit errors."""
         # Setup mock client to return 429 twice, then succeed
@@ -290,8 +290,8 @@ class TestOAuth2Provider:
         mock_sleep.assert_any_call(1.0)
         mock_sleep.assert_any_call(2.0)
 
-    @patch("auth.oauth2_provider.httpx.Client")
-    @patch("auth.oauth2_provider.time.sleep")
+    @patch("greenlake_audit_logs_mcp.auth.oauth2_provider.httpx.Client")
+    @patch("greenlake_audit_logs_mcp.auth.oauth2_provider.time.sleep")
     def test_get_token_exhausts_retries_on_persistent_429(self, mock_sleep, mock_client_class):
         """Test that get_token fails after exhausting retries on persistent 429 errors."""
         # Setup mock client to always return 429
@@ -326,8 +326,8 @@ class TestOAuth2Provider:
         # Should sleep 3 times (after each of the first 3 attempts)
         assert mock_sleep.call_count == 3
 
-    @patch("auth.oauth2_provider.httpx.Client")
-    @patch("auth.oauth2_provider.time.sleep")
+    @patch("greenlake_audit_logs_mcp.auth.oauth2_provider.httpx.Client")
+    @patch("greenlake_audit_logs_mcp.auth.oauth2_provider.time.sleep")
     def test_get_token_exponential_backoff_calculation(self, mock_sleep, mock_client_class):
         """Test that exponential backoff is calculated correctly."""
         # Setup mock client to return 429 repeatedly
@@ -362,8 +362,8 @@ class TestOAuth2Provider:
         actual_calls = [call[0][0] for call in mock_sleep.call_args_list]
         assert actual_calls == expected_delays
 
-    @patch("auth.oauth2_provider.httpx.Client")
-    @patch("auth.oauth2_provider.time.sleep")
+    @patch("greenlake_audit_logs_mcp.auth.oauth2_provider.httpx.Client")
+    @patch("greenlake_audit_logs_mcp.auth.oauth2_provider.time.sleep")
     def test_get_token_respects_max_backoff(self, mock_sleep, mock_client_class):
         """Test that backoff delay respects max_backoff limit."""
         # Setup mock client to return 429 repeatedly
@@ -398,8 +398,8 @@ class TestOAuth2Provider:
         actual_calls = [call[0][0] for call in mock_sleep.call_args_list]
         assert actual_calls == expected_delays
 
-    @patch("auth.oauth2_provider.httpx.Client")
-    @patch("auth.oauth2_provider.time.sleep")
+    @patch("greenlake_audit_logs_mcp.auth.oauth2_provider.httpx.Client")
+    @patch("greenlake_audit_logs_mcp.auth.oauth2_provider.time.sleep")
     def test_get_token_no_retry_on_non_429_errors(self, mock_sleep, mock_client_class):
         """Test that non-429 errors are not retried."""
         # Setup mock client to return 401 (Unauthorized)
@@ -478,7 +478,7 @@ class TestTokenManager:
     @pytest.fixture
     def token_manager(self, mock_settings):
         """Create TokenManager instance for testing."""
-        with patch("auth.token_manager.OAuth2Provider") as mock_provider:
+        with patch("greenlake_audit_logs_mcp.auth.token_manager.OAuth2Provider") as mock_provider:
             # Mock the OAuth2 provider to avoid real network calls
             mock_provider_instance = Mock()
             mock_provider.return_value = mock_provider_instance
@@ -506,7 +506,7 @@ class TestTokenManager:
 
     def test_token_manager_initialization(self):
         """Test TokenManager initialization for audit-logs with lazy token loading."""
-        with patch("auth.token_manager.OAuth2Provider") as mock_provider_class:
+        with patch("greenlake_audit_logs_mcp.auth.token_manager.OAuth2Provider") as mock_provider_class:
             # Setup mock provider
             mock_provider = Mock()
             mock_provider_class.return_value = mock_provider
@@ -528,7 +528,7 @@ class TestTokenManager:
 
     def test_token_manager_initialization_test_mode(self):
         """Test TokenManager initialization in test mode sets test token."""
-        with patch("auth.token_manager.OAuth2Provider") as mock_provider_class:
+        with patch("greenlake_audit_logs_mcp.auth.token_manager.OAuth2Provider") as mock_provider_class:
             mock_provider = Mock()
             mock_provider_class.return_value = mock_provider
 
@@ -548,7 +548,7 @@ class TestTokenManager:
             # Verify get_token was NOT called (test token used instead)
             mock_provider.get_token.assert_not_called()
 
-    @patch("auth.token_manager.OAuth2Provider")
+    @patch("greenlake_audit_logs_mcp.auth.token_manager.OAuth2Provider")
     def test_get_valid_token_when_none_cached(self, mock_provider_class, mock_settings, valid_token):
         """Test lazy token generation when none is cached for audit-logs."""
         # Setup mock provider
@@ -570,7 +570,7 @@ class TestTokenManager:
         # Now get_token should have been called (lazy initialization)
         mock_provider.get_token.assert_called_once()
 
-    @patch("auth.token_manager.OAuth2Provider")
+    @patch("greenlake_audit_logs_mcp.auth.token_manager.OAuth2Provider")
     def test_get_valid_token_when_valid_cached(self, mock_provider_class, mock_settings, valid_token):
         """Test getting token when valid one is cached for audit-logs."""
         # Setup mock provider to return proper token
@@ -591,7 +591,7 @@ class TestTokenManager:
         # Should not call get_token since cached token is valid
         mock_provider.get_token.assert_not_called()
 
-    @patch("auth.token_manager.OAuth2Provider")
+    @patch("greenlake_audit_logs_mcp.auth.token_manager.OAuth2Provider")
     def test_get_valid_token_when_expired_cached(self, mock_provider_class, mock_settings, expired_token, valid_token):
         """Test automatic token refresh when expired token is cached for audit-logs."""
         # Setup mock provider
@@ -612,7 +612,7 @@ class TestTokenManager:
         # Should call get_token to refresh expired token
         mock_provider.get_token.assert_called_once()
 
-    @patch("auth.token_manager.OAuth2Provider")
+    @patch("greenlake_audit_logs_mcp.auth.token_manager.OAuth2Provider")
     def test_lazy_initialization_multiple_calls(self, mock_provider_class, mock_settings, valid_token):
         """Test that lazy initialization only fetches token once for multiple calls."""
         # Setup mock provider
@@ -644,7 +644,7 @@ class TestTokenManager:
         # Still only called once
         mock_provider.get_token.assert_called_once()
 
-    @patch("auth.token_manager.OAuth2Provider")
+    @patch("greenlake_audit_logs_mcp.auth.token_manager.OAuth2Provider")
     def test_initialization_with_initial_token(self, mock_provider_class, mock_settings):
         """Test TokenManager initialization with pre-provided token bypasses lazy init."""
         mock_provider = Mock()
@@ -668,7 +668,7 @@ class TestTokenManager:
 
     def test_is_token_valid_with_valid_token(self, mock_settings, valid_token):
         """Test token validity check with valid token."""
-        with patch("auth.token_manager.OAuth2Provider") as mock_provider_class:
+        with patch("greenlake_audit_logs_mcp.auth.token_manager.OAuth2Provider") as mock_provider_class:
             # Setup mock to return valid token during initialization
             mock_provider = Mock()
             mock_provider.get_token.return_value = valid_token
@@ -680,7 +680,7 @@ class TestTokenManager:
 
     def test_is_token_valid_with_expired_token(self, mock_settings, expired_token):
         """Test token validity check with expired token."""
-        with patch("auth.token_manager.OAuth2Provider") as mock_provider_class:
+        with patch("greenlake_audit_logs_mcp.auth.token_manager.OAuth2Provider") as mock_provider_class:
             # Setup mock to return expired token during initialization
             mock_provider = Mock()
             mock_provider.get_token.return_value = expired_token
@@ -692,7 +692,7 @@ class TestTokenManager:
 
     def test_is_token_valid_with_none(self, mock_settings):
         """Test token validity check with None token."""
-        with patch("auth.token_manager.OAuth2Provider") as mock_provider_class:
+        with patch("greenlake_audit_logs_mcp.auth.token_manager.OAuth2Provider") as mock_provider_class:
             # Setup mock to return a valid token during initialization but we'll clear it
             mock_provider = Mock()
             valid_init_token = OAuth2TokenResponse(
@@ -710,7 +710,7 @@ class TestTokenManager:
 
     def test_is_token_valid_with_soon_expiring_token(self, mock_settings):
         """Test token validity check with soon-to-expire token."""
-        with patch("auth.token_manager.OAuth2Provider") as mock_provider_class:
+        with patch("greenlake_audit_logs_mcp.auth.token_manager.OAuth2Provider") as mock_provider_class:
             # Setup mock to return a valid token during initialization
             mock_provider = Mock()
             valid_init_token = OAuth2TokenResponse(
@@ -735,7 +735,7 @@ class TestTokenManager:
             # Should be considered invalid due to buffer
             assert token_manager.is_token_valid() is False
 
-    @patch("auth.token_manager.OAuth2Provider")
+    @patch("greenlake_audit_logs_mcp.auth.token_manager.OAuth2Provider")
     def test_token_refresh_on_auth_error(self, mock_provider_class, mock_settings, valid_token):
         """Test manual token refresh using refresh_token method."""
         # Setup mock provider
@@ -769,7 +769,7 @@ class TestTokenManager:
         # Verify that refresh_token caused an additional call to get_token
         assert mock_provider.get_token.call_count == 2
 
-    @patch("auth.token_manager.OAuth2Provider")
+    @patch("greenlake_audit_logs_mcp.auth.token_manager.OAuth2Provider")
     def test_get_authorization_header(self, mock_provider_class, mock_settings, valid_token):
         """Test getting authorization header with lazy initialization for audit-logs."""
         # Setup mock provider
@@ -804,7 +804,7 @@ class TestAuthIntegration:
         settings.is_testing = False  # Disable test mode for integration tests
         return settings
 
-    @patch("auth.oauth2_provider.httpx.Client")
+    @patch("greenlake_audit_logs_mcp.auth.oauth2_provider.httpx.Client")
     def test_end_to_end_token_flow(self, mock_client_class, mock_settings):
         """Test complete lazy token acquisition and management flow for audit-logs."""
         # Setup mock httpx.Client
@@ -871,7 +871,7 @@ class TestAuthErrorHandling:
             # If this fails, there's an issue with the model itself
             pytest.fail("OAuth2TokenResponse should accept valid minimal data")
 
-    @patch("auth.token_manager.OAuth2Provider")
+    @patch("greenlake_audit_logs_mcp.auth.token_manager.OAuth2Provider")
     def test_token_manager_handles_oauth_errors(self, mock_provider_class):
         """Test TokenManager handles OAuth provider errors gracefully with lazy init."""
         # Setup mock provider to raise exception

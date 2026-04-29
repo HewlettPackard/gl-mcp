@@ -12,7 +12,9 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from tools.implementations.getreportingstatuses import getreportingstatuses
+from greenlake_reporting_mcp.tools.implementations.getreportingstatuses import (
+    getreportingstatuses as _impl_getreportingstatuses,
+)
 
 
 def _make_mock_ctx(http_client: AsyncMock | None = None) -> MagicMock:
@@ -35,7 +37,7 @@ class TestGetreportingstatusesTool:
         ctx = _make_mock_ctx()
         ctx.request_context.lifespan_context.http_client.get.return_value = {}
 
-        result = await getreportingstatuses(ctx)
+        result = await _impl_getreportingstatuses(ctx)
 
         assert isinstance(result, list)
         assert len(result) == 1
@@ -47,7 +49,7 @@ class TestGetreportingstatusesTool:
         ctx = _make_mock_ctx()
         ctx.request_context.lifespan_context.http_client.get.return_value = api_response
 
-        result = await getreportingstatuses(ctx)
+        result = await _impl_getreportingstatuses(ctx)
 
         assert result[0]["success"] is True
         assert result[0]["result"] == api_response
@@ -58,7 +60,7 @@ class TestGetreportingstatusesTool:
         ctx = _make_mock_ctx()
         ctx.request_context.lifespan_context.http_client.get.side_effect = Exception("API Error")
 
-        result = await getreportingstatuses(ctx)
+        result = await _impl_getreportingstatuses(ctx)
 
         assert result[0]["success"] is False
         assert "API Error" in result[0]["message"]
@@ -69,6 +71,6 @@ class TestGetreportingstatusesTool:
         ctx = _make_mock_ctx()
         ctx.request_context.lifespan_context.http_client.get.return_value = {}
 
-        await getreportingstatuses(ctx)
+        await _impl_getreportingstatuses(ctx)
 
         ctx.request_context.lifespan_context.http_client.get.assert_called_once()

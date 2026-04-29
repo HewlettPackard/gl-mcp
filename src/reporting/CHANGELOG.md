@@ -5,6 +5,17 @@ All notable changes to the HPE GreenLake Reporting MCP Server will be documented
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-04-28
+
+### Changed
+
+- Renamed PyPI package from `reporting-mcp` to `greenlake-reporting-mcp` for consistent HPE GreenLake branding
+- Moved source code into `greenlake_reporting_mcp/` package folder to resolve namespace collisions when multiple MCP servers are installed in the same Python environment
+
+### Added
+
+- Added `server.json` MCP Registry manifest to support publishing to the MCP Registry (`registry.modelcontextprotocol.io`)
+
 ## [1.0.0] - 2026-03-24
 
 ### Added

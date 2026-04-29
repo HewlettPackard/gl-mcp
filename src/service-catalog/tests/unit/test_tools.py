@@ -7,70 +7,45 @@ from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from greenlake_service_catalog_mcp.tools.implementations.getserviceofferregions import (
-    getserviceofferregions as _impl_getserviceofferregions,
-)
 from greenlake_service_catalog_mcp.tools.implementations.getserviceprovisions import (
     getserviceprovisions as _impl_getserviceprovisions,
-)
-from greenlake_service_catalog_mcp.tools.implementations.getserviceoffers import (
-    getserviceoffers as _impl_getserviceoffers,
-)
-from greenlake_service_catalog_mcp.tools.implementations.getserviceofferregion import (
-    getserviceofferregion as _impl_getserviceofferregion,
-)
-from greenlake_service_catalog_mcp.tools.implementations.service_managers_for_a_region_v1 import (
-    service_managers_for_a_region_v1 as _impl_service_managers_for_a_region_v1,
-)
-from greenlake_service_catalog_mcp.tools.implementations.get_service_manager_provisions_v1 import (
-    get_service_manager_provisions_v1 as _impl_get_service_manager_provisions_v1,
 )
 from greenlake_service_catalog_mcp.tools.implementations.get_service_managers_v1 import (
     get_service_managers_v1 as _impl_get_service_managers_v1,
 )
+from greenlake_service_catalog_mcp.tools.implementations.get_service_manager_v1 import (
+    get_service_manager_v1 as _impl_get_service_manager_v1,
+)
 from greenlake_service_catalog_mcp.tools.implementations.get_service_manager_provision_v1 import (
     get_service_manager_provision_v1 as _impl_get_service_manager_provision_v1,
+)
+from greenlake_service_catalog_mcp.tools.implementations.getserviceoffers import (
+    getserviceoffers as _impl_getserviceoffers,
 )
 from greenlake_service_catalog_mcp.tools.implementations.per_region_service_managers_v1 import (
     per_region_service_managers_v1 as _impl_per_region_service_managers_v1,
 )
+from greenlake_service_catalog_mcp.tools.implementations.service_managers_for_a_region_v1 import (
+    service_managers_for_a_region_v1 as _impl_service_managers_for_a_region_v1,
+)
+from greenlake_service_catalog_mcp.tools.implementations.getserviceofferregions import (
+    getserviceofferregions as _impl_getserviceofferregions,
+)
+from greenlake_service_catalog_mcp.tools.implementations.getserviceoffer import getserviceoffer as _impl_getserviceoffer
+from greenlake_service_catalog_mcp.tools.implementations.getserviceofferregion import (
+    getserviceofferregion as _impl_getserviceofferregion,
+)
 from greenlake_service_catalog_mcp.tools.implementations.getserviceprovision import (
     getserviceprovision as _impl_getserviceprovision,
 )
-from greenlake_service_catalog_mcp.tools.implementations.getserviceoffer import getserviceoffer as _impl_getserviceoffer
-from greenlake_service_catalog_mcp.tools.implementations.get_service_manager_v1 import (
-    get_service_manager_v1 as _impl_get_service_manager_v1,
+from greenlake_service_catalog_mcp.tools.implementations.get_service_manager_provisions_v1 import (
+    get_service_manager_provisions_v1 as _impl_get_service_manager_provisions_v1,
 )
 
 _TOOL_TEST_MATRIX: list[dict[str, Any]] = [
     {
-        "func": _impl_getserviceofferregions,
-        "name": "getserviceofferregions",
-        "method": "get",
-    },
-    {
         "func": _impl_getserviceprovisions,
         "name": "getserviceprovisions",
-        "method": "get",
-    },
-    {
-        "func": _impl_getserviceoffers,
-        "name": "getserviceoffers",
-        "method": "get",
-    },
-    {
-        "func": _impl_getserviceofferregion,
-        "name": "getserviceofferregion",
-        "method": "get",
-    },
-    {
-        "func": _impl_service_managers_for_a_region_v1,
-        "name": "service_managers_for_a_region_v1",
-        "method": "get",
-    },
-    {
-        "func": _impl_get_service_manager_provisions_v1,
-        "name": "get_service_manager_provisions_v1",
         "method": "get",
     },
     {
@@ -79,8 +54,18 @@ _TOOL_TEST_MATRIX: list[dict[str, Any]] = [
         "method": "get",
     },
     {
+        "func": _impl_get_service_manager_v1,
+        "name": "get_service_manager_v1",
+        "method": "get",
+    },
+    {
         "func": _impl_get_service_manager_provision_v1,
         "name": "get_service_manager_provision_v1",
+        "method": "get",
+    },
+    {
+        "func": _impl_getserviceoffers,
+        "name": "getserviceoffers",
         "method": "get",
     },
     {
@@ -89,8 +74,13 @@ _TOOL_TEST_MATRIX: list[dict[str, Any]] = [
         "method": "get",
     },
     {
-        "func": _impl_getserviceprovision,
-        "name": "getserviceprovision",
+        "func": _impl_service_managers_for_a_region_v1,
+        "name": "service_managers_for_a_region_v1",
+        "method": "get",
+    },
+    {
+        "func": _impl_getserviceofferregions,
+        "name": "getserviceofferregions",
         "method": "get",
     },
     {
@@ -99,8 +89,18 @@ _TOOL_TEST_MATRIX: list[dict[str, Any]] = [
         "method": "get",
     },
     {
-        "func": _impl_get_service_manager_v1,
-        "name": "get_service_manager_v1",
+        "func": _impl_getserviceofferregion,
+        "name": "getserviceofferregion",
+        "method": "get",
+    },
+    {
+        "func": _impl_getserviceprovision,
+        "name": "getserviceprovision",
+        "method": "get",
+    },
+    {
+        "func": _impl_get_service_manager_provisions_v1,
+        "name": "get_service_manager_provisions_v1",
         "method": "get",
     },
 ]

@@ -1,6 +1,6 @@
 [project]
 name = "greenlake-service-catalog-mcp"
-version = "1.0.0"
+version = "1.0.1"
 description = "HPE GreenLake service-catalog MCP Server"
 authors = [
     {name = "HPE GreenLake Platform Team", email = "greenlake-platform@hpe.com"}
@@ -25,7 +25,7 @@ dependencies = [
     "pydantic>=2.12.0",
     "pydantic-settings>=2.11.0",
     "httpx>=0.28.0",
-    "python-dotenv>=1.2.0",
+    "python-dotenv>=1.2.2",
     "loguru>=0.7.3",
 ]
 
@@ -87,3 +87,9 @@ markers = [
 [tool.ruff]
 line-length = 120
 target-version = "py310"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+    "pytest-asyncio>=1.3.0",
+]

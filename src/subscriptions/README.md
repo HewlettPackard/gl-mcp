@@ -1,5 +1,7 @@
 # subscriptions MCP Server
 
+<!-- mcp-name: io.github.HewlettPackard/greenlake-subscriptions-mcp -->
+
 HPE GreenLake subscriptions MCP Server provides read-only access to the HPE GreenLake subscriptions APIs through the Model Context Protocol.
 
 ## Overview
@@ -24,6 +26,24 @@ This MCP server enables AI assistants and development tools to interact with HPE
 
 ### Installation
 
+<!-- @begin:pypi -->
+**From PyPI (recommended):**
+
+```bash
+pip install greenlake-subscriptions-mcp
+```
+
+After installation, run the server with:
+
+```bash
+python -m greenlake_subscriptions_mcp
+```
+
+<!-- @end -->
+
+<!-- @begin:source -->
+**From source (development):**
+
 1. Navigate to the service directory:
 
    ```bash
@@ -39,6 +59,8 @@ This MCP server enables AI assistants and development tools to interact with HPE
 3. Configure environment variables (see Configuration section)
 
 4. Configure in your MCP client (see MCP Client Configuration section below)
+
+<!-- @end -->
 
 ## Configuration
 
@@ -157,14 +179,16 @@ Configure the `MCP_TOOL_MODE` environment variable in your MCP client configurat
 
 Add to your `.vscode/mcp.json`:
 
+<!-- @begin:pypi -->
+**Using PyPI package:**
+
 ```json
 {
   "servers": {
     "subscriptions": {
       "type": "stdio",
-      "command": "uv",
-      "args": ["run", "python", "__main__.py"],
-      "cwd": "/path/to/mcp-generator/mcps/subscriptions",
+      "command": "python",
+      "args": ["-m", "greenlake_subscriptions_mcp"],
       "env": {
         "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
         "GREENLAKE_CLIENT_ID": "your-client-id",
@@ -179,22 +203,23 @@ Add to your `.vscode/mcp.json`:
 }
 ```
 
-### Claude Desktop
+<!-- @end -->
 
-Add to your `claude_desktop_config.json`:
+<!-- @begin:source -->
+**Using uv (from source):**
 
 ```json
 {
   "servers": {
     "subscriptions": {
-      "type": "stdio", 
+      "type": "stdio",
       "command": "uv",
       "args": ["run", "python", "__main__.py"],
-      "cwd": "/path/to/mcp-generator/mcps/subscriptions",
+      "cwd": "/path/to/gl-mcp/src/subscriptions",
       "env": {
         "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
         "GREENLAKE_CLIENT_ID": "your-client-id",
-        "GREENLAKE_CLIENT_SECRET": "your-client-secret", 
+        "GREENLAKE_CLIENT_SECRET": "your-client-secret",
         "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
         "MCP_TOOL_MODE": "static",
         "GREENLAKE_LOG_LEVEL": "INFO",
@@ -205,18 +230,66 @@ Add to your `claude_desktop_config.json`:
 }
 ```
 
+<!-- @end -->
+
+### Claude Desktop
+
+Add to your `claude_desktop_config.json`:
+
+<!-- @begin:pypi -->
+**Using PyPI package:**
+
+```json
+{
+  "mcpServers": {
+    "subscriptions": {
+      "command": "python",
+      "args": ["-m", "greenlake_subscriptions_mcp"],
+      "env": {
+        "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
+        "GREENLAKE_CLIENT_ID": "your-client-id",
+        "GREENLAKE_CLIENT_SECRET": "your-client-secret",
+        "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
+        "MCP_TOOL_MODE": "static",
+        "GREENLAKE_LOG_LEVEL": "INFO",
+        "GREENLAKE_FILE_LOGGING": "false"
+      }
+    }
+  }
+}
+```
+
+<!-- @end -->
+
+<!-- @begin:source -->
+**Using uv (from source):**
+
+```json
+{
+  "mcpServers": {
+    "subscriptions": {
+      "command": "uv",
+      "args": ["run", "python", "__main__.py"],
+      "cwd": "/path/to/gl-mcp/src/subscriptions",
+      "env": {
+        "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
+        "GREENLAKE_CLIENT_ID": "your-client-id",
+        "GREENLAKE_CLIENT_SECRET": "your-client-secret",
+        "GREENLAKE_WORKSPACE_ID": "your-workspace-id",
+        "MCP_TOOL_MODE": "static",
+        "GREENLAKE_LOG_LEVEL": "INFO",
+        "GREENLAKE_FILE_LOGGING": "false"
+      }
+    }
+  }
+}
+```
+
+<!-- @end -->
+
 ## Available Tools
 
 This server provides the following MCP tools:
-
-### getsubscriptiondetailsbyidv1
-
-- **Description**: Get detailed information for a single subscription by `id`. \<br\>\<br\>**NOTE:** You need to have the view permission of device management to invoke this API. \<br\>\<br\> Rate limits are enforced on this API. 20 requests per minute is supported per workspace. The API returns `429` if this threshold is breached.
-- **Method**: GET /subscriptions/v1/subscriptions/{id}
-- **Parameters**:
-
-  - `id` (str, required):  
-    The unique identifier of the subscription.
 
 ### getsubscriptionsv1
 
@@ -226,22 +299,21 @@ This server provides the following MCP tools:
 
   - `filter` (str, optional):  
     Filter expressions consisting of simple comparison operations joined by logical operators.\<br\> | CLASS | EXAMPLES | |----------------------|----------------------------------------------------| | Types | integer, decimal, timestamp, string, boolean, null | | Comparison | eq, ne, gt, ge, lt, le, in | | Logical Expressions | and, or, not | Subscriptions can be filtered based on the following properties: - `id` - `subscriptionType` - `subscriptionStatus` - `key` - `quantity` -
-    `availableQuantity` - `sku` - `skuDescription` - `contract` - `startTime` - `endTime` - `productType` - `tier` - `tierDescription` - `quote` - `po` - `resellerPo` - `createdAt` - `updatedAt` The following is a non-exhaustive list of possible filtering options. Examples: - tier ne 'BRIDGE' Return subscriptions where a property does not equate to a value. Example syntax, \\<property\> ne \\<value\>. - key eq 'STIAPL6404' Return subscriptions where a property equals a value.
-    Example syntax, \\<property\> eq \\<value\>. - createdAt ge '2024-01-18T19:53:51.480Z' Return subscriptions where a property is greater or equal to a value. Example syntax, \\<property\> ge \\<value\>. - updatedAt le '2024-02-18T19:53:51.480Z' Return subscriptions where a property is less than or equal to a value. Example syntax, \\<property\> le \\<value\>. - subscriptionType in 'CENTRAL_STORAGE', 'CENTRAL_CONTROLLER' Return subscriptions where the property is one of
-    multiple values. Example syntax, \\<property\> in \\<value\>,\\<value\>. - not key eq 'STIAPL6404' Return subscriptions where a property does not equal a value. Example syntax, not \\<property\> eq \\<value\>. - key eq 'STIQQ4L04' and subscriptionType eq 'CENTRAL_STORAGE' The AND operator returns results that meet all filter queries. In the example, the query only returns subscriptions with the exact key and with the specified subscription type. Example syntax, \\<property\>
-    eq \\<value\> and \\<property\> eq \\<value\>. - key eq 'STIQQ4L04' or subscriptionType eq 'CENTRAL_STORAGE' The OR operator returns results that meet any of the filter queries. In the example, the query returns subscriptions with the exact key or with the specified subscription type. - startTime gt '2024-01-23T00:00:00.000Z' and endTime lt '2025-02-22T00:00:00.000Z' and not productType eq 'SERVICE' The AND, OR, and NOT operators can be combined to return results that satisfy
-    all specified filter criteria. **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: availableQuantity, contract, createdAt, endTime, id, isEval, key, po, productType, quantity, quote, resellerPo, sku, skuDescription, startTime, subscriptionStatus, subscriptionType, tags, tier, tierDescription, type, updatedAt
+    `availableQuantity` - `sku` - `skuDescription` - `contract` - `startTime` - `endTime` - `productType` - `tier` - `tierDescription` - `quote` - `po` - `resellerPo` - `createdAt` - `updatedAt` The following is a non-exhaustive list of possible filtering options. Examples: - not key eq 'STIAPL6404' Return subscriptions where a property does not equal a value. Example syntax, not \\<property\> eq \\<value\>. - subscriptionType in 'CENTRAL_STORAGE', 'CENTRAL_CONTROLLER' Return
+    subscriptions where the property is one of multiple values. Example syntax, \\<property\> in \\<value\>,\\<value\>. - key eq 'STIQQ4L04' or subscriptionType eq 'CENTRAL_STORAGE' The OR operator returns results that meet any of the filter queries. In the example, the query returns subscriptions with the exact key or with the specified subscription type. - startTime gt '2024-01-23T00:00:00.000Z' and endTime lt '2025-02-22T00:00:00.000Z' and not productType eq 'SERVICE' The AND,
+    OR, and NOT operators can be combined to return results that satisfy all specified filter criteria. - key eq 'STIAPL6404' Return subscriptions where a property equals a value. Example syntax, \\<property\> eq \\<value\>. - tier ne 'BRIDGE' Return subscriptions where a property does not equate to a value. Example syntax, \\<property\> ne \\<value\>. - updatedAt le '2024-02-18T19:53:51.480Z' Return subscriptions where a property is less than or equal to a value. Example syntax,
+    \\<property\> le \\<value\>. - key eq 'STIQQ4L04' and subscriptionType eq 'CENTRAL_STORAGE' The AND operator returns results that meet all filter queries. In the example, the query only returns subscriptions with the exact key and with the specified subscription type. Example syntax, \\<property\> eq \\<value\> and \\<property\> eq \\<value\>. - createdAt ge '2024-01-18T19:53:51.480Z' Return subscriptions where a property is greater or equal to a value. Example syntax,
+    \\<property\> ge \\<value\>. **Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
   - `filter-tags` (str, optional):  
-    Filter expressions consisting of simple comparison operations joined by logical operators to be applied on the assigned tags or their values.\<br\> | CLASS | EXAMPLES | |---------------------|-----------------| | Types | string | | Comparison | eq, ne | | Logical Expressions | and, or | Examples: - 'city' eq 'London' and 'street' eq 'Piccadilly' Return subscriptions containing the tag key and the corresponding value that satisfy all conditionals. Example syntax, \\<property\>
-    eq \\<value\> and \\<property\> eq \\<value\>. - 'street' eq 'Oxford Street' or 'street' eq 'Piccadilly' Return subscriptions containing the tag key and the corresponding value that satisfy at least one of the conditionals. Example syntax, \\<property\> eq \\<value\> or \\<property\> eq \\<value\>. - 'city' eq 'London' Return subscriptions that have a pair of tags with the exact same tag key and tag value. Example syntax, \\<tagKey\> eq \\<tagValue\>. - 'city' ne 'London'
-    Return subscriptions that have a pair of tags with the exact same tag key and the exact different tag value. Example syntax, \\<tagKey\> ne \\<tagValue\>. **Important**: All filter values must be enclosed in single quotes, including numbers and booleans. Examples: `quantity eq '10'`, `hasDetails eq 'true'`, `name eq 'example'`. Filterable properties: availableQuantity, contract, createdAt, endTime, id, isEval, key, po, productType, quantity, quote, resellerPo, sku,
-    skuDescription, startTime, subscriptionStatus, subscriptionType, tags, tier, tierDescription, type, updatedAt
+    Filter expressions consisting of simple comparison operations joined by logical operators to be applied on the assigned tags or their values.\<br\> | CLASS | EXAMPLES | |---------------------|-----------------| | Types | string | | Comparison | eq, ne | | Logical Expressions | and, or | Examples: - 'street' eq 'Oxford Street' or 'street' eq 'Piccadilly' Return subscriptions containing the tag key and the corresponding value that satisfy at least one of the conditionals.
+    Example syntax, \\<property\> eq \\<value\> or \\<property\> eq \\<value\>. - 'city' eq 'London' Return subscriptions that have a pair of tags with the exact same tag key and tag value. Example syntax, \\<tagKey\> eq \\<tagValue\>. - 'city' ne 'London' Return subscriptions that have a pair of tags with the exact same tag key and the exact different tag value. Example syntax, \\<tagKey\> ne \\<tagValue\>. - 'city' eq 'London' and 'street' eq 'Piccadilly' Return subscriptions
+    containing the tag key and the corresponding value that satisfy all conditionals. Example syntax, \\<property\> eq \\<value\> and \\<property\> eq \\<value\>. **Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
   - `sort` (str, optional):  
     A comma separated list of sort expressions. A sort expression is a  property name optionally followed by a direction indicator `asc` or  `desc`. The default is ascending order.
 
 Example: key, quote desc
 
-- `select` (List[str], optional):  
+- `select` (list[str], optional):  
     A comma separated list of select properties to display in the response.  The default is that all properties are returned.
 
 Example: id,key
@@ -250,6 +322,15 @@ Example: id,key
     Specifies the number of results to be returned. The default value  is 50.
 - `offset` (int, optional):  
     Specifies the zero-based resource offset to start the response from. The default value is 0.
+
+### getsubscriptiondetailsbyidv1
+
+- **Description**: Get detailed information for a single subscription by `id`. \<br\>\<br\>**NOTE:** You need to have the view permission of device management to invoke this API. \<br\>\<br\> Rate limits are enforced on this API. 20 requests per minute is supported per workspace. The API returns `429` if this threshold is breached.
+- **Method**: GET /subscriptions/v1/subscriptions/{id}
+- **Parameters**:
+
+  - `id` (str, required):  
+    The unique identifier of the subscription.
 
 ## Typical Use Cases
 
@@ -267,8 +348,8 @@ These are just examples - you can ask questions in your own words, and the AI as
 
 This MCP server implements read-only access to the following subscriptions API endpoints:
 
-- `GET /subscriptions/v1/subscriptions/{id}` - Get detailed information for a single subscription by `id`. \<br\>\<br\>**NOTE:** You need to have the view permission of device management to invoke this API. \<br\>\<br\> Rate limits are enforced on this API. 20 requests per minute is supported per workspace. The API returns `429` if this threshold is breached.
 - `GET /subscriptions/v1/subscriptions` - Get subscriptions managed in a workspace. Filters can be passed to filter  the subscriptions based on conditional expressions.\<br\>\<br\>**NOTE:** You need to have  view permission for the **Devices and subscription service** to invoke this API. \<br\>\<br\> Rate limits are enforced on this API. 60 requests per minute is supported per workspace. API will result in `429` if this threshold is breached.
+- `GET /subscriptions/v1/subscriptions/{id}` - Get detailed information for a single subscription by `id`. \<br\>\<br\>**NOTE:** You need to have the view permission of device management to invoke this API. \<br\>\<br\> Rate limits are enforced on this API. 20 requests per minute is supported per workspace. The API returns `429` if this threshold is breached.
 
 ## Development
 
@@ -285,46 +366,46 @@ make clean         # Clean build artifacts
 
 ```text
 subscriptions/
-├── __main__.py             # Entry point
 ├── pyproject.toml          # Dependencies and configuration
 ├── README.md               # This file
 ├── Makefile                # Development commands
-├── auth/                   # Authentication components
+├── greenlake_subscriptions_mcp/           # Python package
 │   ├── __init__.py
-│   ├── oauth2_provider.py  # OAuth2 client credentials
-│   └── token_manager.py    # Token lifecycle management
-├── config/                 # Configuration management
-│   ├── __init__.py
-│   ├── logging.py          # Logging configuration
-│   └── settings.py         # Application settings
-├── models/                 # Data models
-│   ├── __init__.py
-│   └── base.py             # Base model classes
-├── server/                 # MCP server implementation
-│   ├── __init__.py
-│   ├── app.py              # Application factory
-│   └── mcp_server.py       # MCP server core
-├── tools/                  # MCP tools
-│   ├── __init__.py
-│   ├── base.py             # Base tool class
-│   ├── registry.py         # Tool registration
-│   └── implementations/    # Tool implementations
-│       ├── __init__.py
-│       └── example_tool.py # Example tool template
-├── tests/                  # Test suite
-│   ├── __init__.py
-│   ├── conftest.py         # Shared fixtures
-│   ├── shared/
-│   │   └── http.py        # Testing helpers
-│   ├── unit/
+│   ├── __main__.py         # Entry point
+│   ├── _version.py         # Version constants
+│   ├── auth/               # Authentication components
 │   │   ├── __init__.py
-│   │   └── test_*.py      # Unit tests
-│   └── integration/
+│   │   ├── oauth2_provider.py  # OAuth2 client credentials
+│   │   └── token_manager.py    # Token lifecycle management
+│   ├── config/             # Configuration management
+│   │   ├── __init__.py
+│   │   ├── logging.py      # Logging configuration
+│   │   └── settings.py     # Application settings
+│   ├── models/             # Data models
+│   │   ├── __init__.py
+│   │   └── base.py         # Base model classes
+│   ├── server/             # MCP server implementation
+│   │   ├── __init__.py
+│   │   ├── app.py          # Application factory
+│   │   ├── fastmcp_instance.py # FastMCP singleton
+│   │   └── mcp_server.py   # MCP server core
+│   ├── tools/              # MCP tools
+│   │   ├── __init__.py
+│   │   ├── base.py         # Base tool class
+│   │   ├── registry.py     # Tool registration
+│   │   └── implementations/
+│   │       └── *.py        # Tool implementations
+│   └── utils/              # Utility modules
 │       ├── __init__.py
-│       └── test_live_tools.py
-└── utils/                  # Utility modules
-    ├── __init__.py
-    └── http_client.py      # HTTP client utilities
+│       └── http_client.py  # HTTP client utilities
+└── tests/                  # Test suite
+    ├── conftest.py         # Shared fixtures
+    ├── shared/
+    │   └── http.py         # Testing helpers
+    ├── unit/
+    │   └── test_*.py       # Unit tests
+    └── integration/
+        └── test_live_tools.py
 ```
 
 ### Adding New Tools
@@ -378,7 +459,12 @@ The generated suite provides:
 **Server won't start:**
 
 - Verify environment variables are set
+<!-- @begin:source -->
 - Check uv dependencies are installed
+<!-- @end -->
+<!-- @begin:pypi -->
+- Check that the package is installed: `pip show greenlake-subscriptions-mcp`
+<!-- @end -->
 - Review log output for specific errors
 
 **Authentication failures:**

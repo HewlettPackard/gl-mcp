@@ -12,8 +12,8 @@ import stat
 import tempfile
 from loguru import logger as loguru_logger
 
-from config.settings import settings, Settings
-from config.logging import setup_logging, get_logger
+from greenlake_subscriptions_mcp.config.settings import settings, Settings
+from greenlake_subscriptions_mcp.config.logging import setup_logging, get_logger
 
 
 class TestSettings:
@@ -43,7 +43,6 @@ class TestSettings:
 
         with patch.dict(os.environ, test_env, clear=False):
             test_settings = Settings()
-
             assert test_settings.greenlake_client_id == "env-test-client-id"
             assert test_settings.greenlake_client_secret == "env-test-client-secret"
             assert test_settings.greenlake_api_base_url == "https://global.api.greenlake.hpe.com"

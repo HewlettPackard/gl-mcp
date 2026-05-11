@@ -755,6 +755,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Python dependencies
+        run: pip install toml
+
       - name: Install mcp-publisher
         run: |
           OS=$(uname -s | tr '[:upper:]' '[:lower:]')

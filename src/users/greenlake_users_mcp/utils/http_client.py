@@ -221,6 +221,7 @@ class UsersHttpClient:
         headers["HPE-AI-Origin"] = "mcp"
         headers["Accept"] = "application/json"
         headers["User-Agent"] = USER_AGENT
+        headers["X-HPE-Thirdparty"] = USER_AGENT
         return headers
 
     async def close(self):

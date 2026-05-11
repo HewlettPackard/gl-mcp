@@ -47,8 +47,8 @@ async def list_endpoints(
     filter_term = (filter or "").lower()
 
     all_endpoints: list[dict[str, str]] = [
-        {"endpoint": "GET:/audit-log/v1/logs/{id}/detail", "summary": "getauditlogdetails", "type": "detail"},
         {"endpoint": "GET:/audit-log/v1/logs", "summary": "getauditlogs", "type": "list"},
+        {"endpoint": "GET:/audit-log/v1/logs/{id}/detail", "summary": "getauditlogdetails", "type": "detail"},
     ]
 
     if filter_term:

@@ -10,28 +10,52 @@ from pydantic import ValidationError as PydanticValidationError
 
 from greenlake_audit_logs_mcp.models import (
     BaseModel,
+    AuditLogDetails,
     Error,
-    ErrorNotFoundDetails,
-    PaginatedApiResponse,
-    ErrorBadRequestDetails,
-    ErrorRetryDetails,
     AuditLog,
     AuditLogs,
     ErrorGeneralDetails,
-    AuditLogDetails,
+    ErrorRetryDetails,
+    ErrorBadRequestDetails,
+    ErrorNotFoundDetails,
+    PaginatedApiResponse,
 )
 
 MODEL_TEST_MATRIX = [
     {
+        "model": AuditLogDetails,
+        "name": "AuditLogDetails",
+        "fields": [
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "body",
+                "sanitized": "body",
+                "type": r"array",
+                "required": True,
+            },
+            {
+                "name": "header",
+                "sanitized": "header",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r"string",
+                "required": True,
+            },
+        ],
+    },
+    {
         "model": Error,
         "name": "Error",
         "fields": [
-            {
-                "name": "httpStatusCode",
-                "sanitized": "httpStatusCode",
-                "type": r"integer",
-                "required": True,
-            },
             {
                 "name": "message",
                 "sanitized": "message",
@@ -50,71 +74,11 @@ MODEL_TEST_MATRIX = [
                 "type": r"string",
                 "required": True,
             },
-        ],
-    },
-    {
-        "model": ErrorNotFoundDetails,
-        "name": "ErrorNotFoundDetails",
-        "fields": [
             {
-                "name": "errorDetails",
-                "sanitized": "errorDetails",
-                "type": r"array",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": PaginatedApiResponse,
-        "name": "PaginatedApiResponse",
-        "fields": [
-            {
-                "name": "remainingRecords",
-                "sanitized": "remainingRecords",
-                "type": r"boolean",
-                "required": False,
-            },
-            {
-                "name": "total",
-                "sanitized": "total",
+                "name": "httpStatusCode",
+                "sanitized": "httpStatusCode",
                 "type": r"integer",
                 "required": True,
-            },
-            {
-                "name": "count",
-                "sanitized": "count",
-                "type": r"integer",
-                "required": True,
-            },
-            {
-                "name": "offset",
-                "sanitized": "offset",
-                "type": r"integer",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": ErrorBadRequestDetails,
-        "name": "ErrorBadRequestDetails",
-        "fields": [
-            {
-                "name": "errorDetails",
-                "sanitized": "errorDetails",
-                "type": r"array",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": ErrorRetryDetails,
-        "name": "ErrorRetryDetails",
-        "fields": [
-            {
-                "name": "errorDetails",
-                "sanitized": "errorDetails",
-                "type": r"array",
-                "required": False,
             },
         ],
     },
@@ -123,21 +87,15 @@ MODEL_TEST_MATRIX = [
         "name": "AuditLog",
         "fields": [
             {
-                "name": "generation",
-                "sanitized": "generation",
-                "type": r"integer",
-                "required": False,
-            },
-            {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"string",
-                "required": True,
-            },
-            {
                 "name": "updatedAt",
                 "sanitized": "updatedAt",
                 "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "additionalInfo",
+                "sanitized": "additionalInfo",
+                "type": r"object",
                 "required": False,
             },
             {
@@ -145,6 +103,42 @@ MODEL_TEST_MATRIX = [
                 "sanitized": "category",
                 "type": r"string",
                 "required": False,
+            },
+            {
+                "name": "region",
+                "sanitized": "region",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "createdAt",
+                "sanitized": "createdAt",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "hasDetails",
+                "sanitized": "hasDetails",
+                "type": r"boolean",
+                "required": False,
+            },
+            {
+                "name": "user",
+                "sanitized": "user",
+                "type": r"object",
+                "required": False,
+            },
+            {
+                "name": "workspace",
+                "sanitized": "workspace",
+                "type": r"object",
+                "required": False,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"string",
+                "required": True,
             },
             {
                 "name": "application",
@@ -159,9 +153,9 @@ MODEL_TEST_MATRIX = [
                 "required": False,
             },
             {
-                "name": "additionalInfo",
-                "sanitized": "additionalInfo",
-                "type": r"object",
+                "name": "generation",
+                "sanitized": "generation",
+                "type": r"integer",
                 "required": False,
             },
             {
@@ -169,36 +163,6 @@ MODEL_TEST_MATRIX = [
                 "sanitized": "id",
                 "type": r"string",
                 "required": True,
-            },
-            {
-                "name": "region",
-                "sanitized": "region",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "workspace",
-                "sanitized": "workspace",
-                "type": r"object",
-                "required": False,
-            },
-            {
-                "name": "hasDetails",
-                "sanitized": "hasDetails",
-                "type": r"boolean",
-                "required": False,
-            },
-            {
-                "name": "createdAt",
-                "sanitized": "createdAt",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "user",
-                "sanitized": "user",
-                "type": r"object",
-                "required": False,
             },
         ],
     },
@@ -251,31 +215,67 @@ MODEL_TEST_MATRIX = [
         ],
     },
     {
-        "model": AuditLogDetails,
-        "name": "AuditLogDetails",
+        "model": ErrorRetryDetails,
+        "name": "ErrorRetryDetails",
         "fields": [
             {
-                "name": "body",
-                "sanitized": "body",
+                "name": "errorDetails",
+                "sanitized": "errorDetails",
                 "type": r"array",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": ErrorBadRequestDetails,
+        "name": "ErrorBadRequestDetails",
+        "fields": [
+            {
+                "name": "errorDetails",
+                "sanitized": "errorDetails",
+                "type": r"array",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": ErrorNotFoundDetails,
+        "name": "ErrorNotFoundDetails",
+        "fields": [
+            {
+                "name": "errorDetails",
+                "sanitized": "errorDetails",
+                "type": r"array",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": PaginatedApiResponse,
+        "name": "PaginatedApiResponse",
+        "fields": [
+            {
+                "name": "count",
+                "sanitized": "count",
+                "type": r"integer",
                 "required": True,
             },
             {
-                "name": "header",
-                "sanitized": "header",
-                "type": r"string",
-                "required": True,
+                "name": "offset",
+                "sanitized": "offset",
+                "type": r"integer",
+                "required": False,
             },
             {
-                "name": "id",
-                "sanitized": "id",
-                "type": r"string",
-                "required": True,
+                "name": "remainingRecords",
+                "sanitized": "remainingRecords",
+                "type": r"boolean",
+                "required": False,
             },
             {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"string",
+                "name": "total",
+                "sanitized": "total",
+                "type": r"integer",
                 "required": True,
             },
         ],

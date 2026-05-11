@@ -291,6 +291,18 @@ Add to your `claude_desktop_config.json`:
 
 This server provides the following MCP tools:
 
+### getreportingstatusbyid
+
+- **Description**: Retrieve the status of a specific report by passing the report status ID.
+
+- **Method**: GET /reporting/v1/statuses/{id}
+- **Parameters**:
+
+  - `id` (str, required):  
+    The report status identifier.
+
+Example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+
 ### getreportingstatuses
 
 - **Description**: This API is designed to fetch the status of all reports for a specific workspace. Only reports belonging to the workspace ID and username are returned. This API supports pagination, allowing you to use offset and limit parameters.
@@ -316,18 +328,6 @@ Example: 50
 
 Example: 20
 
-### getreportingstatusbyid
-
-- **Description**: Retrieve the status of a specific report by passing the report status ID.
-
-- **Method**: GET /reporting/v1/statuses/{id}
-- **Parameters**:
-
-  - `id` (str, required):  
-    The report status identifier.
-
-Example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-
 ## Typical Use Cases
 
 This MCP server enables AI assistants to answer natural language questions about your HPE GreenLake reporting resources. Here are some example queries you can try:
@@ -346,9 +346,9 @@ These are just examples - you can ask questions in your own words, and the AI as
 
 This MCP server implements read-only access to the following reporting API endpoints:
 
-- `GET /reporting/v1/statuses` - This API is designed to fetch the status of all reports for a specific workspace. Only reports belonging to the workspace ID and username are returned. This API supports pagination, allowing you to use offset and limit parameters.
-
 - `GET /reporting/v1/statuses/{id}` - Retrieve the status of a specific report by passing the report status ID.
+
+- `GET /reporting/v1/statuses` - This API is designed to fetch the status of all reports for a specific workspace. Only reports belonging to the workspace ID and username are returned. This API supports pagination, allowing you to use offset and limit parameters.
 
 ## Development
 

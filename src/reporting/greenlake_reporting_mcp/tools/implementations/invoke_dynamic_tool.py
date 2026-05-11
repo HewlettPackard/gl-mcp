@@ -8,6 +8,7 @@ Generated for dynamic mode when OpenAPI spec has 2 endpoints (>= 50 threshold).
 
 from __future__ import annotations
 
+import re
 from typing import Annotated, Any
 from urllib.parse import quote
 
@@ -18,6 +19,21 @@ from greenlake_reporting_mcp.config.logging import get_logger
 from greenlake_reporting_mcp.server.fastmcp_instance import mcp
 
 logger = get_logger(__name__)
+
+
+def _normalize_filter_quotes(filter_expr: str) -> str:
+    """Wrap unquoted numeric values in single quotes for OData filter expressions.
+
+    LLMs sometimes omit quotes around numeric filter values (e.g., ``quantity eq 5``
+    instead of ``quantity eq '5'``), which causes 400 Bad Request from the API.
+    This function normalises those bare numeric values while leaving booleans,
+    already-quoted strings, and other tokens untouched.
+    """
+    return re.sub(
+        r"\b(eq|ne|gt|ge|lt|le)\s+(-?\d+(?:\.\d+)?)\b",
+        r"\1 '\2'",
+        filter_expr,
+    )
 
 
 @mcp.tool(
@@ -86,6 +102,15 @@ async def invoke_dynamic_tool(
 
     # Get endpoint schema for validation
     endpoint_schemas: dict[str, Any] = {
+        "GET:/reporting/v1/statuses/{id}": {
+            "path": "/reporting/v1/statuses/{id}",
+            "method": "GET",
+            "summary": "getreportingstatusbyid",
+            "description": "getreportingstatusbyid",
+            "parameters": [
+                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
+            ],
+        },
         "GET:/reporting/v1/statuses": {
             "path": "/reporting/v1/statuses",
             "method": "GET",
@@ -103,15 +128,6 @@ async def invoke_dynamic_tool(
                     "default": "10",
                 },
                 {"name": "offset", "type": "int", "description": "offset", "required": False, "location": "query"},
-            ],
-        },
-        "GET:/reporting/v1/statuses/{id}": {
-            "path": "/reporting/v1/statuses/{id}",
-            "method": "GET",
-            "summary": "getreportingstatusbyid",
-            "description": "getreportingstatusbyid",
-            "parameters": [
-                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
             ],
         },
     }
@@ -225,6 +241,9 @@ def _build_request_url(
                     param_value = int(param_value)
                 except (ValueError, TypeError):
                     pass
+            # Normalize unquoted numeric values in OData filter expressions
+            if param_name in ("filter", "filter-tags") and isinstance(param_value, str):
+                param_value = _normalize_filter_quotes(param_value)
             query_params[param_name] = param_value
 
     return url, query_params

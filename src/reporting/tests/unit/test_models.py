@@ -10,38 +10,20 @@ from pydantic import ValidationError as PydanticValidationError
 
 from greenlake_reporting_mcp.models import (
     BaseModel,
-    delivery,
     enrollment,
+    generateDocResponse,
+    queryElements,
+    error,
     filterCriteria,
-    reportDefinition,
     generateReportBody,
     generateResponse,
-    queryElements,
     reportDoc,
     asyncOperationResponse,
-    generateDocResponse,
-    error,
+    delivery,
+    reportDefinition,
 )
 
 MODEL_TEST_MATRIX = [
-    {
-        "model": delivery,
-        "name": "delivery",
-        "fields": [
-            {
-                "name": "format",
-                "sanitized": "format",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "email",
-                "sanitized": "email",
-                "type": r"object",
-                "required": False,
-            },
-        ],
-    },
     {
         "model": enrollment,
         "name": "enrollment",
@@ -51,228 +33,6 @@ MODEL_TEST_MATRIX = [
                 "sanitized": "delivery",
                 "type": r"object",
                 "required": False,
-            },
-        ],
-    },
-    {
-        "model": filterCriteria,
-        "name": "filterCriteria",
-        "fields": [
-            {
-                "name": "value",
-                "sanitized": "value",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "key",
-                "sanitized": "key",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "operator",
-                "sanitized": "operator",
-                "type": r"string",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": reportDefinition,
-        "name": "reportDefinition",
-        "fields": [
-            {
-                "name": "enrollment",
-                "sanitized": "enrollment",
-                "type": r"object",
-                "required": False,
-            },
-            {
-                "name": "queryElements",
-                "sanitized": "queryElements",
-                "type": r"object",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": generateReportBody,
-        "name": "generateReportBody",
-        "fields": [
-            {
-                "name": "kind",
-                "sanitized": "kind",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "name",
-                "sanitized": "name",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "definition",
-                "sanitized": "definition",
-                "type": r"object",
-                "required": False,
-            },
-            {
-                "name": "description",
-                "sanitized": "description",
-                "type": r"string",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": generateResponse,
-        "name": "generateResponse",
-        "fields": [
-            {
-                "name": "name",
-                "sanitized": "name",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "id",
-                "sanitized": "id",
-                "type": r"string",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": queryElements,
-        "name": "queryElements",
-        "fields": [
-            {
-                "name": "columns",
-                "sanitized": "columns",
-                "type": r"array",
-                "required": False,
-            },
-            {
-                "name": "filterCriteria",
-                "sanitized": "filterCriteria",
-                "type": r"array",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": reportDoc,
-        "name": "reportDoc",
-        "fields": [
-            {
-                "name": "kind",
-                "sanitized": "kind",
-                "type": r"string",
-                "required": True,
-            },
-            {
-                "name": "name",
-                "sanitized": "name",
-                "type": r"string",
-                "required": True,
-            },
-            {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"string",
-                "required": True,
-            },
-            {
-                "name": "columns",
-                "sanitized": "columns",
-                "type": r"array",
-                "required": True,
-            },
-            {
-                "name": "filterCriteria",
-                "sanitized": "filterCriteria",
-                "type": r"array",
-                "required": True,
-            },
-            {
-                "name": "id",
-                "sanitized": "id",
-                "type": r"string",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": asyncOperationResponse,
-        "name": "asyncOperationResponse",
-        "fields": [
-            {
-                "name": "logMessages",
-                "sanitized": "logMessages",
-                "type": r"array",
-                "required": True,
-            },
-            {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"string",
-                "required": True,
-            },
-            {
-                "name": "error",
-                "sanitized": "error",
-                "type": r"object",
-                "required": False,
-            },
-            {
-                "name": "startedAt",
-                "sanitized": "startedAt",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "endedAt",
-                "sanitized": "endedAt",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "results",
-                "sanitized": "results",
-                "type": r"array",
-                "required": False,
-            },
-            {
-                "name": "state",
-                "sanitized": "state",
-                "type": r"string",
-                "required": True,
-            },
-            {
-                "name": "id",
-                "sanitized": "id",
-                "type": r"string",
-                "required": True,
-            },
-            {
-                "name": "sourceResourceUri",
-                "sanitized": "sourceResourceUri",
-                "type": r"string",
-                "required": True,
-            },
-            {
-                "name": "progressPercent",
-                "sanitized": "progressPercent",
-                "type": r"integer",
-                "required": True,
             },
         ],
     },
@@ -307,6 +67,24 @@ MODEL_TEST_MATRIX = [
         ],
     },
     {
+        "model": queryElements,
+        "name": "queryElements",
+        "fields": [
+            {
+                "name": "columns",
+                "sanitized": "columns",
+                "type": r"array",
+                "required": False,
+            },
+            {
+                "name": "filterCriteria",
+                "sanitized": "filterCriteria",
+                "type": r"array",
+                "required": False,
+            },
+        ],
+    },
+    {
         "model": error,
         "name": "error",
         "fields": [
@@ -333,6 +111,228 @@ MODEL_TEST_MATRIX = [
                 "sanitized": "debugId",
                 "type": r"string",
                 "required": True,
+            },
+        ],
+    },
+    {
+        "model": filterCriteria,
+        "name": "filterCriteria",
+        "fields": [
+            {
+                "name": "key",
+                "sanitized": "key",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "operator",
+                "sanitized": "operator",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "value",
+                "sanitized": "value",
+                "type": r"string",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": generateReportBody,
+        "name": "generateReportBody",
+        "fields": [
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "definition",
+                "sanitized": "definition",
+                "type": r"object",
+                "required": False,
+            },
+            {
+                "name": "description",
+                "sanitized": "description",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "kind",
+                "sanitized": "kind",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "name",
+                "sanitized": "name",
+                "type": r"string",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": generateResponse,
+        "name": "generateResponse",
+        "fields": [
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "name",
+                "sanitized": "name",
+                "type": r"string",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": reportDoc,
+        "name": "reportDoc",
+        "fields": [
+            {
+                "name": "columns",
+                "sanitized": "columns",
+                "type": r"array",
+                "required": True,
+            },
+            {
+                "name": "filterCriteria",
+                "sanitized": "filterCriteria",
+                "type": r"array",
+                "required": True,
+            },
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "kind",
+                "sanitized": "kind",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "name",
+                "sanitized": "name",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"string",
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": asyncOperationResponse,
+        "name": "asyncOperationResponse",
+        "fields": [
+            {
+                "name": "startedAt",
+                "sanitized": "startedAt",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "progressPercent",
+                "sanitized": "progressPercent",
+                "type": r"integer",
+                "required": True,
+            },
+            {
+                "name": "sourceResourceUri",
+                "sanitized": "sourceResourceUri",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "error",
+                "sanitized": "error",
+                "type": r"object",
+                "required": False,
+            },
+            {
+                "name": "logMessages",
+                "sanitized": "logMessages",
+                "type": r"array",
+                "required": True,
+            },
+            {
+                "name": "state",
+                "sanitized": "state",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "endedAt",
+                "sanitized": "endedAt",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "results",
+                "sanitized": "results",
+                "type": r"array",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": delivery,
+        "name": "delivery",
+        "fields": [
+            {
+                "name": "email",
+                "sanitized": "email",
+                "type": r"object",
+                "required": False,
+            },
+            {
+                "name": "format",
+                "sanitized": "format",
+                "type": r"string",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": reportDefinition,
+        "name": "reportDefinition",
+        "fields": [
+            {
+                "name": "enrollment",
+                "sanitized": "enrollment",
+                "type": r"object",
+                "required": False,
+            },
+            {
+                "name": "queryElements",
+                "sanitized": "queryElements",
+                "type": r"object",
+                "required": False,
             },
         ],
     },

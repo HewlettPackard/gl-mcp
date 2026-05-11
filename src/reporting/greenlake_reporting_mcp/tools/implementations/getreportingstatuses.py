@@ -6,6 +6,7 @@ Implements: GET /reporting/v1/statuses
 """
 
 from __future__ import annotations
+import re
 from typing import Annotated, Any
 
 from mcp.server.fastmcp import Context
@@ -15,6 +16,21 @@ from greenlake_reporting_mcp.config.logging import get_logger
 from greenlake_reporting_mcp.server.fastmcp_instance import mcp
 
 logger = get_logger(__name__)
+
+
+def _normalize_filter_quotes(filter_expr: str) -> str:
+    """Wrap unquoted numeric values in single quotes for OData filter expressions.
+
+    LLMs sometimes omit quotes around numeric filter values (e.g., ``quantity eq 5``
+    instead of ``quantity eq '5'``), which causes 400 Bad Request from the API.
+    This function normalises those bare numeric values while leaving booleans,
+    already-quoted strings, and other tokens untouched.
+    """
+    return re.sub(
+        r"\b(eq|ne|gt|ge|lt|le)\s+(-?\d+(?:\.\d+)?)\b",
+        r"\1 '\2'",
+        filter_expr,
+    )
 
 
 @mcp.tool(
@@ -62,7 +78,7 @@ async def getreportingstatuses(  # noqa: E501
     # Collect query / body parameters; skip values that were not provided
     params: dict[str, Any] = {}
     if filter is not None and filter is not ...:
-        params["filter"] = filter
+        params["filter"] = _normalize_filter_quotes(filter)
     if sort is not None and sort is not ...:
         params["sort"] = sort
     if limit is not None and limit is not ...:

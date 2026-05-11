@@ -59,6 +59,30 @@ async def get_endpoint_schema(
 
     # Create endpoint schema map for fast lookup
     endpoint_schemas: dict[str, dict[str, Any]] = {
+        "GET:/reporting/v1/statuses/{id}": {
+            "path": "/reporting/v1/statuses/{id}",
+            "method": "GET",
+            "summary": "getreportingstatusbyid",
+            "description": "getreportingstatusbyid",
+            "operationId": "getreportingstatusbyid",
+            "tags": [],
+            "deprecated": False,
+            "parameters": [
+                {
+                    "name": "id",
+                    "type": "str",
+                    "description": "The report status identifier.\n\nExample: 3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    "required": True,
+                    "location": "query",
+                    "schema": {
+                        "type": "string",
+                        "description": "The report status identifier.\n\nExample: 3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    },
+                },
+            ],
+            "security": [],
+            "responses": {"200": {"description": "Successful response", "content_type": "application/json"}},
+        },
         "GET:/reporting/v1/statuses": {
             "path": "/reporting/v1/statuses",
             "method": "GET",
@@ -112,30 +136,6 @@ async def get_endpoint_schema(
                     "schema": {
                         "type": "integer",
                         "description": "Zero-based resource offset to start the response from.\n\nExample: 20",
-                    },
-                },
-            ],
-            "security": [],
-            "responses": {"200": {"description": "Successful response", "content_type": "application/json"}},
-        },
-        "GET:/reporting/v1/statuses/{id}": {
-            "path": "/reporting/v1/statuses/{id}",
-            "method": "GET",
-            "summary": "getreportingstatusbyid",
-            "description": "getreportingstatusbyid",
-            "operationId": "getreportingstatusbyid",
-            "tags": [],
-            "deprecated": False,
-            "parameters": [
-                {
-                    "name": "id",
-                    "type": "str",
-                    "description": "The report status identifier.\n\nExample: 3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                    "required": True,
-                    "location": "query",
-                    "schema": {
-                        "type": "string",
-                        "description": "The report status identifier.\n\nExample: 3fa85f64-5717-4562-b3fc-2c963f66afa6",
                     },
                 },
             ],

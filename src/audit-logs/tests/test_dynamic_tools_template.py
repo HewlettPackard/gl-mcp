@@ -123,14 +123,14 @@ class TestGetEndpointSchema:
     async def test_valid_endpoint_returns_schema(self):
         """A recognised endpoint identifier returns a complete schema dict."""
 
-        result = await get_endpoint_schema(endpoint_identifier="GET:/audit-log/v1/logs/{id}/detail")
+        result = await get_endpoint_schema(endpoint_identifier="GET:/audit-log/v1/logs")
 
         assert len(result) == 1
         response = result[0]
         assert response["success"] is True
-        assert response["endpoint_identifier"] == "GET:/audit-log/v1/logs/{id}/detail"
+        assert response["endpoint_identifier"] == "GET:/audit-log/v1/logs"
         schema = response["schema"]
-        assert schema["path"] == "/audit-log/v1/logs/{id}/detail"
+        assert schema["path"] == "/audit-log/v1/logs"
         assert schema["method"] == "GET"
         assert isinstance(schema["parameters"], list)
 
@@ -158,7 +158,7 @@ class TestGetEndpointSchema:
         """Setting include_examples=True attaches an example value to each parameter."""
 
         result = await get_endpoint_schema(
-            endpoint_identifier="GET:/audit-log/v1/logs/{id}/detail",
+            endpoint_identifier="GET:/audit-log/v1/logs",
             include_examples=True,
         )
 
@@ -170,7 +170,7 @@ class TestGetEndpointSchema:
     async def test_schema_contains_all_expected_keys(self):
         """Schema response includes all mandatory top-level keys."""
 
-        result = await get_endpoint_schema(endpoint_identifier="GET:/audit-log/v1/logs/{id}/detail")
+        result = await get_endpoint_schema(endpoint_identifier="GET:/audit-log/v1/logs")
         schema = result[0]["schema"]
         for key in ("path", "method", "summary", "description", "parameters", "responses"):
             assert key in schema, f"Missing key: {key}"
@@ -193,10 +193,8 @@ class TestInvokeDynamicTool:
 
         result = await invoke_dynamic_tool(
             ctx,
-            endpoint_identifier="GET:/audit-log/v1/logs/{id}/detail",
-            parameters={
-                "id": "test-value",
-            },
+            endpoint_identifier="GET:/audit-log/v1/logs",
+            parameters={},
         )
 
         assert len(result) == 1
@@ -237,7 +235,7 @@ class TestInvokeDynamicTool:
 
         result = await invoke_dynamic_tool(
             ctx,
-            endpoint_identifier="OPTIONS:/audit-log/v1/logs/{id}/detail",
+            endpoint_identifier="OPTIONS:/audit-log/v1/logs",
         )
 
         assert len(result) == 1
@@ -286,7 +284,7 @@ class TestInvokeDynamicTool:
 
         result = await invoke_dynamic_tool(
             ctx,
-            endpoint_identifier="GET:/audit-log/v1/logs/{id}/detail",
+            endpoint_identifier="GET:/audit-log/v1/logs",
             validate_schema=False,  # skip validation so we reach the HTTP call
         )
 
@@ -346,20 +344,6 @@ def sample_endpoints() -> list[dict]:
     """Sample endpoint data matching the generated schemas."""
     return [
         {
-            "path": "/audit-log/v1/logs/{id}/detail",
-            "method": "GET",
-            "summary": "getauditlogdetails",
-            "operationId": "getauditlogdetails",
-            "parameters": [
-                {
-                    "name": "id",
-                    "type": "str",
-                    "required": True,
-                    "location": "query",
-                },
-            ],
-        },
-        {
             "path": "/audit-log/v1/logs",
             "method": "GET",
             "summary": "getauditlogs",
@@ -393,6 +377,20 @@ def sample_endpoints() -> list[dict]:
                     "name": "offset",
                     "type": "int",
                     "required": False,
+                    "location": "query",
+                },
+            ],
+        },
+        {
+            "path": "/audit-log/v1/logs/{id}/detail",
+            "method": "GET",
+            "summary": "getauditlogdetails",
+            "operationId": "getauditlogdetails",
+            "parameters": [
+                {
+                    "name": "id",
+                    "type": "str",
+                    "required": True,
                     "location": "query",
                 },
             ],

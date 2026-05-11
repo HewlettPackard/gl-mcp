@@ -6,6 +6,7 @@ Implements: GET /identity/v1/users
 """
 
 from __future__ import annotations
+import re
 from typing import Annotated, Any
 
 from mcp.server.fastmcp import Context
@@ -17,6 +18,21 @@ from greenlake_users_mcp.server.fastmcp_instance import mcp
 logger = get_logger(__name__)
 
 
+def _normalize_filter_quotes(filter_expr: str) -> str:
+    """Wrap unquoted numeric values in single quotes for OData filter expressions.
+
+    LLMs sometimes omit quotes around numeric filter values (e.g., ``quantity eq 5``
+    instead of ``quantity eq '5'``), which causes 400 Bad Request from the API.
+    This function normalises those bare numeric values while leaving booleans,
+    already-quoted strings, and other tokens untouched.
+    """
+    return re.sub(
+        r"\b(eq|ne|gt|ge|lt|le)\s+(-?\d+(?:\.\d+)?)\b",
+        r"\1 '\2'",
+        filter_expr,
+    )
+
+
 @mcp.tool(
     name="get_users_identity_v1_users_get",
     description="Retrieve list of users with filtering, and pagination options. All users are returned when no filters are provided. \n**Note**: User view all permission is required to invoke this API. \nRate limit: 300 requests per minute per workspace, resulting in a `429` error if exceeded.\n",
@@ -26,7 +42,7 @@ async def get_users_identity_v1_users_get(  # noqa: E501
     filter: Annotated[
         str | None,
         Field(
-            description="Filter data using a subset of OData 4.0 and return only the subset of resources that match the filter.\n\nSupported classes and examples include:\n- **Types**: timestamp, string\n- **Comparison**: eq, ne, gt, ge, lt\n- **Logical Expressions**: and, or, not\n\nThe Get users API can be filtered by:\n- id\n- username\n- userStatus\n- createdAt\n- updatedAt\n- lastLogin\n\nuserStatus can be one of the following:\n- UNVERIFIED\n- VERIFIED\n- BLOCKED\n- DELETE_IN_PROGRESS\n- DELETED\n- SUSPENDED\n\n**Note**: The userStatus filter is case-sensitive.\n\nExamples:\n  - username eq 'user@example.com'\n    Returns the user with a specific username.\n  - createdAt gt '2020-09-21T14:19:09.769747'\n    Returns users created after 2020-09-21T14:19:09.769747\n  - username eq 'user@example.com'\n    Returns the user with a specific email.\n  - id eq '7600415a-8876-5722-9f3c-b0fd11112283'\n    Returns the user with a specific ID.\n  - lastLogin lt '2020-09-21T14:19:09.769747'\n    Returns users that logged in before 2020-09-21T14:19:09.769747\n  - updatedAt gt '2020-09-21T14:19:09.769747'\n    Returns users updated after 2020-09-21T14:19:09.769747\n  - userStatus ne 'UNVERIFIED'\n    Returns users that are not unverified.\n\n**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes."
+            description="Filter data using a subset of OData 4.0 and return only the subset of resources that match the filter.\n\nSupported classes and examples include:\n- **Types**: timestamp, string\n- **Comparison**: eq, ne, gt, ge, lt\n- **Logical Expressions**: and, or, not\n\nThe Get users API can be filtered by:\n- id\n- username\n- userStatus\n- createdAt\n- updatedAt\n- lastLogin\n\nuserStatus can be one of the following:\n- UNVERIFIED\n- VERIFIED\n- BLOCKED\n- DELETE_IN_PROGRESS\n- DELETED\n- SUSPENDED\n\n**Note**: The userStatus filter is case-sensitive.\n\nExamples:\n  - updatedAt gt '2020-09-21T14:19:09.769747'\n    Returns users updated after 2020-09-21T14:19:09.769747\n  - userStatus ne 'UNVERIFIED'\n    Returns users that are not unverified.\n  - username eq 'user@example.com'\n    Returns the user with a specific username.\n  - createdAt gt '2020-09-21T14:19:09.769747'\n    Returns users created after 2020-09-21T14:19:09.769747\n  - username eq 'user@example.com'\n    Returns the user with a specific email.\n  - id eq '7600415a-8876-5722-9f3c-b0fd11112283'\n    Returns the user with a specific ID.\n  - lastLogin lt '2020-09-21T14:19:09.769747'\n    Returns users that logged in before 2020-09-21T14:19:09.769747\n\n**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes."
         ),
     ] = None,
     offset: Annotated[
@@ -46,7 +62,7 @@ async def get_users_identity_v1_users_get(  # noqa: E501
     """Retrieve list of users with filtering, and pagination options. All users are returned when no filters are provided. \n**Note**: User view all permission is required to invoke this API. \nRate limit: 300 requests per minute per workspace, resulting in a `429` error if exceeded.\n
 
     Args:
-        filter: Filter data using a subset of OData 4.0 and return only the subset of resources that match the filter.\n\nSupported classes and examples include:\n- **Types**: timestamp, string\n- **Comparison**: eq, ne, gt, ge, lt\n- **Logical Expressions**: and, or, not\n\nThe Get users API can be filtered by:\n- id\n- username\n- userStatus\n- createdAt\n- updatedAt\n- lastLogin\n\nuserStatus can be one of the following:\n- UNVERIFIED\n- VERIFIED\n- BLOCKED\n- DELETE_IN_PROGRESS\n- DELETED\n- SUSPENDED\n\n**Note**: The userStatus filter is case-sensitive.\n\nExamples:\n  - username eq 'user@example.com'\n    Returns the user with a specific username.\n  - createdAt gt '2020-09-21T14:19:09.769747'\n    Returns users created after 2020-09-21T14:19:09.769747\n  - username eq 'user@example.com'\n    Returns the user with a specific email.\n  - id eq '7600415a-8876-5722-9f3c-b0fd11112283'\n    Returns the user with a specific ID.\n  - lastLogin lt '2020-09-21T14:19:09.769747'\n    Returns users that logged in before 2020-09-21T14:19:09.769747\n  - updatedAt gt '2020-09-21T14:19:09.769747'\n    Returns users updated after 2020-09-21T14:19:09.769747\n  - userStatus ne 'UNVERIFIED'\n    Returns users that are not unverified.\n\n**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
+        filter: Filter data using a subset of OData 4.0 and return only the subset of resources that match the filter.\n\nSupported classes and examples include:\n- **Types**: timestamp, string\n- **Comparison**: eq, ne, gt, ge, lt\n- **Logical Expressions**: and, or, not\n\nThe Get users API can be filtered by:\n- id\n- username\n- userStatus\n- createdAt\n- updatedAt\n- lastLogin\n\nuserStatus can be one of the following:\n- UNVERIFIED\n- VERIFIED\n- BLOCKED\n- DELETE_IN_PROGRESS\n- DELETED\n- SUSPENDED\n\n**Note**: The userStatus filter is case-sensitive.\n\nExamples:\n  - updatedAt gt '2020-09-21T14:19:09.769747'\n    Returns users updated after 2020-09-21T14:19:09.769747\n  - userStatus ne 'UNVERIFIED'\n    Returns users that are not unverified.\n  - username eq 'user@example.com'\n    Returns the user with a specific username.\n  - createdAt gt '2020-09-21T14:19:09.769747'\n    Returns users created after 2020-09-21T14:19:09.769747\n  - username eq 'user@example.com'\n    Returns the user with a specific email.\n  - id eq '7600415a-8876-5722-9f3c-b0fd11112283'\n    Returns the user with a specific ID.\n  - lastLogin lt '2020-09-21T14:19:09.769747'\n    Returns users that logged in before 2020-09-21T14:19:09.769747\n\n**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
         offset: Specify pagination offset. An offset argument defines how many pages to skip before returning results.
         limit: Specify the maximum number of entries per page. NOTE: The maximum value accepted is 600.
     Returns:
@@ -60,7 +76,7 @@ async def get_users_identity_v1_users_get(  # noqa: E501
     # Collect query / body parameters; skip values that were not provided
     params: dict[str, Any] = {}
     if filter is not None and filter is not ...:
-        params["filter"] = filter
+        params["filter"] = _normalize_filter_quotes(filter)
     if offset is not None and offset is not ...:
         # Coerce string supplied by LLM clients to int
         try:

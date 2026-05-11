@@ -10,30 +10,54 @@ from pydantic import ValidationError as PydanticValidationError
 
 from greenlake_workspaces_mcp.models import (
     BaseModel,
-    NBCcsAddress,
-    NBContactTenant,
-    NBContactWorkspace,
-    NBCcsAddressV2,
     NBTenantWorkspacePaginate,
+    NBCcsAddress,
+    NBCcsAddressV2,
+    NBContactWorkspace,
+    StandardErrorResponse,
     Message,
+    NBBasicTenant,
     NBTenantInventoryOwnership,
     CountryCode,
-    NBBasicTenant,
-    StandardErrorResponse,
     NBBasicWorkspace,
+    NBContactTenant,
 )
 
 MODEL_TEST_MATRIX = [
     {
+        "model": NBTenantWorkspacePaginate,
+        "name": "NBTenantWorkspacePaginate",
+        "fields": [
+            {
+                "name": "count",
+                "sanitized": "count",
+                "type": r"integer",
+                "required": True,
+            },
+            {
+                "name": "items",
+                "sanitized": "items",
+                "type": r"array",
+                "required": True,
+            },
+            {
+                "name": "offset",
+                "sanitized": "offset",
+                "type": r"integer",
+                "required": True,
+            },
+            {
+                "name": "total",
+                "sanitized": "total",
+                "type": r"integer",
+                "required": True,
+            },
+        ],
+    },
+    {
         "model": NBCcsAddress,
         "name": "NBCcsAddress",
         "fields": [
-            {
-                "name": "zip",
-                "sanitized": "zip",
-                "type": r"string",
-                "required": False,
-            },
             {
                 "name": "city",
                 "sanitized": "city",
@@ -64,81 +88,9 @@ MODEL_TEST_MATRIX = [
                 "type": r"string",
                 "required": False,
             },
-        ],
-    },
-    {
-        "model": NBContactTenant,
-        "name": "NBContactTenant",
-        "fields": [
             {
-                "name": "email",
-                "sanitized": "email",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "inventoryOwnership",
-                "sanitized": "inventoryOwnership",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "phoneNumber",
-                "sanitized": "phoneNumber",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "resourceUri",
-                "sanitized": "resourceUri",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "workspaceName",
-                "sanitized": "workspaceName",
-                "type": r"string",
-                "required": True,
-            },
-            {
-                "name": "address",
-                "sanitized": "address",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "description",
-                "sanitized": "description",
-                "type": r"string",
-                "required": False,
-            },
-        ],
-    },
-    {
-        "model": NBContactWorkspace,
-        "name": "NBContactWorkspace",
-        "fields": [
-            {
-                "name": "phoneNumber",
-                "sanitized": "phoneNumber",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "resourceUri",
-                "sanitized": "resourceUri",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "address",
-                "sanitized": "address",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "email",
-                "sanitized": "email",
+                "name": "zip",
+                "sanitized": "zip",
                 "type": r"string",
                 "required": False,
             },
@@ -187,88 +139,18 @@ MODEL_TEST_MATRIX = [
         ],
     },
     {
-        "model": NBTenantWorkspacePaginate,
-        "name": "NBTenantWorkspacePaginate",
+        "model": NBContactWorkspace,
+        "name": "NBContactWorkspace",
         "fields": [
             {
-                "name": "offset",
-                "sanitized": "offset",
-                "type": r"integer",
-                "required": True,
-            },
-            {
-                "name": "total",
-                "sanitized": "total",
-                "type": r"integer",
-                "required": True,
-            },
-            {
-                "name": "count",
-                "sanitized": "count",
-                "type": r"integer",
-                "required": True,
-            },
-            {
-                "name": "items",
-                "sanitized": "items",
-                "type": r"array",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": Message,
-        "name": "Message",
-        "fields": [
-            {
-                "name": "message",
-                "sanitized": "message",
-                "type": r"string",
-                "required": True,
-            },
-        ],
-    },
-    {
-        "model": NBTenantInventoryOwnership,
-        "name": "NBTenantInventoryOwnership",
-        "fields": [],
-    },
-    {
-        "model": CountryCode,
-        "name": "CountryCode",
-        "fields": [],
-    },
-    {
-        "model": NBBasicTenant,
-        "name": "NBBasicTenant",
-        "fields": [
-            {
-                "name": "type",
-                "sanitized": "type",
-                "type": r"string",
-                "required": True,
-            },
-            {
-                "name": "updatedAt",
-                "sanitized": "updatedAt",
+                "name": "email",
+                "sanitized": "email",
                 "type": r"string",
                 "required": False,
             },
             {
-                "name": "workspaceName",
-                "sanitized": "workspaceName",
-                "type": r"string",
-                "required": True,
-            },
-            {
-                "name": "id",
-                "sanitized": "id",
-                "type": r"string",
-                "required": True,
-            },
-            {
-                "name": "inventoryOwnership",
-                "sanitized": "inventoryOwnership",
+                "name": "phoneNumber",
+                "sanitized": "phoneNumber",
                 "type": r"string",
                 "required": False,
             },
@@ -279,20 +161,8 @@ MODEL_TEST_MATRIX = [
                 "required": False,
             },
             {
-                "name": "createdAt",
-                "sanitized": "createdAt",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "generation",
-                "sanitized": "generation",
-                "type": r"integer",
-                "required": False,
-            },
-            {
-                "name": "createdBy",
-                "sanitized": "createdBy",
+                "name": "address",
+                "sanitized": "address",
                 "type": r"string",
                 "required": False,
             },
@@ -329,9 +199,115 @@ MODEL_TEST_MATRIX = [
         ],
     },
     {
+        "model": Message,
+        "name": "Message",
+        "fields": [
+            {
+                "name": "message",
+                "sanitized": "message",
+                "type": r"string",
+                "required": True,
+            },
+        ],
+    },
+    {
+        "model": NBBasicTenant,
+        "name": "NBBasicTenant",
+        "fields": [
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "inventoryOwnership",
+                "sanitized": "inventoryOwnership",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "workspaceName",
+                "sanitized": "workspaceName",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "type",
+                "sanitized": "type",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "createdBy",
+                "sanitized": "createdBy",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "updatedAt",
+                "sanitized": "updatedAt",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "resourceUri",
+                "sanitized": "resourceUri",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "createdAt",
+                "sanitized": "createdAt",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "generation",
+                "sanitized": "generation",
+                "type": r"integer",
+                "required": False,
+            },
+        ],
+    },
+    {
+        "model": NBTenantInventoryOwnership,
+        "name": "NBTenantInventoryOwnership",
+        "fields": [],
+    },
+    {
+        "model": CountryCode,
+        "name": "CountryCode",
+        "fields": [],
+    },
+    {
         "model": NBBasicWorkspace,
         "name": "NBBasicWorkspace",
         "fields": [
+            {
+                "name": "updatedAt",
+                "sanitized": "updatedAt",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "workspaceName",
+                "sanitized": "workspaceName",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "createdAt",
+                "sanitized": "createdAt",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "createdBy",
+                "sanitized": "createdBy",
+                "type": r"string",
+                "required": False,
+            },
             {
                 "name": "generation",
                 "sanitized": "generation",
@@ -356,9 +332,45 @@ MODEL_TEST_MATRIX = [
                 "type": r"string",
                 "required": True,
             },
+        ],
+    },
+    {
+        "model": NBContactTenant,
+        "name": "NBContactTenant",
+        "fields": [
             {
-                "name": "updatedAt",
-                "sanitized": "updatedAt",
+                "name": "address",
+                "sanitized": "address",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "description",
+                "sanitized": "description",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "email",
+                "sanitized": "email",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "inventoryOwnership",
+                "sanitized": "inventoryOwnership",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "phoneNumber",
+                "sanitized": "phoneNumber",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "resourceUri",
+                "sanitized": "resourceUri",
                 "type": r"string",
                 "required": False,
             },
@@ -367,18 +379,6 @@ MODEL_TEST_MATRIX = [
                 "sanitized": "workspaceName",
                 "type": r"string",
                 "required": True,
-            },
-            {
-                "name": "createdAt",
-                "sanitized": "createdAt",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "createdBy",
-                "sanitized": "createdBy",
-                "type": r"string",
-                "required": False,
             },
         ],
     },

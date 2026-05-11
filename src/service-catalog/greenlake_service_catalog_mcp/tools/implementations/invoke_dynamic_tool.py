@@ -8,6 +8,7 @@ Generated for dynamic mode when OpenAPI spec has 12 endpoints (>= 50 threshold).
 
 from __future__ import annotations
 
+import re
 from typing import Annotated, Any
 from urllib.parse import quote
 
@@ -18,6 +19,21 @@ from greenlake_service_catalog_mcp.config.logging import get_logger
 from greenlake_service_catalog_mcp.server.fastmcp_instance import mcp
 
 logger = get_logger(__name__)
+
+
+def _normalize_filter_quotes(filter_expr: str) -> str:
+    """Wrap unquoted numeric values in single quotes for OData filter expressions.
+
+    LLMs sometimes omit quotes around numeric filter values (e.g., ``quantity eq 5``
+    instead of ``quantity eq '5'``), which causes 400 Bad Request from the API.
+    This function normalises those bare numeric values while leaving booleans,
+    already-quoted strings, and other tokens untouched.
+    """
+    return re.sub(
+        r"\b(eq|ne|gt|ge|lt|le)\s+(-?\d+(?:\.\d+)?)\b",
+        r"\1 '\2'",
+        filter_expr,
+    )
 
 
 @mcp.tool(
@@ -86,6 +102,102 @@ async def invoke_dynamic_tool(
 
     # Get endpoint schema for validation
     endpoint_schemas: dict[str, Any] = {
+        "GET:/service-catalog/v1beta1/service-provisions/{id}": {
+            "path": "/service-catalog/v1beta1/service-provisions/{id}",
+            "method": "GET",
+            "summary": "getserviceprovision",
+            "description": "getserviceprovision",
+            "parameters": [
+                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
+                {
+                    "name": "unredacted",
+                    "type": "bool",
+                    "description": "unredacted",
+                    "required": False,
+                    "location": "query",
+                },
+            ],
+        },
+        "GET:/service-catalog/v1/service-managers": {
+            "path": "/service-catalog/v1/service-managers",
+            "method": "GET",
+            "summary": "get_service_managers_v1",
+            "description": "get_service_managers_v1",
+            "parameters": [
+                {"name": "offset", "type": "int", "description": "offset", "required": False, "location": "query"},
+                {
+                    "name": "limit",
+                    "type": "int",
+                    "description": "limit",
+                    "required": False,
+                    "location": "query",
+                    "default": "2000",
+                },
+            ],
+        },
+        "GET:/service-catalog/v1/service-managers/{id}": {
+            "path": "/service-catalog/v1/service-managers/{id}",
+            "method": "GET",
+            "summary": "get_service_manager_v1",
+            "description": "get_service_manager_v1",
+            "parameters": [
+                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
+            ],
+        },
+        "GET:/service-catalog/v1beta1/service-offers/{id}": {
+            "path": "/service-catalog/v1beta1/service-offers/{id}",
+            "method": "GET",
+            "summary": "getserviceoffer",
+            "description": "getserviceoffer",
+            "parameters": [
+                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
+            ],
+        },
+        "GET:/service-catalog/v1beta1/service-offer-regions": {
+            "path": "/service-catalog/v1beta1/service-offer-regions",
+            "method": "GET",
+            "summary": "getserviceofferregions",
+            "description": "getserviceofferregions",
+            "parameters": [
+                {"name": "next", "type": "str", "description": "next", "required": False, "location": "query"},
+                {
+                    "name": "limit",
+                    "type": "int",
+                    "description": "limit",
+                    "required": False,
+                    "location": "query",
+                    "default": "2000",
+                },
+                {"name": "filter", "type": "str", "description": "filter", "required": False, "location": "query"},
+            ],
+        },
+        "GET:/service-catalog/v1beta1/service-offers": {
+            "path": "/service-catalog/v1beta1/service-offers",
+            "method": "GET",
+            "summary": "getserviceoffers",
+            "description": "getserviceoffers",
+            "parameters": [
+                {"name": "next", "type": "str", "description": "next", "required": False, "location": "query"},
+                {
+                    "name": "limit",
+                    "type": "int",
+                    "description": "limit",
+                    "required": False,
+                    "location": "query",
+                    "default": "2000",
+                },
+                {"name": "filter", "type": "str", "description": "filter", "required": False, "location": "query"},
+            ],
+        },
+        "GET:/service-catalog/v1/service-manager-provisions/{id}": {
+            "path": "/service-catalog/v1/service-manager-provisions/{id}",
+            "method": "GET",
+            "summary": "get_service_manager_provision_v1",
+            "description": "get_service_manager_provision_v1",
+            "parameters": [
+                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
+            ],
+        },
         "GET:/service-catalog/v1beta1/service-provisions": {
             "path": "/service-catalog/v1beta1/service-provisions",
             "method": "GET",
@@ -120,64 +232,11 @@ async def invoke_dynamic_tool(
                 {"name": "all", "type": "bool", "description": "all", "required": False, "location": "query"},
             ],
         },
-        "GET:/service-catalog/v1/service-managers": {
-            "path": "/service-catalog/v1/service-managers",
+        "GET:/service-catalog/v1/service-manager-provisions": {
+            "path": "/service-catalog/v1/service-manager-provisions",
             "method": "GET",
-            "summary": "get_service_managers_v1",
-            "description": "get_service_managers_v1",
-            "parameters": [
-                {"name": "offset", "type": "int", "description": "offset", "required": False, "location": "query"},
-                {
-                    "name": "limit",
-                    "type": "int",
-                    "description": "limit",
-                    "required": False,
-                    "location": "query",
-                    "default": "2000",
-                },
-            ],
-        },
-        "GET:/service-catalog/v1/service-managers/{id}": {
-            "path": "/service-catalog/v1/service-managers/{id}",
-            "method": "GET",
-            "summary": "get_service_manager_v1",
-            "description": "get_service_manager_v1",
-            "parameters": [
-                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
-            ],
-        },
-        "GET:/service-catalog/v1/service-manager-provisions/{id}": {
-            "path": "/service-catalog/v1/service-manager-provisions/{id}",
-            "method": "GET",
-            "summary": "get_service_manager_provision_v1",
-            "description": "get_service_manager_provision_v1",
-            "parameters": [
-                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
-            ],
-        },
-        "GET:/service-catalog/v1beta1/service-offers": {
-            "path": "/service-catalog/v1beta1/service-offers",
-            "method": "GET",
-            "summary": "getserviceoffers",
-            "description": "getserviceoffers",
-            "parameters": [
-                {"name": "next", "type": "str", "description": "next", "required": False, "location": "query"},
-                {
-                    "name": "limit",
-                    "type": "int",
-                    "description": "limit",
-                    "required": False,
-                    "location": "query",
-                    "default": "2000",
-                },
-                {"name": "filter", "type": "str", "description": "filter", "required": False, "location": "query"},
-            ],
-        },
-        "GET:/service-catalog/v1/per-region-service-managers": {
-            "path": "/service-catalog/v1/per-region-service-managers",
-            "method": "GET",
-            "summary": "per_region_service_managers_v1",
-            "description": "per_region_service_managers_v1",
+            "summary": "get_service_manager_provisions_v1",
+            "description": "get_service_manager_provisions_v1",
             "parameters": [
                 {"name": "offset", "type": "int", "description": "offset", "required": False, "location": "query"},
                 {
@@ -200,33 +259,6 @@ async def invoke_dynamic_tool(
                 {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
             ],
         },
-        "GET:/service-catalog/v1beta1/service-offer-regions": {
-            "path": "/service-catalog/v1beta1/service-offer-regions",
-            "method": "GET",
-            "summary": "getserviceofferregions",
-            "description": "getserviceofferregions",
-            "parameters": [
-                {"name": "next", "type": "str", "description": "next", "required": False, "location": "query"},
-                {
-                    "name": "limit",
-                    "type": "int",
-                    "description": "limit",
-                    "required": False,
-                    "location": "query",
-                    "default": "2000",
-                },
-                {"name": "filter", "type": "str", "description": "filter", "required": False, "location": "query"},
-            ],
-        },
-        "GET:/service-catalog/v1beta1/service-offers/{id}": {
-            "path": "/service-catalog/v1beta1/service-offers/{id}",
-            "method": "GET",
-            "summary": "getserviceoffer",
-            "description": "getserviceoffer",
-            "parameters": [
-                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
-            ],
-        },
         "GET:/service-catalog/v1beta1/service-offer-regions/{id}": {
             "path": "/service-catalog/v1beta1/service-offer-regions/{id}",
             "method": "GET",
@@ -236,27 +268,11 @@ async def invoke_dynamic_tool(
                 {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
             ],
         },
-        "GET:/service-catalog/v1beta1/service-provisions/{id}": {
-            "path": "/service-catalog/v1beta1/service-provisions/{id}",
+        "GET:/service-catalog/v1/per-region-service-managers": {
+            "path": "/service-catalog/v1/per-region-service-managers",
             "method": "GET",
-            "summary": "getserviceprovision",
-            "description": "getserviceprovision",
-            "parameters": [
-                {"name": "id", "type": "str", "description": "id", "required": True, "location": "path"},
-                {
-                    "name": "unredacted",
-                    "type": "bool",
-                    "description": "unredacted",
-                    "required": False,
-                    "location": "query",
-                },
-            ],
-        },
-        "GET:/service-catalog/v1/service-manager-provisions": {
-            "path": "/service-catalog/v1/service-manager-provisions",
-            "method": "GET",
-            "summary": "get_service_manager_provisions_v1",
-            "description": "get_service_manager_provisions_v1",
+            "summary": "per_region_service_managers_v1",
+            "description": "per_region_service_managers_v1",
             "parameters": [
                 {"name": "offset", "type": "int", "description": "offset", "required": False, "location": "query"},
                 {
@@ -381,6 +397,9 @@ def _build_request_url(
                     param_value = int(param_value)
                 except (ValueError, TypeError):
                     pass
+            # Normalize unquoted numeric values in OData filter expressions
+            if param_name in ("filter", "filter-tags") and isinstance(param_value, str):
+                param_value = _normalize_filter_quotes(param_value)
             query_params[param_name] = param_value
 
     return url, query_params

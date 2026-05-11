@@ -8,7 +8,7 @@ User-Agent headers and other metadata purposes.
 
 # Server identification
 SERVER_NAME: str = "subscriptions"
-SERVER_VERSION: str = "1.1.0"
+SERVER_VERSION: str = "1.1.1"
 
 # User-Agent string for API calls
 # Format: HPE-GreenLake-MCP/{server-name}-{version}

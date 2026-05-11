@@ -96,44 +96,8 @@ MODEL_TEST_MATRIX = [
         "name": "NBUser",
         "fields": [
             {
-                "name": "generation",
-                "sanitized": "generation",
-                "type": r"integer",
-                "required": False,
-            },
-            {
-                "name": "lastLogin",
-                "sanitized": "lastLogin",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "id",
-                "sanitized": "id",
-                "type": r"string",
-                "required": True,
-            },
-            {
                 "name": "resourceUri",
                 "sanitized": "resourceUri",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "userStatus",
-                "sanitized": "userStatus",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "updatedAt",
-                "sanitized": "updatedAt",
-                "type": r"string",
-                "required": False,
-            },
-            {
-                "name": "createdAt",
-                "sanitized": "createdAt",
                 "type": r"string",
                 "required": False,
             },
@@ -144,10 +108,46 @@ MODEL_TEST_MATRIX = [
                 "required": True,
             },
             {
+                "name": "generation",
+                "sanitized": "generation",
+                "type": r"integer",
+                "required": False,
+            },
+            {
+                "name": "createdAt",
+                "sanitized": "createdAt",
+                "type": r"string",
+                "required": False,
+            },
+            {
                 "name": "username",
                 "sanitized": "username",
                 "type": r"string",
                 "required": True,
+            },
+            {
+                "name": "id",
+                "sanitized": "id",
+                "type": r"string",
+                "required": True,
+            },
+            {
+                "name": "lastLogin",
+                "sanitized": "lastLogin",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "updatedAt",
+                "sanitized": "updatedAt",
+                "type": r"string",
+                "required": False,
+            },
+            {
+                "name": "userStatus",
+                "sanitized": "userStatus",
+                "type": r"string",
+                "required": False,
             },
         ],
     },
@@ -155,6 +155,12 @@ MODEL_TEST_MATRIX = [
         "model": NBUserPaginate,
         "name": "NBUserPaginate",
         "fields": [
+            {
+                "name": "offset",
+                "sanitized": "offset",
+                "type": r"integer",
+                "required": True,
+            },
             {
                 "name": "total",
                 "sanitized": "total",
@@ -173,12 +179,6 @@ MODEL_TEST_MATRIX = [
                 "type": r"array",
                 "required": True,
             },
-            {
-                "name": "offset",
-                "sanitized": "offset",
-                "type": r"integer",
-                "required": True,
-            },
         ],
     },
     {
@@ -186,15 +186,15 @@ MODEL_TEST_MATRIX = [
         "name": "NBUserPreferences",
         "fields": [
             {
-                "name": "language",
-                "sanitized": "language",
-                "type": r"string",
-                "required": False,
-            },
-            {
                 "name": "idleTimeout",
                 "sanitized": "idleTimeout",
                 "type": r"integer",
+                "required": False,
+            },
+            {
+                "name": "language",
+                "sanitized": "language",
+                "type": r"string",
                 "required": False,
             },
         ],

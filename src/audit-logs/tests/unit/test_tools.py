@@ -7,20 +7,20 @@ from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from greenlake_audit_logs_mcp.tools.implementations.getauditlogs import getauditlogs as _impl_getauditlogs
 from greenlake_audit_logs_mcp.tools.implementations.getauditlogdetails import (
     getauditlogdetails as _impl_getauditlogdetails,
 )
-from greenlake_audit_logs_mcp.tools.implementations.getauditlogs import getauditlogs as _impl_getauditlogs
 
 _TOOL_TEST_MATRIX: list[dict[str, Any]] = [
     {
-        "func": _impl_getauditlogdetails,
-        "name": "getauditlogdetails",
+        "func": _impl_getauditlogs,
+        "name": "getauditlogs",
         "method": "get",
     },
     {
-        "func": _impl_getauditlogs,
-        "name": "getauditlogs",
+        "func": _impl_getauditlogdetails,
+        "name": "getauditlogdetails",
         "method": "get",
     },
 ]

@@ -93,14 +93,7 @@ jobs:
               
               # Extract version from pyproject.toml
               if [ -f "src/${service}/pyproject.toml" ]; then
-                VERSION=$(python3 -c "
-          import toml
-          try:
-              data = toml.load('src/${service}/pyproject.toml')
-              print(data['project']['version'])
-          except:
-              print('0.0.1')
-          ")
+                VERSION=$(python3 -c "import toml; data=toml.load('src/${service}/pyproject.toml'); print(data['project']['version'])" 2>/dev/null || echo '0.0.1')
                 echo "  Version: $VERSION"
                 CHANGED_SERVICES="$CHANGED_SERVICES $service"
                 CHANGED_SERVICES_WITH_VERSIONS="$CHANGED_SERVICES_WITH_VERSIONS ${service}:${VERSION}"
@@ -800,7 +793,7 @@ jobs:
             fi
 
             SERVER_NAME=$(jq -r '.name' "$SERVER_JSON")
-            VERSION=$(python3 -c "import tomllib,sys; f=open('src/${service}/pyproject.toml','rb'); print(tomllib.load(f)['project']['version'])" 2>/dev/null || echo "0.0.0")
+            VERSION=$(python3 -c "import toml; data=toml.load('src/${service}/pyproject.toml'); print(data['project']['version'])" 2>/dev/null || echo "0.0.0")
 
             echo ""
             echo "📦 $service — name: $SERVER_NAME, version: $VERSION"
@@ -848,7 +841,7 @@ jobs:
           if [ -n "$PUBLISHED" ]; then
             for svc in $PUBLISHED; do
               SERVER_NAME=$(jq -r '.name' "src/${svc}/server.json")
-              VERSION=$(python3 -c "import tomllib\nwith open('src/${svc}/pyproject.toml','rb') as f: d=tomllib.load(f)\nprint(d['project']['version'])" 2>/dev/null || echo "?")
+              VERSION=$(python3 -c "import toml; data=toml.load('src/${svc}/pyproject.toml'); print(data['project']['version'])" 2>/dev/null || echo "?")
               echo "- ✅ [\`${SERVER_NAME}\` v${VERSION}](https://registry.modelcontextprotocol.io)" >> $GITHUB_STEP_SUMMARY
             done
           fi

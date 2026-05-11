@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.HewlettPackard/greenlake-reporting-mcp",
   "description": "HPE GreenLake reporting MCP Server",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "HPE GreenLake Platform Team",
   "license": "Apache-2.0",
   "homepage": "https://github.com/HewlettPackard/gl-mcp/tree/main/src/reporting",
@@ -14,7 +14,7 @@
     {
       "registryType": "pypi",
       "identifier": "greenlake-reporting-mcp",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "transport": {
         "type": "stdio"
       }
@@ -23,12 +23,12 @@
   "capabilities": {
     "tools": [
       {
-        "name": "getreportingstatuses",
-        "description": "This API is designed to fetch the status of all reports for a specific workspace. Only reports belonging to the workspace ID and username are returned. This API supports pagination, allowing you to use offset and limit parameters.\n"
-      },
-      {
         "name": "getreportingstatusbyid",
         "description": "Retrieve the status of a specific report by passing the report status ID.\n"
+      },
+      {
+        "name": "getreportingstatuses",
+        "description": "This API is designed to fetch the status of all reports for a specific workspace. Only reports belonging to the workspace ID and username are returned. This API supports pagination, allowing you to use offset and limit parameters.\n"
       }
     ]
   },

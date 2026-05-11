@@ -6,6 +6,7 @@ Implements: GET /audit-log/v1/logs
 """
 
 from __future__ import annotations
+import re
 from typing import Annotated, Any
 
 from mcp.server.fastmcp import Context
@@ -15,6 +16,21 @@ from greenlake_audit_logs_mcp.config.logging import get_logger
 from greenlake_audit_logs_mcp.server.fastmcp_instance import mcp
 
 logger = get_logger(__name__)
+
+
+def _normalize_filter_quotes(filter_expr: str) -> str:
+    """Wrap unquoted numeric values in single quotes for OData filter expressions.
+
+    LLMs sometimes omit quotes around numeric filter values (e.g., ``quantity eq 5``
+    instead of ``quantity eq '5'``), which causes 400 Bad Request from the API.
+    This function normalises those bare numeric values while leaving booleans,
+    already-quoted strings, and other tokens untouched.
+    """
+    return re.sub(
+        r"\b(eq|ne|gt|ge|lt|le)\s+(-?\d+(?:\.\d+)?)\b",
+        r"\1 '\2'",
+        filter_expr,
+    )
 
 
 @mcp.tool(
@@ -69,7 +85,7 @@ async def getauditlogs(  # noqa: E501
     # Collect query / body parameters; skip values that were not provided
     params: dict[str, Any] = {}
     if filter is not None and filter is not ...:
-        params["filter"] = filter
+        params["filter"] = _normalize_filter_quotes(filter)
     if select is not None and select is not ...:
         params["select"] = select
     if all is not None and all is not ...:

@@ -6,6 +6,7 @@ Implements: GET /service-catalog/v1/service-manager-provisions
 """
 
 from __future__ import annotations
+import re
 from typing import Annotated, Any
 
 from mcp.server.fastmcp import Context
@@ -15,6 +16,21 @@ from greenlake_service_catalog_mcp.config.logging import get_logger
 from greenlake_service_catalog_mcp.server.fastmcp_instance import mcp
 
 logger = get_logger(__name__)
+
+
+def _normalize_filter_quotes(filter_expr: str) -> str:
+    """Wrap unquoted numeric values in single quotes for OData filter expressions.
+
+    LLMs sometimes omit quotes around numeric filter values (e.g., ``quantity eq 5``
+    instead of ``quantity eq '5'``), which causes 400 Bad Request from the API.
+    This function normalises those bare numeric values while leaving booleans,
+    already-quoted strings, and other tokens untouched.
+    """
+    return re.sub(
+        r"\b(eq|ne|gt|ge|lt|le)\s+(-?\d+(?:\.\d+)?)\b",
+        r"\1 '\2'",
+        filter_expr,
+    )
 
 
 @mcp.tool(
@@ -34,7 +50,7 @@ async def get_service_manager_provisions_v1(  # noqa: E501
     filter: Annotated[
         str | None,
         Field(
-            description="Examples:\n  - status eq 'PROVISIONED'\n    Returns service managers that are provisioned.\n  - status eq 'UNPROVISIONED'\n    Returns service managers that are not provisioned.\n  - region eq 'us-west'\n    Returns service managers in a specified region.\n  - serviceManagerId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Returns service managers with a specific service manager ID.\n\n**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes."
+            description="Examples:\n  - region eq 'us-west'\n    Returns service managers in a specified region.\n  - serviceManagerId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Returns service managers with a specific service manager ID.\n  - status eq 'PROVISIONED'\n    Returns service managers that are provisioned.\n  - status eq 'UNPROVISIONED'\n    Returns service managers that are not provisioned.\n\n**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes."
         ),
     ] = None,
 ) -> list[dict[str, Any]]:
@@ -43,7 +59,7 @@ async def get_service_manager_provisions_v1(  # noqa: E501
     Args:
         offset: Zero-based resource offset to start the response from.\n\nExample: 0
         limit: The maximum number of records to return.\n\nExample: 10
-        filter: Examples:\n  - status eq 'PROVISIONED'\n    Returns service managers that are provisioned.\n  - status eq 'UNPROVISIONED'\n    Returns service managers that are not provisioned.\n  - region eq 'us-west'\n    Returns service managers in a specified region.\n  - serviceManagerId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Returns service managers with a specific service manager ID.\n\n**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
+        filter: Examples:\n  - region eq 'us-west'\n    Returns service managers in a specified region.\n  - serviceManagerId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Returns service managers with a specific service manager ID.\n  - status eq 'PROVISIONED'\n    Returns service managers that are provisioned.\n  - status eq 'UNPROVISIONED'\n    Returns service managers that are not provisioned.\n\n**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
     Returns:
         API response data as a list containing one result dict.
     """
@@ -67,7 +83,7 @@ async def get_service_manager_provisions_v1(  # noqa: E501
         except (ValueError, TypeError) as exc:
             raise ValueError("'limit' must be an integer") from exc
     if filter is not None and filter is not ...:
-        params["filter"] = filter
+        params["filter"] = _normalize_filter_quotes(filter)
 
     try:
         response_data = await http_client.get(url, params=params)

@@ -44,8 +44,8 @@ def get_tool_classes(mode: str | None = None) -> list:
             # Static mode: import every per-endpoint tool module.
             # The @mcp.tool() decorators inside each module fire on import and
             # register the function with the FastMCP instance.
-            import greenlake_reporting_mcp.tools.implementations.getreportingstatuses  # noqa: F401 (triggers @mcp.tool registration)
             import greenlake_reporting_mcp.tools.implementations.getreportingstatusbyid  # noqa: F401 (triggers @mcp.tool registration)
+            import greenlake_reporting_mcp.tools.implementations.getreportingstatuses  # noqa: F401 (triggers @mcp.tool registration)
 
             logger.info("Static mode: 2 endpoint tools registered")
     except ImportError as exc:

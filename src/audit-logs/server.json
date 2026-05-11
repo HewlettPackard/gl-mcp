@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.HewlettPackard/greenlake-audit-logs-mcp",
   "description": "HPE GreenLake audit-logs MCP Server",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "HPE GreenLake Platform Team",
   "license": "Apache-2.0",
   "homepage": "https://github.com/HewlettPackard/gl-mcp/tree/main/src/audit-logs",
@@ -14,7 +14,7 @@
     {
       "registryType": "pypi",
       "identifier": "greenlake-audit-logs-mcp",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "transport": {
         "type": "stdio"
       }
@@ -23,12 +23,12 @@
   "capabilities": {
     "tools": [
       {
-        "name": "getauditlogdetails",
-        "description": "Get additional detail of an audit log."
-      },
-      {
         "name": "getauditlogs",
         "description": "The audit logs can be filtered using a variety of parameters. Queries should be separated by `and` and can utilize `eq`, `contains`, and `in` operators to construct the final query. Each query should follow the format:\n* key eq 'value' for equality operation.\n* contains(key, 'value') for contains operation.\n* key in ('value1', 'value2') for in operation.\n\n| Filter parameter         | Supported Operators | Type                    | Example                                                                                         |\n|--------------------------|---------------------|-------------------------|-------------------------------------------------------------------------------------------------|\n| createdAt                | lt, ge              | RFC timestamp in string | createdAt ge '2024-02-16T07:54:55.0Z'                                                           |\n| category                 | eq, in              | string                  | category eq 'User Management' category in ('Device Management', 'User Activity')                |\n| description              | eq, contains        | string                  | contains(description, 'Logged in') description eq 'User test@test.com logged in via ping mode.' |\n| additionalInfo/ipAddress | eq, contains        | IP string               | additionalInfo/ipAddress eq '192.168.12.12' contains(additionalInfo/ipAddress, '192.168')       |\n| user/username            | eq, contains        | email in string         | user/username eq 'test@test.com' contains(user/username, '@gmail.com')                          |\n| workspace/workspaceName  | eq, contains        | string                  | workspace/workspaceName eq 'Example workspace' contains(workspace/workspaceName, 'Example')     |\n| application/id           | eq                  | UUID in string          | application/id eq '12312-123123-123123-123121'                                                  |\n| region                   | eq                  | region code in string   | region eq 'us-west'                                                                             |\n| hasDetails               | eq                  | boolean                 | hasDetails eq 'true'                                                                              |\n"
+      },
+      {
+        "name": "getauditlogdetails",
+        "description": "Get additional detail of an audit log."
       }
     ]
   },

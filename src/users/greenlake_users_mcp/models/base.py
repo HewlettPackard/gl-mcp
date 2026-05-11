@@ -145,31 +145,33 @@ class Message(BaseModel):
 class NBUser(BaseModel):
     """User's information for north bound apis."""
 
+    resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
+
+    type: str = Field(alias="type", description="Type of data")
+
     generation: Optional[int] = Field(default=None, alias="generation", description="Resource history of updates")
+
+    createdAt: Optional[str] = Field(default=None, alias="createdAt", description="The time the resource was created.")
+
+    username: str = Field(alias="username", description="User's Email Address")
+
+    id: str = Field(alias="id", description="Resource unique identification")
 
     lastLogin: Optional[str] = Field(
         default=None, alias="lastLogin", description="Time when this user had last logged in."
     )
 
-    id: str = Field(alias="id", description="Resource unique identification")
-
-    resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
-
-    userStatus: Optional[str] = Field(default=None, alias="userStatus", description="On-Boarding Status of a user")
-
     updatedAt: Optional[str] = Field(
         default=None, alias="updatedAt", description="The time the resource was last updated."
     )
 
-    createdAt: Optional[str] = Field(default=None, alias="createdAt", description="The time the resource was created.")
-
-    type: str = Field(alias="type", description="Type of data")
-
-    username: str = Field(alias="username", description="User's Email Address")
+    userStatus: Optional[str] = Field(default=None, alias="userStatus", description="On-Boarding Status of a user")
 
 
 class NBUserPaginate(BaseModel):
     """NBUserPaginate model"""
+
+    offset: int = Field(alias="offset", description="Specifies the offset of the returned page")
 
     total: int = Field(alias="total", description="The total number of items in the result set")
 
@@ -177,14 +179,12 @@ class NBUserPaginate(BaseModel):
 
     items: list[Any] = Field(alias="items", description="List of users")
 
-    offset: int = Field(alias="offset", description="Specifies the offset of the returned page")
-
 
 class NBUserPreferences(BaseModel):
     """NBUserPreferences model"""
 
-    language: Optional[str] = Field(default=None, alias="language", description="The preferred language of the user.")
-
     idleTimeout: Optional[int] = Field(
         default=None, alias="idleTimeout", description="The user's session idle timeout in seconds."
     )
+
+    language: Optional[str] = Field(default=None, alias="language", description="The preferred language of the user.")

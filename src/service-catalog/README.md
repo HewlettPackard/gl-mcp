@@ -291,34 +291,16 @@ Add to your `claude_desktop_config.json`:
 
 This server provides the following MCP tools:
 
-### getserviceprovisions
+### getserviceprovision
 
-- **Description**: Retrieve a list of service provisions by applying filters.
-A service offer provides a distinct set of functionalities that can be independently identified and assigned access. Service offers are typically associated with roles and permissions, commerce, metering, quote-to-cash, and trial evaluations.
-A service provision occurs when a service offer is provisioned (added) to a workspace.
-\<br\>\<br\>**Pagination**: This endpoint supports cursor-based pagination using the `next` query parameter. Provide the cursor in the `next` query parameter to retrieve the next page.
-
-- **Method**: GET /service-catalog/v1beta1/service-provisions
+- **Description**: Fetch service provision details for an ID.
+- **Method**: GET /service-catalog/v1beta1/service-provisions/{id}
 - **Parameters**:
 
-  - `Hpe-workspace-id` (str, optional):  
-    The workspace ID. Required if the "view all" parameter is false.
-  - `next` (str, optional):  
-    Specify the start ID for the next page of service offers.
-  - `limit` (int, optional):  
-    Specify the number of results to be returned.
-  - `filter` (str, optional):  
-    Limit the entities operated on by this endpoint by returning only the subset of entities that match the filter. The filter grammar is a subset of OData 4.0. \<br\> **Supported Fields:** `id`, `ServiceOfferId`, `workspaceId`, `serviceManagerProvisionId`, `serviceManagerId`, `serviceManagerInstanceId`, `status`, `organizationId`, `slug`. \<br\> **Supported operand:** `eq` \<br\> **Supported operations:** `and` Examples: - id eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' Return the
-    service provision with a given ID. - workspaceId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' Return service provisions for a given workspace ID. - serviceManagerProvisionId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' Return service provisions for a given Application Customer ID. - ServiceOfferId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and region eq 'us-west' Return service provisions for a given service offer ID and region. - serviceManagerId eq
-    '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and serviceManagerInstanceId eq '62d242c7-7d53-448d-b7d0-baf0c591f024' Return service provision for a given application ID and application instance ID. - status eq 'PROVISION_INITIATED' Return service provisions with a given status. - organizationId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' Return service provisions with a given organization ID. - slug eq 'AC' Return service provisions with a given slug. **Filter Syntax**: Use
-    OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
+  - `id` (str, required):  
+    The unique identifier of a service provision. The ID is returned by the `Get service provisions` endpoint.
   - `unredacted` (bool, optional):  
-    If true, returns the complete entry including sensitive fields.
-
-Example: true
-
-- `all` (bool, optional):  
-    If true, returns unredacted entries for all workspaces, including all provisioned service offers and their sensitive fields.
+    If set to true, get the entire entry along with sensitive fields.
 
 Example: true
 
@@ -347,69 +329,18 @@ Example: 10
   - `id` (str, required):  
     Service manager ID
 
-### get_service_manager_provision_v1
+### getserviceoffer
 
-- **Description**: Retrieve details for a specific service manager provision entry using the ID for the entry.
-- **Method**: GET /service-catalog/v1/service-manager-provisions/{id}
+- **Description**: Retrieve detailed information about a specific service offer by supplying its unique identifier in the request path.
+To obtain valid service offer IDs, use the `Get service offers` endpoint to list available offers.
+
+- **Method**: GET /service-catalog/v1beta1/service-offers/{id}
 - **Parameters**:
 
   - `id` (str, required):  
-    Service manager provision ID
+    The unique identifier of the service offer.
 
-### getserviceoffers
-
-- **Description**: Retrieve a list of service offers by applying filters.
-A service offer provides a distinct set of functionality that can be independently identified and assigned access.
-\<br\>\<br\>**Pagination:** This API supports cursor-based pagination. Provide the cursor in the `next` query parameter to retrieve the next page.
-
-- **Method**: GET /service-catalog/v1beta1/service-offers
-- **Parameters**:
-
-  - `next` (str, optional):  
-    Specifies the pagination cursor for the next page of service offers.
-
-Example: 64136af7-cd64-4b4e-88a8-150ab51a920d
-
-- `limit` (int, optional):  
-    Specifies the number of results to be returned.
-- `filter` (str, optional):  
-    The `filter` query parameter is used to filter the set of resources returned in a `GET` request. The returned set of resources must match the criteria in the filter query parameter.\<br\>\<br\> The value of the `filter` query parameter is a subset of [OData 4.0](https://www.odata.org/documentation/) filter expressions consisting of simple comparison operations joined by logical operators.\<br\>\<br\>**Supported fields**: `category`, `serviceManagerId`, `status`, `isDefault`,
-    `slug`, and `staticLaunchUrl`.\<br\>**Supported operand**: `eq`\<br\>**Supported operations**: `and` Examples: - slug eq 'GLP' Return service offers with a given slug - staticLaunchUrl eq '/Organization' Return service offers for a given static launch URL - status eq 'ONBOARDED' Return service offers with a given status - category eq 'COMPUTE' Return service offers for a given category - isDefault eq true Return service offers that are service managers - serviceManagerId eq
-    '767c0c92-5ecc-4952-85d6-06d2bcaaf050' Return service offers for given service manager ID **Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
-
-### per_region_service_managers_v1
-
-- **Description**: Retrieve a list of available service managers categorized by region.
-- **Method**: GET /service-catalog/v1/per-region-service-managers
-- **Parameters**:
-
-  - `offset` (int, optional):  
-    Zero-based resource offset to start the response from.
-
-Example: 0
-
-- `limit` (int, optional):  
-    The maximum number of records to return.
-
-Example: 10
-
-- `filter` (str, optional):  
-    Limit the resources operated on by an endpoint and return only the subset of resources that match the filter using an [OData V4](https://www.odata.org/documentation/) formatted filter string. Service manager by region can be filtered by `mspsupported` See examples of filtering options. Examples: - mspSupported eq true Return service managers when msp supported equals true - mspSupported eq false Return service managers when msp supported equals false **Filter Syntax**: Use
-    OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
-
-### service_managers_for_a_region_v1
-
-- **Description**: Retrieve a list of service managers deployed to a particular region.
-- **Method**: GET /service-catalog/v1/per-region-service-managers/{id}
-- **Parameters**:
-
-  - `id` (str, required):  
-    HPE GreenLake platform defined region code.
-
-Examples:
-
-- us-west
-- us-east
+Example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
 
 ### getserviceofferregions
 
@@ -429,46 +360,68 @@ Example: 64136af7-cd64-4b4e-88a8-150ab51a920d
     Specifies the number of results to be returned.
 - `filter` (str, optional):  
     The `filter` query parameter is used to filter the set of resources returned in a `GET` request. The returned set of resources must match the criteria in the filter query parameter.\<br\>\<br\> The value of the `filter` query parameter is a subset of [OData 4.0](https://www.odata.org/documentation/) filter expressions consisting of simple comparison operations joined by logical operators.\<br\>\<br\>**Supported fields**: `serviceOfferId`, `status`, and
-    `region`.\<br\>**Supported operand**: `eq`\<br\>**Supported operations**: `and` Examples: - status eq 'ONBOARDED' Return service offer regions with a given status - serviceOfferId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' Return service offer regions with a given service offer ID - serviceOfferId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and region eq 'us-east' Return service offer regions with a given service offer ID and region - serviceOfferId eq
-    '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and status eq 'ONBOARDED' Return service offer regions with a given service offer ID and status - serviceOfferId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and status eq 'ONBOARDED' and region eq 'us-east' Return service offer regions with a given service offer ID and status and region - region eq 'us-east' Return service offer regions with a given region **Filter Syntax**: Use OData-style filters with the field names shown in the
-    examples above. String values must be enclosed in single quotes.
+    `region`.\<br\>**Supported operand**: `eq`\<br\>**Supported operations**: `and` Examples: - serviceOfferId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and region eq 'us-east' Return service offer regions with a given service offer ID and region - serviceOfferId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and status eq 'ONBOARDED' Return service offer regions with a given service offer ID and status - serviceOfferId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and status eq
+    'ONBOARDED' and region eq 'us-east' Return service offer regions with a given service offer ID and status and region - region eq 'us-east' Return service offer regions with a given region - status eq 'ONBOARDED' Return service offer regions with a given status - serviceOfferId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' Return service offer regions with a given service offer ID **Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String
+    values must be enclosed in single quotes.
 
-### getserviceoffer
+### getserviceoffers
 
-- **Description**: Retrieve detailed information about a specific service offer by supplying its unique identifier in the request path.
-To obtain valid service offer IDs, use the `Get service offers` endpoint to list available offers.
+- **Description**: Retrieve a list of service offers by applying filters.
+A service offer provides a distinct set of functionality that can be independently identified and assigned access.
+\<br\>\<br\>**Pagination:** This API supports cursor-based pagination. Provide the cursor in the `next` query parameter to retrieve the next page.
 
-- **Method**: GET /service-catalog/v1beta1/service-offers/{id}
+- **Method**: GET /service-catalog/v1beta1/service-offers
+- **Parameters**:
+
+  - `next` (str, optional):  
+    Specifies the pagination cursor for the next page of service offers.
+
+Example: 64136af7-cd64-4b4e-88a8-150ab51a920d
+
+- `limit` (int, optional):  
+    Specifies the number of results to be returned.
+- `filter` (str, optional):  
+    The `filter` query parameter is used to filter the set of resources returned in a `GET` request. The returned set of resources must match the criteria in the filter query parameter.\<br\>\<br\> The value of the `filter` query parameter is a subset of [OData 4.0](https://www.odata.org/documentation/) filter expressions consisting of simple comparison operations joined by logical operators.\<br\>\<br\>**Supported fields**: `category`, `serviceManagerId`, `status`, `isDefault`,
+    `slug`, and `staticLaunchUrl`.\<br\>**Supported operand**: `eq`\<br\>**Supported operations**: `and` Examples: - category eq 'COMPUTE' Return service offers for a given category - isDefault eq true Return service offers that are service managers - serviceManagerId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' Return service offers for given service manager ID - slug eq 'GLP' Return service offers with a given slug - staticLaunchUrl eq '/Organization' Return service offers for a
+    given static launch URL - status eq 'ONBOARDED' Return service offers with a given status **Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
+
+### get_service_manager_provision_v1
+
+- **Description**: Retrieve details for a specific service manager provision entry using the ID for the entry.
+- **Method**: GET /service-catalog/v1/service-manager-provisions/{id}
 - **Parameters**:
 
   - `id` (str, required):  
-    The unique identifier of the service offer.
+    Service manager provision ID
 
-Example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+### getserviceprovisions
 
-### getserviceofferregion
+- **Description**: Retrieve a list of service provisions by applying filters.
+A service offer provides a distinct set of functionalities that can be independently identified and assigned access. Service offers are typically associated with roles and permissions, commerce, metering, quote-to-cash, and trial evaluations.
+A service provision occurs when a service offer is provisioned (added) to a workspace.
+\<br\>\<br\>**Pagination**: This endpoint supports cursor-based pagination using the `next` query parameter. Provide the cursor in the `next` query parameter to retrieve the next page.
 
-- **Description**: Retrieve detailed information about a specific service offer region by providing its unique identifier in the request path.
-To obtain valid service offer region IDs, use the `Get service offer regions` endpoint to list available regions.
-
-- **Method**: GET /service-catalog/v1beta1/service-offer-regions/{id}
+- **Method**: GET /service-catalog/v1beta1/service-provisions
 - **Parameters**:
 
-  - `id` (str, required):  
-    The unique service offer region ID.
-
-Example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-
-### getserviceprovision
-
-- **Description**: Fetch service provision details for an ID.
-- **Method**: GET /service-catalog/v1beta1/service-provisions/{id}
-- **Parameters**:
-
-  - `id` (str, required):  
-    The unique identifier of a service provision. The ID is returned by the `Get service provisions` endpoint.
+  - `Hpe-workspace-id` (str, optional):  
+    The workspace ID. Required if the "view all" parameter is false.
+  - `next` (str, optional):  
+    Specify the start ID for the next page of service offers.
+  - `limit` (int, optional):  
+    Specify the number of results to be returned.
+  - `filter` (str, optional):  
+    Limit the entities operated on by this endpoint by returning only the subset of entities that match the filter. The filter grammar is a subset of OData 4.0. \<br\> **Supported Fields:** `id`, `ServiceOfferId`, `workspaceId`, `serviceManagerProvisionId`, `serviceManagerId`, `serviceManagerInstanceId`, `status`, `organizationId`, `slug`. \<br\> **Supported operand:** `eq` \<br\> **Supported operations:** `and` Examples: - serviceManagerProvisionId eq
+    '767c0c92-5ecc-4952-85d6-06d2bcaaf050' Return service provisions for a given Application Customer ID. - ServiceOfferId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and region eq 'us-west' Return service provisions for a given service offer ID and region. - serviceManagerId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and serviceManagerInstanceId eq '62d242c7-7d53-448d-b7d0-baf0c591f024' Return service provision for a given application ID and application instance ID. - status eq
+    'PROVISION_INITIATED' Return service provisions with a given status. - organizationId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' Return service provisions with a given organization ID. - slug eq 'AC' Return service provisions with a given slug. - id eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' Return the service provision with a given ID. - workspaceId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' Return service provisions for a given workspace ID. **Filter Syntax**: Use OData-style
+    filters with the field names shown in the examples above. String values must be enclosed in single quotes.
   - `unredacted` (bool, optional):  
-    If set to true, get the entire entry along with sensitive fields.
+    If true, returns the complete entry including sensitive fields.
+
+Example: true
+
+- `all` (bool, optional):  
+    If true, returns unredacted entries for all workspaces, including all provisioned service offers and their sensitive fields.
 
 Example: true
 
@@ -489,8 +442,55 @@ Example: 0
 Example: 10
 
 - `filter` (str, optional):  
-    Examples: - status eq 'PROVISIONED' Returns service managers that are provisioned. - status eq 'UNPROVISIONED' Returns service managers that are not provisioned. - region eq 'us-west' Returns service managers in a specified region. - serviceManagerId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' Returns service managers with a specific service manager ID. **Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in
+    Examples: - region eq 'us-west' Returns service managers in a specified region. - serviceManagerId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' Returns service managers with a specific service manager ID. - status eq 'PROVISIONED' Returns service managers that are provisioned. - status eq 'UNPROVISIONED' Returns service managers that are not provisioned. **Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in
     single quotes.
+
+### service_managers_for_a_region_v1
+
+- **Description**: Retrieve a list of service managers deployed to a particular region.
+- **Method**: GET /service-catalog/v1/per-region-service-managers/{id}
+- **Parameters**:
+
+  - `id` (str, required):  
+    HPE GreenLake platform defined region code.
+
+Examples:
+
+- us-west
+- us-east
+
+### getserviceofferregion
+
+- **Description**: Retrieve detailed information about a specific service offer region by providing its unique identifier in the request path.
+To obtain valid service offer region IDs, use the `Get service offer regions` endpoint to list available regions.
+
+- **Method**: GET /service-catalog/v1beta1/service-offer-regions/{id}
+- **Parameters**:
+
+  - `id` (str, required):  
+    The unique service offer region ID.
+
+Example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+
+### per_region_service_managers_v1
+
+- **Description**: Retrieve a list of available service managers categorized by region.
+- **Method**: GET /service-catalog/v1/per-region-service-managers
+- **Parameters**:
+
+  - `offset` (int, optional):  
+    Zero-based resource offset to start the response from.
+
+Example: 0
+
+- `limit` (int, optional):  
+    The maximum number of records to return.
+
+Example: 10
+
+- `filter` (str, optional):  
+    Limit the resources operated on by an endpoint and return only the subset of resources that match the filter using an [OData V4](https://www.odata.org/documentation/) formatted filter string. Service manager by region can be filtered by `mspsupported` See examples of filtering options. Examples: - mspSupported eq false Return service managers when msp supported equals false - mspSupported eq true Return service managers when msp supported equals true **Filter Syntax**: Use
+    OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
 
 ## Typical Use Cases
 
@@ -510,32 +510,32 @@ These are just examples - you can ask questions in your own words, and the AI as
 
 This MCP server implements read-only access to the following service-catalog API endpoints:
 
+- `GET /service-catalog/v1beta1/service-provisions/{id}` - Fetch service provision details for an ID.
+- `GET /service-catalog/v1/service-managers` - Get a list of available service managers.
+- `GET /service-catalog/v1/service-managers/{id}` - Retrieve details for a specific service manager by passing the service manager ID.
+- `GET /service-catalog/v1beta1/service-offers/{id}` - Retrieve detailed information about a specific service offer by supplying its unique identifier in the request path.
+To obtain valid service offer IDs, use the `Get service offers` endpoint to list available offers.
+
+- `GET /service-catalog/v1beta1/service-offer-regions` - Retrieve a list of service offer regions by applying filters.
+Each service offer region represents a service offer provisioned in a specific region.
+\<br\>\<br\>**Pagination:** This API supports cursor-based pagination. Provide the cursor in the `next` query parameter to retrieve the next page.
+
+- `GET /service-catalog/v1beta1/service-offers` - Retrieve a list of service offers by applying filters.
+A service offer provides a distinct set of functionality that can be independently identified and assigned access.
+\<br\>\<br\>**Pagination:** This API supports cursor-based pagination. Provide the cursor in the `next` query parameter to retrieve the next page.
+
+- `GET /service-catalog/v1/service-manager-provisions/{id}` - Retrieve details for a specific service manager provision entry using the ID for the entry.
 - `GET /service-catalog/v1beta1/service-provisions` - Retrieve a list of service provisions by applying filters.
 A service offer provides a distinct set of functionalities that can be independently identified and assigned access. Service offers are typically associated with roles and permissions, commerce, metering, quote-to-cash, and trial evaluations.
 A service provision occurs when a service offer is provisioned (added) to a workspace.
 \<br\>\<br\>**Pagination**: This endpoint supports cursor-based pagination using the `next` query parameter. Provide the cursor in the `next` query parameter to retrieve the next page.
 
-- `GET /service-catalog/v1/service-managers` - Get a list of available service managers.
-- `GET /service-catalog/v1/service-managers/{id}` - Retrieve details for a specific service manager by passing the service manager ID.
-- `GET /service-catalog/v1/service-manager-provisions/{id}` - Retrieve details for a specific service manager provision entry using the ID for the entry.
-- `GET /service-catalog/v1beta1/service-offers` - Retrieve a list of service offers by applying filters.
-A service offer provides a distinct set of functionality that can be independently identified and assigned access.
-\<br\>\<br\>**Pagination:** This API supports cursor-based pagination. Provide the cursor in the `next` query parameter to retrieve the next page.
-
-- `GET /service-catalog/v1/per-region-service-managers` - Retrieve a list of available service managers categorized by region.
+- `GET /service-catalog/v1/service-manager-provisions` - Retrieve a list of all service manager provision entries.
 - `GET /service-catalog/v1/per-region-service-managers/{id}` - Retrieve a list of service managers deployed to a particular region.
-- `GET /service-catalog/v1beta1/service-offer-regions` - Retrieve a list of service offer regions by applying filters.
-Each service offer region represents a service offer provisioned in a specific region.
-\<br\>\<br\>**Pagination:** This API supports cursor-based pagination. Provide the cursor in the `next` query parameter to retrieve the next page.
-
-- `GET /service-catalog/v1beta1/service-offers/{id}` - Retrieve detailed information about a specific service offer by supplying its unique identifier in the request path.
-To obtain valid service offer IDs, use the `Get service offers` endpoint to list available offers.
-
 - `GET /service-catalog/v1beta1/service-offer-regions/{id}` - Retrieve detailed information about a specific service offer region by providing its unique identifier in the request path.
 To obtain valid service offer region IDs, use the `Get service offer regions` endpoint to list available regions.
 
-- `GET /service-catalog/v1beta1/service-provisions/{id}` - Fetch service provision details for an ID.
-- `GET /service-catalog/v1/service-manager-provisions` - Retrieve a list of all service manager provision entries.
+- `GET /service-catalog/v1/per-region-service-managers` - Retrieve a list of available service managers categorized by region.
 
 ## Development
 

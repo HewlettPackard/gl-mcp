@@ -123,14 +123,14 @@ class TestGetEndpointSchema:
     async def test_valid_endpoint_returns_schema(self):
         """A recognised endpoint identifier returns a complete schema dict."""
 
-        result = await get_endpoint_schema(endpoint_identifier="GET:/service-catalog/v1beta1/service-provisions")
+        result = await get_endpoint_schema(endpoint_identifier="GET:/service-catalog/v1beta1/service-provisions/{id}")
 
         assert len(result) == 1
         response = result[0]
         assert response["success"] is True
-        assert response["endpoint_identifier"] == "GET:/service-catalog/v1beta1/service-provisions"
+        assert response["endpoint_identifier"] == "GET:/service-catalog/v1beta1/service-provisions/{id}"
         schema = response["schema"]
-        assert schema["path"] == "/service-catalog/v1beta1/service-provisions"
+        assert schema["path"] == "/service-catalog/v1beta1/service-provisions/{id}"
         assert schema["method"] == "GET"
         assert isinstance(schema["parameters"], list)
 
@@ -158,7 +158,7 @@ class TestGetEndpointSchema:
         """Setting include_examples=True attaches an example value to each parameter."""
 
         result = await get_endpoint_schema(
-            endpoint_identifier="GET:/service-catalog/v1beta1/service-provisions",
+            endpoint_identifier="GET:/service-catalog/v1beta1/service-provisions/{id}",
             include_examples=True,
         )
 
@@ -170,7 +170,7 @@ class TestGetEndpointSchema:
     async def test_schema_contains_all_expected_keys(self):
         """Schema response includes all mandatory top-level keys."""
 
-        result = await get_endpoint_schema(endpoint_identifier="GET:/service-catalog/v1beta1/service-provisions")
+        result = await get_endpoint_schema(endpoint_identifier="GET:/service-catalog/v1beta1/service-provisions/{id}")
         schema = result[0]["schema"]
         for key in ("path", "method", "summary", "description", "parameters", "responses"):
             assert key in schema, f"Missing key: {key}"
@@ -193,8 +193,10 @@ class TestInvokeDynamicTool:
 
         result = await invoke_dynamic_tool(
             ctx,
-            endpoint_identifier="GET:/service-catalog/v1beta1/service-provisions",
-            parameters={},
+            endpoint_identifier="GET:/service-catalog/v1beta1/service-provisions/{id}",
+            parameters={
+                "id": "test-value",
+            },
         )
 
         assert len(result) == 1
@@ -235,7 +237,7 @@ class TestInvokeDynamicTool:
 
         result = await invoke_dynamic_tool(
             ctx,
-            endpoint_identifier="OPTIONS:/service-catalog/v1beta1/service-provisions",
+            endpoint_identifier="OPTIONS:/service-catalog/v1beta1/service-provisions/{id}",
         )
 
         assert len(result) == 1
@@ -266,7 +268,27 @@ class TestInvokeDynamicTool:
 
         result = await invoke_dynamic_tool(
             ctx,
+            endpoint_identifier="GET:/service-catalog/v1beta1/service-provisions/{id}",
+            parameters={},  # required "id" is intentionally omitted
+        )
+        assert len(result) == 1
+        assert result[0]["success"] is False
+        assert "validation" in result[0].get("error", "").lower() or "missing" in str(result[0]).lower()
+        return  # only need to test one case
+
+        result = await invoke_dynamic_tool(
+            ctx,
             endpoint_identifier="GET:/service-catalog/v1/service-managers/{id}",
+            parameters={},  # required "id" is intentionally omitted
+        )
+        assert len(result) == 1
+        assert result[0]["success"] is False
+        assert "validation" in result[0].get("error", "").lower() or "missing" in str(result[0]).lower()
+        return  # only need to test one case
+
+        result = await invoke_dynamic_tool(
+            ctx,
+            endpoint_identifier="GET:/service-catalog/v1beta1/service-offers/{id}",
             parameters={},  # required "id" is intentionally omitted
         )
         assert len(result) == 1
@@ -296,27 +318,7 @@ class TestInvokeDynamicTool:
 
         result = await invoke_dynamic_tool(
             ctx,
-            endpoint_identifier="GET:/service-catalog/v1beta1/service-offers/{id}",
-            parameters={},  # required "id" is intentionally omitted
-        )
-        assert len(result) == 1
-        assert result[0]["success"] is False
-        assert "validation" in result[0].get("error", "").lower() or "missing" in str(result[0]).lower()
-        return  # only need to test one case
-
-        result = await invoke_dynamic_tool(
-            ctx,
             endpoint_identifier="GET:/service-catalog/v1beta1/service-offer-regions/{id}",
-            parameters={},  # required "id" is intentionally omitted
-        )
-        assert len(result) == 1
-        assert result[0]["success"] is False
-        assert "validation" in result[0].get("error", "").lower() or "missing" in str(result[0]).lower()
-        return  # only need to test one case
-
-        result = await invoke_dynamic_tool(
-            ctx,
-            endpoint_identifier="GET:/service-catalog/v1beta1/service-provisions/{id}",
             parameters={},  # required "id" is intentionally omitted
         )
         assert len(result) == 1
@@ -334,7 +336,7 @@ class TestInvokeDynamicTool:
 
         result = await invoke_dynamic_tool(
             ctx,
-            endpoint_identifier="GET:/service-catalog/v1beta1/service-provisions",
+            endpoint_identifier="GET:/service-catalog/v1beta1/service-provisions/{id}",
             validate_schema=False,  # skip validation so we reach the HTTP call
         )
 
@@ -394,6 +396,140 @@ def sample_endpoints() -> list[dict]:
     """Sample endpoint data matching the generated schemas."""
     return [
         {
+            "path": "/service-catalog/v1beta1/service-provisions/{id}",
+            "method": "GET",
+            "summary": "getserviceprovision",
+            "operationId": "getserviceprovision",
+            "parameters": [
+                {
+                    "name": "id",
+                    "type": "str",
+                    "required": True,
+                    "location": "query",
+                },
+                {
+                    "name": "unredacted",
+                    "type": "bool",
+                    "required": False,
+                    "location": "query",
+                },
+            ],
+        },
+        {
+            "path": "/service-catalog/v1/service-managers",
+            "method": "GET",
+            "summary": "get_service_managers_v1",
+            "operationId": "get_service_managers_v1",
+            "parameters": [
+                {
+                    "name": "offset",
+                    "type": "int",
+                    "required": False,
+                    "location": "query",
+                },
+                {
+                    "name": "limit",
+                    "type": "int",
+                    "required": False,
+                    "location": "query",
+                },
+            ],
+        },
+        {
+            "path": "/service-catalog/v1/service-managers/{id}",
+            "method": "GET",
+            "summary": "get_service_manager_v1",
+            "operationId": "get_service_manager_v1",
+            "parameters": [
+                {
+                    "name": "id",
+                    "type": "str",
+                    "required": True,
+                    "location": "query",
+                },
+            ],
+        },
+        {
+            "path": "/service-catalog/v1beta1/service-offers/{id}",
+            "method": "GET",
+            "summary": "getserviceoffer",
+            "operationId": "getserviceoffer",
+            "parameters": [
+                {
+                    "name": "id",
+                    "type": "str",
+                    "required": True,
+                    "location": "query",
+                },
+            ],
+        },
+        {
+            "path": "/service-catalog/v1beta1/service-offer-regions",
+            "method": "GET",
+            "summary": "getserviceofferregions",
+            "operationId": "getserviceofferregions",
+            "parameters": [
+                {
+                    "name": "next",
+                    "type": "str",
+                    "required": False,
+                    "location": "query",
+                },
+                {
+                    "name": "limit",
+                    "type": "int",
+                    "required": False,
+                    "location": "query",
+                },
+                {
+                    "name": "filter",
+                    "type": "str",
+                    "required": False,
+                    "location": "query",
+                },
+            ],
+        },
+        {
+            "path": "/service-catalog/v1beta1/service-offers",
+            "method": "GET",
+            "summary": "getserviceoffers",
+            "operationId": "getserviceoffers",
+            "parameters": [
+                {
+                    "name": "next",
+                    "type": "str",
+                    "required": False,
+                    "location": "query",
+                },
+                {
+                    "name": "limit",
+                    "type": "int",
+                    "required": False,
+                    "location": "query",
+                },
+                {
+                    "name": "filter",
+                    "type": "str",
+                    "required": False,
+                    "location": "query",
+                },
+            ],
+        },
+        {
+            "path": "/service-catalog/v1/service-manager-provisions/{id}",
+            "method": "GET",
+            "summary": "get_service_manager_provision_v1",
+            "operationId": "get_service_manager_provision_v1",
+            "parameters": [
+                {
+                    "name": "id",
+                    "type": "str",
+                    "required": True,
+                    "location": "query",
+                },
+            ],
+        },
+        {
             "path": "/service-catalog/v1beta1/service-provisions",
             "method": "GET",
             "summary": "getserviceprovisions",
@@ -438,84 +574,10 @@ def sample_endpoints() -> list[dict]:
             ],
         },
         {
-            "path": "/service-catalog/v1/service-managers",
+            "path": "/service-catalog/v1/service-manager-provisions",
             "method": "GET",
-            "summary": "get_service_managers_v1",
-            "operationId": "get_service_managers_v1",
-            "parameters": [
-                {
-                    "name": "offset",
-                    "type": "int",
-                    "required": False,
-                    "location": "query",
-                },
-                {
-                    "name": "limit",
-                    "type": "int",
-                    "required": False,
-                    "location": "query",
-                },
-            ],
-        },
-        {
-            "path": "/service-catalog/v1/service-managers/{id}",
-            "method": "GET",
-            "summary": "get_service_manager_v1",
-            "operationId": "get_service_manager_v1",
-            "parameters": [
-                {
-                    "name": "id",
-                    "type": "str",
-                    "required": True,
-                    "location": "query",
-                },
-            ],
-        },
-        {
-            "path": "/service-catalog/v1/service-manager-provisions/{id}",
-            "method": "GET",
-            "summary": "get_service_manager_provision_v1",
-            "operationId": "get_service_manager_provision_v1",
-            "parameters": [
-                {
-                    "name": "id",
-                    "type": "str",
-                    "required": True,
-                    "location": "query",
-                },
-            ],
-        },
-        {
-            "path": "/service-catalog/v1beta1/service-offers",
-            "method": "GET",
-            "summary": "getserviceoffers",
-            "operationId": "getserviceoffers",
-            "parameters": [
-                {
-                    "name": "next",
-                    "type": "str",
-                    "required": False,
-                    "location": "query",
-                },
-                {
-                    "name": "limit",
-                    "type": "int",
-                    "required": False,
-                    "location": "query",
-                },
-                {
-                    "name": "filter",
-                    "type": "str",
-                    "required": False,
-                    "location": "query",
-                },
-            ],
-        },
-        {
-            "path": "/service-catalog/v1/per-region-service-managers",
-            "method": "GET",
-            "summary": "per_region_service_managers_v1",
-            "operationId": "per_region_service_managers_v1",
+            "summary": "get_service_manager_provisions_v1",
+            "operationId": "get_service_manager_provisions_v1",
             "parameters": [
                 {
                     "name": "offset",
@@ -552,46 +614,6 @@ def sample_endpoints() -> list[dict]:
             ],
         },
         {
-            "path": "/service-catalog/v1beta1/service-offer-regions",
-            "method": "GET",
-            "summary": "getserviceofferregions",
-            "operationId": "getserviceofferregions",
-            "parameters": [
-                {
-                    "name": "next",
-                    "type": "str",
-                    "required": False,
-                    "location": "query",
-                },
-                {
-                    "name": "limit",
-                    "type": "int",
-                    "required": False,
-                    "location": "query",
-                },
-                {
-                    "name": "filter",
-                    "type": "str",
-                    "required": False,
-                    "location": "query",
-                },
-            ],
-        },
-        {
-            "path": "/service-catalog/v1beta1/service-offers/{id}",
-            "method": "GET",
-            "summary": "getserviceoffer",
-            "operationId": "getserviceoffer",
-            "parameters": [
-                {
-                    "name": "id",
-                    "type": "str",
-                    "required": True,
-                    "location": "query",
-                },
-            ],
-        },
-        {
             "path": "/service-catalog/v1beta1/service-offer-regions/{id}",
             "method": "GET",
             "summary": "getserviceofferregion",
@@ -606,30 +628,10 @@ def sample_endpoints() -> list[dict]:
             ],
         },
         {
-            "path": "/service-catalog/v1beta1/service-provisions/{id}",
+            "path": "/service-catalog/v1/per-region-service-managers",
             "method": "GET",
-            "summary": "getserviceprovision",
-            "operationId": "getserviceprovision",
-            "parameters": [
-                {
-                    "name": "id",
-                    "type": "str",
-                    "required": True,
-                    "location": "query",
-                },
-                {
-                    "name": "unredacted",
-                    "type": "bool",
-                    "required": False,
-                    "location": "query",
-                },
-            ],
-        },
-        {
-            "path": "/service-catalog/v1/service-manager-provisions",
-            "method": "GET",
-            "summary": "get_service_manager_provisions_v1",
-            "operationId": "get_service_manager_provisions_v1",
+            "summary": "per_region_service_managers_v1",
+            "operationId": "per_region_service_managers_v1",
             "parameters": [
                 {
                     "name": "offset",

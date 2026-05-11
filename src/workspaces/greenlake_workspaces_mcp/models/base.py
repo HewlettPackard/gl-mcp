@@ -104,10 +104,20 @@ class ResourceMetadata(BaseModel):
 # SERVICE-SPECIFIC MODELS GENERATED FROM OPENAPI SCHEMAS
 
 
+class NBTenantWorkspacePaginate(BaseModel):
+    """NBTenantWorkspacePaginate model"""
+
+    count: int = Field(alias="count", description="The number of returned items")
+
+    items: list[Any] = Field(alias="items", description="List of Workspaces")
+
+    offset: int = Field(alias="offset", description="Specifies the offset of the returned page")
+
+    total: int = Field(alias="total", description="The total number of items in the result set")
+
+
 class NBCcsAddress(BaseModel):
     """NBCcsAddress model"""
-
-    zip: Optional[str] = Field(default=None, alias="zip", description="zip field")
 
     city: Optional[str] = Field(default=None, alias="city", description="city field")
 
@@ -121,47 +131,7 @@ class NBCcsAddress(BaseModel):
         default=None, alias="streetAddressComplement", description="Apt or suite or building"
     )
 
-
-class NBContactTenant(BaseModel):
-    """NBContactTenant model"""
-
-    email: Optional[str] = Field(
-        default=None, alias="email", description="The primary email address associated with the workspace."
-    )
-
-    inventoryOwnership: Optional[str] = Field(
-        default=None,
-        alias="inventoryOwnership",
-        description='Devices and Subscriptions Ownership for this tenant. If not specified, the tenant is created with the default value of "MSP_OWNED_INVENTORY".',
-    )
-
-    phoneNumber: Optional[str] = Field(
-        default=None, alias="phoneNumber", description="The phone number associated with this workspace."
-    )
-
-    resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
-
-    workspaceName: str = Field(alias="workspaceName", description="Name of the tenant.")
-
-    address: Optional[str] = Field(default=None, alias="address", description="Company Address.")
-
-    description: Optional[str] = Field(default=None, alias="description", description="A description of the tenant.")
-
-
-class NBContactWorkspace(BaseModel):
-    """NBContactWorkspace model"""
-
-    phoneNumber: Optional[str] = Field(
-        default=None, alias="phoneNumber", description="The phone number associated with this workspace."
-    )
-
-    resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
-
-    address: Optional[str] = Field(default=None, alias="address", description="Company address.")
-
-    email: Optional[str] = Field(
-        default=None, alias="email", description="The primary email address associated with the workspace."
-    )
+    zip: Optional[str] = Field(default=None, alias="zip", description="zip field")
 
 
 class NBCcsAddressV2(BaseModel):
@@ -182,58 +152,20 @@ class NBCcsAddressV2(BaseModel):
     zip: Optional[str] = Field(default=None, alias="zip", description="zip field")
 
 
-class NBTenantWorkspacePaginate(BaseModel):
-    """NBTenantWorkspacePaginate model"""
+class NBContactWorkspace(BaseModel):
+    """NBContactWorkspace model"""
 
-    offset: int = Field(alias="offset", description="Specifies the offset of the returned page")
-
-    total: int = Field(alias="total", description="The total number of items in the result set")
-
-    count: int = Field(alias="count", description="The number of returned items")
-
-    items: list[Any] = Field(alias="items", description="List of Workspaces")
-
-
-class Message(BaseModel):
-    """Message model"""
-
-    message: str = Field(alias="message", description="Message")
-
-
-class NBTenantInventoryOwnership(BaseModel):
-    """An enumeration."""
-
-
-class CountryCode(BaseModel):
-    """An enumeration."""
-
-
-class NBBasicTenant(BaseModel):
-    """NBBasicTenant model"""
-
-    type: str = Field(alias="type", description="Type of data")
-
-    updatedAt: Optional[str] = Field(
-        default=None, alias="updatedAt", description="The time the resource was last updated."
+    email: Optional[str] = Field(
+        default=None, alias="email", description="The primary email address associated with the workspace."
     )
 
-    workspaceName: str = Field(alias="workspaceName", description="Company name of the workspace.")
-
-    id: str = Field(alias="id", description="Resource unique identification")
-
-    inventoryOwnership: Optional[str] = Field(
-        default=None, alias="inventoryOwnership", description="Devices and Subscriptions Ownership for this tenant."
+    phoneNumber: Optional[str] = Field(
+        default=None, alias="phoneNumber", description="The phone number associated with this workspace."
     )
 
     resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
 
-    createdAt: Optional[str] = Field(default=None, alias="createdAt", description="The time the resource was created.")
-
-    generation: Optional[int] = Field(default=None, alias="generation", description="Resource history of updates")
-
-    createdBy: Optional[str] = Field(
-        default=None, alias="createdBy", description="Email address of the user that created the account."
-    )
+    address: Optional[str] = Field(default=None, alias="address", description="Company address.")
 
 
 class StandardErrorResponse(BaseModel):
@@ -250,16 +182,50 @@ class StandardErrorResponse(BaseModel):
     errorCode: str = Field(alias="errorCode", description="HPE GreenLake standard error code")
 
 
-class NBBasicWorkspace(BaseModel):
-    """NBBasicWorkspace model"""
+class Message(BaseModel):
+    """Message model"""
 
-    generation: Optional[int] = Field(default=None, alias="generation", description="Resource history of updates")
+    message: str = Field(alias="message", description="Message")
+
+
+class NBBasicTenant(BaseModel):
+    """NBBasicTenant model"""
 
     id: str = Field(alias="id", description="Resource unique identification")
 
-    resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
+    inventoryOwnership: Optional[str] = Field(
+        default=None, alias="inventoryOwnership", description="Devices and Subscriptions Ownership for this tenant."
+    )
+
+    workspaceName: str = Field(alias="workspaceName", description="Company name of the workspace.")
 
     type: str = Field(alias="type", description="Type of data")
+
+    createdBy: Optional[str] = Field(
+        default=None, alias="createdBy", description="Email address of the user that created the account."
+    )
+
+    updatedAt: Optional[str] = Field(
+        default=None, alias="updatedAt", description="The time the resource was last updated."
+    )
+
+    resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
+
+    createdAt: Optional[str] = Field(default=None, alias="createdAt", description="The time the resource was created.")
+
+    generation: Optional[int] = Field(default=None, alias="generation", description="Resource history of updates")
+
+
+class NBTenantInventoryOwnership(BaseModel):
+    """An enumeration."""
+
+
+class CountryCode(BaseModel):
+    """An enumeration."""
+
+
+class NBBasicWorkspace(BaseModel):
+    """NBBasicWorkspace model"""
 
     updatedAt: Optional[str] = Field(
         default=None, alias="updatedAt", description="The time the resource was last updated."
@@ -272,3 +238,37 @@ class NBBasicWorkspace(BaseModel):
     createdBy: Optional[str] = Field(
         default=None, alias="createdBy", description="Email address of the user that created the account."
     )
+
+    generation: Optional[int] = Field(default=None, alias="generation", description="Resource history of updates")
+
+    id: str = Field(alias="id", description="Resource unique identification")
+
+    resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
+
+    type: str = Field(alias="type", description="Type of data")
+
+
+class NBContactTenant(BaseModel):
+    """NBContactTenant model"""
+
+    address: Optional[str] = Field(default=None, alias="address", description="Company Address.")
+
+    description: Optional[str] = Field(default=None, alias="description", description="A description of the tenant.")
+
+    email: Optional[str] = Field(
+        default=None, alias="email", description="The primary email address associated with the workspace."
+    )
+
+    inventoryOwnership: Optional[str] = Field(
+        default=None,
+        alias="inventoryOwnership",
+        description='Devices and Subscriptions Ownership for this tenant. If not specified, the tenant is created with the default value of "MSP_OWNED_INVENTORY".',
+    )
+
+    phoneNumber: Optional[str] = Field(
+        default=None, alias="phoneNumber", description="The phone number associated with this workspace."
+    )
+
+    resourceUri: Optional[str] = Field(default=None, alias="resourceUri", description="Full path of the resource")
+
+    workspaceName: str = Field(alias="workspaceName", description="Name of the tenant.")

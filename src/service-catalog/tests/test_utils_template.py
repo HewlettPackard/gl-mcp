@@ -73,9 +73,11 @@ class TestServiceCatalogHttpClient:
         # Verify required headers are always present
         assert "Accept" in headers
         assert "User-Agent" in headers
+        assert "X-HPE-Thirdparty" in headers
 
         # Verify header values
         assert headers["User-Agent"].startswith("HPE-GreenLake-MCP/")
+        assert headers["X-HPE-Thirdparty"] == headers["User-Agent"]
         assert headers["Accept"] == "application/json"
         # OAuth2 mode: verify authentication and GLP tracking headers
         assert "Authorization" in headers
@@ -101,6 +103,7 @@ class TestServiceCatalogHttpClient:
             assert headers["Authorization"] == "Bearer test-access-token"
             assert headers["X-Custom-Header"] == "custom-value"
             assert headers["User-Agent"].startswith("HPE-GreenLake-MCP/")
+            assert headers["X-HPE-Thirdparty"] == headers["User-Agent"]
             assert headers["HPE-AI-Origin"] == "mcp"
 
     @pytest.mark.asyncio

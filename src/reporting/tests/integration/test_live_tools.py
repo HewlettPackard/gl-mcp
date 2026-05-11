@@ -44,6 +44,20 @@ pytestmark = pytest.mark.skipif(
 )
 TOOL_CASES = [
     {
+        "name": "getreportingstatusbyid",
+        "path": "/reporting/v1/statuses/{id}",
+        "method": "get",
+        "parameters": [
+            {
+                "name": "id",
+                "required": True,
+                "type": "str",
+                "env": "MCP_TEST_REPORTING_ID",
+                "default": None,
+            },
+        ],
+    },
+    {
         "name": "getreportingstatuses",
         "path": "/reporting/v1/statuses",
         "method": "get",
@@ -74,20 +88,6 @@ TOOL_CASES = [
                 "required": False,
                 "type": "int",
                 "env": "MCP_TEST_REPORTING_OFFSET",
-                "default": None,
-            },
-        ],
-    },
-    {
-        "name": "getreportingstatusbyid",
-        "path": "/reporting/v1/statuses/{id}",
-        "method": "get",
-        "parameters": [
-            {
-                "name": "id",
-                "required": True,
-                "type": "str",
-                "env": "MCP_TEST_REPORTING_ID",
                 "default": None,
             },
         ],

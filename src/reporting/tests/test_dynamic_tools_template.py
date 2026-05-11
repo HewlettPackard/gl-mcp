@@ -123,14 +123,14 @@ class TestGetEndpointSchema:
     async def test_valid_endpoint_returns_schema(self):
         """A recognised endpoint identifier returns a complete schema dict."""
 
-        result = await get_endpoint_schema(endpoint_identifier="GET:/reporting/v1/statuses")
+        result = await get_endpoint_schema(endpoint_identifier="GET:/reporting/v1/statuses/{id}")
 
         assert len(result) == 1
         response = result[0]
         assert response["success"] is True
-        assert response["endpoint_identifier"] == "GET:/reporting/v1/statuses"
+        assert response["endpoint_identifier"] == "GET:/reporting/v1/statuses/{id}"
         schema = response["schema"]
-        assert schema["path"] == "/reporting/v1/statuses"
+        assert schema["path"] == "/reporting/v1/statuses/{id}"
         assert schema["method"] == "GET"
         assert isinstance(schema["parameters"], list)
 
@@ -158,7 +158,7 @@ class TestGetEndpointSchema:
         """Setting include_examples=True attaches an example value to each parameter."""
 
         result = await get_endpoint_schema(
-            endpoint_identifier="GET:/reporting/v1/statuses",
+            endpoint_identifier="GET:/reporting/v1/statuses/{id}",
             include_examples=True,
         )
 
@@ -170,7 +170,7 @@ class TestGetEndpointSchema:
     async def test_schema_contains_all_expected_keys(self):
         """Schema response includes all mandatory top-level keys."""
 
-        result = await get_endpoint_schema(endpoint_identifier="GET:/reporting/v1/statuses")
+        result = await get_endpoint_schema(endpoint_identifier="GET:/reporting/v1/statuses/{id}")
         schema = result[0]["schema"]
         for key in ("path", "method", "summary", "description", "parameters", "responses"):
             assert key in schema, f"Missing key: {key}"
@@ -193,9 +193,9 @@ class TestInvokeDynamicTool:
 
         result = await invoke_dynamic_tool(
             ctx,
-            endpoint_identifier="GET:/reporting/v1/statuses",
+            endpoint_identifier="GET:/reporting/v1/statuses/{id}",
             parameters={
-                "filter": "test-value",
+                "id": "test-value",
             },
         )
 
@@ -237,7 +237,7 @@ class TestInvokeDynamicTool:
 
         result = await invoke_dynamic_tool(
             ctx,
-            endpoint_identifier="OPTIONS:/reporting/v1/statuses",
+            endpoint_identifier="OPTIONS:/reporting/v1/statuses/{id}",
         )
 
         assert len(result) == 1
@@ -268,8 +268,8 @@ class TestInvokeDynamicTool:
 
         result = await invoke_dynamic_tool(
             ctx,
-            endpoint_identifier="GET:/reporting/v1/statuses",
-            parameters={},  # required "filter" is intentionally omitted
+            endpoint_identifier="GET:/reporting/v1/statuses/{id}",
+            parameters={},  # required "id" is intentionally omitted
         )
         assert len(result) == 1
         assert result[0]["success"] is False
@@ -278,8 +278,8 @@ class TestInvokeDynamicTool:
 
         result = await invoke_dynamic_tool(
             ctx,
-            endpoint_identifier="GET:/reporting/v1/statuses/{id}",
-            parameters={},  # required "id" is intentionally omitted
+            endpoint_identifier="GET:/reporting/v1/statuses",
+            parameters={},  # required "filter" is intentionally omitted
         )
         assert len(result) == 1
         assert result[0]["success"] is False
@@ -296,7 +296,7 @@ class TestInvokeDynamicTool:
 
         result = await invoke_dynamic_tool(
             ctx,
-            endpoint_identifier="GET:/reporting/v1/statuses",
+            endpoint_identifier="GET:/reporting/v1/statuses/{id}",
             validate_schema=False,  # skip validation so we reach the HTTP call
         )
 
@@ -356,6 +356,20 @@ def sample_endpoints() -> list[dict]:
     """Sample endpoint data matching the generated schemas."""
     return [
         {
+            "path": "/reporting/v1/statuses/{id}",
+            "method": "GET",
+            "summary": "getreportingstatusbyid",
+            "operationId": "getreportingstatusbyid",
+            "parameters": [
+                {
+                    "name": "id",
+                    "type": "str",
+                    "required": True,
+                    "location": "query",
+                },
+            ],
+        },
+        {
             "path": "/reporting/v1/statuses",
             "method": "GET",
             "summary": "getreportingstatuses",
@@ -383,20 +397,6 @@ def sample_endpoints() -> list[dict]:
                     "name": "offset",
                     "type": "int",
                     "required": False,
-                    "location": "query",
-                },
-            ],
-        },
-        {
-            "path": "/reporting/v1/statuses/{id}",
-            "method": "GET",
-            "summary": "getreportingstatusbyid",
-            "operationId": "getreportingstatusbyid",
-            "parameters": [
-                {
-                    "name": "id",
-                    "type": "str",
-                    "required": True,
                     "location": "query",
                 },
             ],

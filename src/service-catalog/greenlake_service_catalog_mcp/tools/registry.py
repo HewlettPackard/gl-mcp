@@ -44,18 +44,18 @@ def get_tool_classes(mode: str | None = None) -> list:
             # Static mode: import every per-endpoint tool module.
             # The @mcp.tool() decorators inside each module fire on import and
             # register the function with the FastMCP instance.
-            import greenlake_service_catalog_mcp.tools.implementations.getserviceprovisions  # noqa: F401 (triggers @mcp.tool registration)
+            import greenlake_service_catalog_mcp.tools.implementations.getserviceprovision  # noqa: F401 (triggers @mcp.tool registration)
             import greenlake_service_catalog_mcp.tools.implementations.get_service_managers_v1  # noqa: F401 (triggers @mcp.tool registration)
             import greenlake_service_catalog_mcp.tools.implementations.get_service_manager_v1  # noqa: F401 (triggers @mcp.tool registration)
-            import greenlake_service_catalog_mcp.tools.implementations.get_service_manager_provision_v1  # noqa: F401 (triggers @mcp.tool registration)
-            import greenlake_service_catalog_mcp.tools.implementations.getserviceoffers  # noqa: F401 (triggers @mcp.tool registration)
-            import greenlake_service_catalog_mcp.tools.implementations.per_region_service_managers_v1  # noqa: F401 (triggers @mcp.tool registration)
-            import greenlake_service_catalog_mcp.tools.implementations.service_managers_for_a_region_v1  # noqa: F401 (triggers @mcp.tool registration)
-            import greenlake_service_catalog_mcp.tools.implementations.getserviceofferregions  # noqa: F401 (triggers @mcp.tool registration)
             import greenlake_service_catalog_mcp.tools.implementations.getserviceoffer  # noqa: F401 (triggers @mcp.tool registration)
-            import greenlake_service_catalog_mcp.tools.implementations.getserviceofferregion  # noqa: F401 (triggers @mcp.tool registration)
-            import greenlake_service_catalog_mcp.tools.implementations.getserviceprovision  # noqa: F401 (triggers @mcp.tool registration)
+            import greenlake_service_catalog_mcp.tools.implementations.getserviceofferregions  # noqa: F401 (triggers @mcp.tool registration)
+            import greenlake_service_catalog_mcp.tools.implementations.getserviceoffers  # noqa: F401 (triggers @mcp.tool registration)
+            import greenlake_service_catalog_mcp.tools.implementations.get_service_manager_provision_v1  # noqa: F401 (triggers @mcp.tool registration)
+            import greenlake_service_catalog_mcp.tools.implementations.getserviceprovisions  # noqa: F401 (triggers @mcp.tool registration)
             import greenlake_service_catalog_mcp.tools.implementations.get_service_manager_provisions_v1  # noqa: F401 (triggers @mcp.tool registration)
+            import greenlake_service_catalog_mcp.tools.implementations.service_managers_for_a_region_v1  # noqa: F401 (triggers @mcp.tool registration)
+            import greenlake_service_catalog_mcp.tools.implementations.getserviceofferregion  # noqa: F401 (triggers @mcp.tool registration)
+            import greenlake_service_catalog_mcp.tools.implementations.per_region_service_managers_v1  # noqa: F401 (triggers @mcp.tool registration)
 
             logger.info("Static mode: 12 endpoint tools registered")
     except ImportError as exc:

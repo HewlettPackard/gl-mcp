@@ -83,7 +83,7 @@ cd src/audit-logs
 uv sync
 
 # Run the server
-uv run python __main__.py
+uv run python -m greenlake_audit_logs_mcp
 ```
 
 ## MCP Client Configuration
@@ -97,7 +97,7 @@ Add servers to your `claude_desktop_config.json`:
   "mcpServers": {
     "greenlake-audit-logs": {
       "command": "uv",
-      "args": ["run", "python", "__main__.py"],
+      "args": ["run", "python", "-m", "greenlake_audit_logs_mcp"],
       "cwd": "/path/to/gl-mcp/src/audit-logs",
       "env": {
         "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
@@ -108,7 +108,7 @@ Add servers to your `claude_desktop_config.json`:
     },
     "greenlake-devices": {
       "command": "uv",
-      "args": ["run", "python", "__main__.py"],
+      "args": ["run", "python", "-m", "greenlake_devices_mcp"],
       "cwd": "/path/to/gl-mcp/src/devices",
       "env": {
         "GREENLAKE_API_BASE_URL": "https://global.api.greenlake.hpe.com",
@@ -229,18 +229,20 @@ flowchart TB
 All servers share a common architecture:
 
 ```text
-server/
-├── __main__.py           # Entry point
-├── auth/                 # OAuth2 authentication
-├── config/               # Settings and logging
-├── models/               # Pydantic data models
-├── server/               # MCP server core
-├── tools/                # Tool implementations
-│   ├── base.py          # Base tool class
-│   ├── registry.py      # Tool registration
-│   └── implementations/ # Tool implementations
-├── utils/                # HTTP client and utilities
-└── tests/                # Unit and integration tests
+src/<service>/
+├── greenlake_<service>_mcp/   # Main package (e.g. greenlake_audit_logs_mcp)
+│   ├── __main__.py            # Entry point (python -m greenlake_<service>_mcp)
+│   ├── auth/                  # OAuth2 authentication
+│   ├── config/                # Settings and logging
+│   ├── models/                # Pydantic data models
+│   ├── server/                # MCP server core
+│   ├── tools/                 # Tool implementations
+│   │   ├── base.py           # Base tool class
+│   │   ├── registry.py       # Tool registration
+│   │   └── implementations/  # Tool implementations
+│   └── utils/                 # HTTP client and utilities
+├── tests/                     # Unit and integration tests
+└── pyproject.toml             # Package definition and entry points
 ```
 
 ### Authentication
@@ -304,7 +306,7 @@ Log files are written to: `~/.hpe/mcp-logs/{service-name}/`
 
 ### GitHub Issues
 
-The primary support channel for this project is [GitHub Issues](https://github.com/glcp/gl-mcp/issues). When reporting an issue, please include:
+The primary support channel for this project is [GitHub Issues](https://github.com/HewlettPackard/gl-mcp/issues). When reporting an issue, please include:
 
 - **Environment details**: OS, Python version, `uv` version
 - **Server name**: Which MCP server you're using (audit-logs, devices, etc.)

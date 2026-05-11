@@ -6,6 +6,7 @@ Implements: GET /service-catalog/v1beta1/service-provisions
 """
 
 from __future__ import annotations
+import re
 from typing import Annotated, Any
 
 from mcp.server.fastmcp import Context
@@ -15,6 +16,21 @@ from greenlake_service_catalog_mcp.config.logging import get_logger
 from greenlake_service_catalog_mcp.server.fastmcp_instance import mcp
 
 logger = get_logger(__name__)
+
+
+def _normalize_filter_quotes(filter_expr: str) -> str:
+    """Wrap unquoted numeric values in single quotes for OData filter expressions.
+
+    LLMs sometimes omit quotes around numeric filter values (e.g., ``quantity eq 5``
+    instead of ``quantity eq '5'``), which causes 400 Bad Request from the API.
+    This function normalises those bare numeric values while leaving booleans,
+    already-quoted strings, and other tokens untouched.
+    """
+    return re.sub(
+        r"\b(eq|ne|gt|ge|lt|le)\s+(-?\d+(?:\.\d+)?)\b",
+        r"\1 '\2'",
+        filter_expr,
+    )
 
 
 @mcp.tool(
@@ -38,7 +54,7 @@ async def getserviceprovisions(  # noqa: E501
     filter: Annotated[
         str | None,
         Field(
-            description="Limit the entities operated on by this endpoint by returning only the subset of entities that match the filter. The filter grammar is a subset of OData 4.0. <br> **Supported Fields:** `id`, `ServiceOfferId`, `workspaceId`, `serviceManagerProvisionId`, `serviceManagerId`, `serviceManagerInstanceId`, `status`, `organizationId`, `slug`. <br> **Supported operand:** `eq` <br> **Supported operations:** `and`\n\nExamples:\n  - id eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Return the service provision with a given ID.\n  - workspaceId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Return service provisions for a given workspace ID.\n  - serviceManagerProvisionId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Return service provisions for a given Application Customer ID.\n  - ServiceOfferId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and region eq 'us-west'\n    Return service provisions for a given service offer ID and region.\n  - serviceManagerId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and serviceManagerInstanceId eq '62d242c7-7d53-448d-b7d0-baf0c591f024'\n    Return service provision for a given application ID and application instance ID.\n  - status eq 'PROVISION_INITIATED'\n    Return service provisions with a given status.\n  - organizationId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Return service provisions with a given organization ID.\n  - slug eq 'AC'\n    Return service provisions with a given slug.\n\n**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes."
+            description="Limit the entities operated on by this endpoint by returning only the subset of entities that match the filter. The filter grammar is a subset of OData 4.0. <br> **Supported Fields:** `id`, `ServiceOfferId`, `workspaceId`, `serviceManagerProvisionId`, `serviceManagerId`, `serviceManagerInstanceId`, `status`, `organizationId`, `slug`. <br> **Supported operand:** `eq` <br> **Supported operations:** `and`\n\nExamples:\n  - serviceManagerProvisionId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Return service provisions for a given Application Customer ID.\n  - ServiceOfferId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and region eq 'us-west'\n    Return service provisions for a given service offer ID and region.\n  - serviceManagerId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and serviceManagerInstanceId eq '62d242c7-7d53-448d-b7d0-baf0c591f024'\n    Return service provision for a given application ID and application instance ID.\n  - status eq 'PROVISION_INITIATED'\n    Return service provisions with a given status.\n  - organizationId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Return service provisions with a given organization ID.\n  - slug eq 'AC'\n    Return service provisions with a given slug.\n  - id eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Return the service provision with a given ID.\n  - workspaceId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Return service provisions for a given workspace ID.\n\n**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes."
         ),
     ] = None,
     unredacted: Annotated[
@@ -58,7 +74,7 @@ async def getserviceprovisions(  # noqa: E501
         Hpe-workspace-id: The workspace ID. Required if the \"view all\" parameter is false.
         next: Specify the start ID for the next page of service offers.
         limit: Specify the number of results to be returned.
-        filter: Limit the entities operated on by this endpoint by returning only the subset of entities that match the filter. The filter grammar is a subset of OData 4.0. <br> **Supported Fields:** `id`, `ServiceOfferId`, `workspaceId`, `serviceManagerProvisionId`, `serviceManagerId`, `serviceManagerInstanceId`, `status`, `organizationId`, `slug`. <br> **Supported operand:** `eq` <br> **Supported operations:** `and`\n\nExamples:\n  - id eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Return the service provision with a given ID.\n  - workspaceId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Return service provisions for a given workspace ID.\n  - serviceManagerProvisionId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Return service provisions for a given Application Customer ID.\n  - ServiceOfferId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and region eq 'us-west'\n    Return service provisions for a given service offer ID and region.\n  - serviceManagerId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and serviceManagerInstanceId eq '62d242c7-7d53-448d-b7d0-baf0c591f024'\n    Return service provision for a given application ID and application instance ID.\n  - status eq 'PROVISION_INITIATED'\n    Return service provisions with a given status.\n  - organizationId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Return service provisions with a given organization ID.\n  - slug eq 'AC'\n    Return service provisions with a given slug.\n\n**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
+        filter: Limit the entities operated on by this endpoint by returning only the subset of entities that match the filter. The filter grammar is a subset of OData 4.0. <br> **Supported Fields:** `id`, `ServiceOfferId`, `workspaceId`, `serviceManagerProvisionId`, `serviceManagerId`, `serviceManagerInstanceId`, `status`, `organizationId`, `slug`. <br> **Supported operand:** `eq` <br> **Supported operations:** `and`\n\nExamples:\n  - serviceManagerProvisionId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Return service provisions for a given Application Customer ID.\n  - ServiceOfferId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and region eq 'us-west'\n    Return service provisions for a given service offer ID and region.\n  - serviceManagerId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050' and serviceManagerInstanceId eq '62d242c7-7d53-448d-b7d0-baf0c591f024'\n    Return service provision for a given application ID and application instance ID.\n  - status eq 'PROVISION_INITIATED'\n    Return service provisions with a given status.\n  - organizationId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Return service provisions with a given organization ID.\n  - slug eq 'AC'\n    Return service provisions with a given slug.\n  - id eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Return the service provision with a given ID.\n  - workspaceId eq '767c0c92-5ecc-4952-85d6-06d2bcaaf050'\n    Return service provisions for a given workspace ID.\n\n**Filter Syntax**: Use OData-style filters with the field names shown in the examples above. String values must be enclosed in single quotes.
         unredacted: If true, returns the complete entry including sensitive fields.\n\nExample: true
         all: If true, returns unredacted entries for all workspaces, including all provisioned service offers and their sensitive fields.\n\nExample: true
     Returns:
@@ -82,7 +98,7 @@ async def getserviceprovisions(  # noqa: E501
         except (ValueError, TypeError) as exc:
             raise ValueError("'limit' must be an integer") from exc
     if filter is not None and filter is not ...:
-        params["filter"] = filter
+        params["filter"] = _normalize_filter_quotes(filter)
     if unredacted is not None and unredacted is not ...:
         params["unredacted"] = unredacted
     if all is not None and all is not ...:
